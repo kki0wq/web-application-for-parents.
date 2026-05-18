@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Родительский контроль | Успеваемость, посещаемость, оплаты</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Подключаем CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-container">
+    <div class="header">
+        <div class="logo">
+            <h1><i class="fas fa-child"></i> FamilyTrack</h1>
+            <p>Успеваемость • Посещаемость • Оплаты • Связь с куратором</p>
+        </div>
+        <div class="parent-info">
+            <i class="fas fa-user-check"></i>
+            <span>Родитель: Екатерина В.</span>
+            <i class="fas fa-graduation-cap"></i>
+            <span>Ученик: Артём Смирнов, 1ИП-18-25</span>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <!-- Успеваемость -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-chart-line"></i> Успеваемость</h2>
+                <div class="badge">текущий период</div>
+            </div>
+            <ul class="grades-list" id="gradesList"></ul>
+            <div class="total-paid" style="margin-top: 8px; text-align: left;">⭐ Средний балл: <span id="avgGrade">—</span></div>
+        </div>
+
+        <!-- Посещаемость -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-calendar-check"></i> Посещаемость</h2>
+                <div class="badge">последние занятия</div>
+            </div>
+            <ul class="attendance-list" id="attendanceList"></ul>
+            <div class="total-paid">✅ Всего уроков: <span id="totalLessons">0</span> | Пропуски: <span id="totalAbsent">0</span></div>
+        </div>
+
+        <!-- Финансы -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-credit-card"></i> Оплаты</h2>
+                <div class="badge">2025/2026</div>
+            </div>
+            <ul class="payments-list" id="paymentsList"></ul>
+            <div class="total-paid">💰 Общая сумма оплат: <span id="totalPaidAmount">0</span> ₽</div>
+        </div>
+    </div>
+
+    <!-- Чат с куратором (родитель отправляет) -->
+    <div class="feedback-section">
+        <div class="feedback-header">
+            <i class="fas fa-comments"></i>
+            <h2>Чат с куратором</h2>
+            <span class="online-badge">онлайн</span>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <!-- Здесь будут сообщения родителя и куратора вместе -->
+        </div>
+        <div class="feedback-input-area">
+            <input type="text" id="messageInput" placeholder="Задайте вопрос куратору (успеваемость, оплаты, расписание...)">
+            <button id="sendMsgBtn"><i class="fas fa-paper-plane"></i> Отправить</button>
+        </div>
+        <p class="info-note"><i class="fas fa-clock"></i> Куратор отвечает в течение учебного дня</p>
+    </div>
+
+    <!-- НОВЫЙ БЛОК: Ответы куратора (только его сообщения) -->
+    <div class="curator-answers-section">
+        <div class="feedback-header">
+            <i class="fas fa-user-tie"></i>
+            <h2>📢 Ответы куратора</h2>
+            <span class="badge" style="background:#e0e7ff;">только официальные ответы</span>
+        </div>
+        <div class="curator-answers-list" id="curatorAnswersList">
+            <!-- Здесь будут только сообщения от куратора -->
+        </div>
+    </div>
+
+    <!-- API панель и тесты -->
+    <div class="api-panel">
+        <h3><i class="fas fa-code"></i> API эндпоинты & Тестирование</h3>
+        <div class="endpoints">
+            <span class="endpoint">GET /api/grades</span>
+            <span class="endpoint">GET /api/attendance</span>
+            <span class="endpoint">GET /api/payments</span>
+            <span class="endpoint">POST /api/feedback</span>
+            <span class="endpoint">GET /api/feedback</span>
+        </div>
+        <div class="test-buttons">
+            <button class="test-btn" id="testGradesApi"><i class="fas fa-database"></i> Тест: успеваемость</button>
+            <button class="test-btn" id="testAttendanceApi"><i class="fas fa-user-clock"></i> Тест: посещаемость</button>
+            <button class="test-btn" id="testPaymentsApi"><i class="fas fa-money-bill"></i> Тест: оплаты</button>
+            <button class="test-btn" id="testResetDemo"><i class="fas fa-sync-alt"></i> Сброс демо-данных</button>
+        </div>
+        <div class="api-output" id="apiOutput">
+            💡 Нажмите на тест — ответ API в формате JSON
+        </div>
+    </div>
+    <footer>
+        © 2026 FamilyTrack — пилотная версия. Репозиторий с историей коммитов, README и тестами. Рабочий продукт для защиты.
+    </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
