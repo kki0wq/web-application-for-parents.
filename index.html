@@ -64,7 +64,6 @@
         .auth-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; }
         .auth-btn:hover { transform: translateY(-2px); }
         .auth-error { color: var(--warning); font-size: 0.85rem; text-align: center; background: #ffe0f0; padding: 10px; border-radius: 50px; }
-        .role-badge { text-align: center; padding: 14px; background: linear-gradient(135deg, #ffe0f0, #ffd4e8); border-radius: 60px; font-size: 0.85rem; color: var(--primary-dark); margin-top: 15px; }
 
         /* ДАШБОРД */
         .dashboard-content { display: none; }
@@ -203,10 +202,6 @@
                     <button id="doRegisterBtn" class="auth-btn">✨ Зарегистрироваться</button>
                     <div id="regError" class="auth-error"></div>
                 </div>
-                <div class="role-badge">
-                    💡 Куратор: curator@college.com / 123456<br>
-                    🌸 Родитель: зарегистрируйтесь и укажите ФИО и группу студента
-                </div>
             </div>
         </div>
 
@@ -281,7 +276,7 @@
                 <div class="card" style="grid-column: 1 / -1;">
                     <div class="card-title">💬 Чат с куратором</div>
                     <div class="chat-container-modern">
-                        <div class="chat-header"><div style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:50%;display:flex;align-items:center;justify-content:center;">📚</div><div><h4 style="font-size:1rem;">Куратор колледжа</h4></div></div>
+                        <div class="chat-header"><div style="width:40px;height:40px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:50%;display:flex;align-items:center;justify-content:center;">📚</div><div><h4 style="font-size:1rem;">Чат колледжа</h4></div></div>
                         <div id="chatMessagesModern" class="chat-messages-modern"></div>
                         <div class="chat-input-modern"><input type="text" id="modernChatInput" placeholder="Напишите сообщение..."><button id="modernSendBtn" class="chat-send-btn">📨 Отправить</button></div>
                     </div>
@@ -312,29 +307,10 @@
         
         let students = JSON.parse(localStorage.getItem('students')) || [];
         let users = JSON.parse(localStorage.getItem('users')) || [];
-        let chatMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+        let chatMessages = JSON.parse(localStorage.getItem('chatMessages')) || [
+            { text: "Добро пожаловать в чат колледжа! 🌸", sender: "curator", senderName: "Система", time: "10:00", studentId: null }
+        ];
         let curatorGroups = JSON.parse(localStorage.getItem('curatorGroups')) || {};
-
-        // Создаём тестового куратора
-        if (!users.find(u => u.email === 'curator@college.com')) {
-            users.push({ id: "cur1", name: "Анна Куратор", email: "curator@college.com", password: "123456", role: "curator", group: "" });
-        }
-
-        // Создаём тестовых студентов
-        if (students.length === 0) {
-            students = [
-                { id: "s1", name: "Алексей Иванов", group: "П-201", parentEmail: "", parentName: "", grades: {}, absences: [] },
-                { id: "s2", name: "София Петрова", group: "П-201", parentEmail: "", parentName: "", grades: {}, absences: [] },
-                { id: "s3", name: "Дмитрий Сидоров", group: "П-202", parentEmail: "", parentName: "", grades: {}, absences: [] }
-            ];
-            for (let s of students) {
-                if (Object.keys(s.grades).length === 0) {
-                    for (let subj of ALL_SUBJECTS) s.grades[subj] = [4, 5, 4, 5, 4];
-                }
-                if (!s.absences) s.absences = [];
-            }
-            saveAll();
-        }
 
         function saveAll() {
             localStorage.setItem('students', JSON.stringify(students));
@@ -429,7 +405,7 @@
             let container = document.getElementById('chatMessagesModern');
             if (container) {
                 container.innerHTML = filtered.slice().reverse().slice(0, 30).reverse().map(msg => `
-                    <div class="message-modern ${msg.sender}">
+                    <div class="message-modern ${msg.sender === 'parent' ? 'parent' : 'curator'}">
                         <div class="message-avatar">${msg.sender === 'parent' ? '👨‍👩‍👧' : '📚'}</div>
                         <div class="message-content">
                             <div class="message-bubble-modern">${msg.text}</div>
@@ -595,7 +571,7 @@
             for (let s of ALL_SUBJECTS) {
                 let g = student.grades[s] || [4];
                 let avg = (g.reduce((a, b) => a + b, 0) / g.length).toFixed(1);
-                rows += `<tr><td style="font-weight:500;">📚 ${s}<tr><td>${avg}</td><td><span class="grade-badge">${g[g.length - 1]}</span></td></tr>`;
+                rows += `<tr><td style="font-weight:500;">📚 ${s}</td><td>${avg}</td><td><span class="grade-badge">${g[g.length - 1]}</span></td></tr>`;
             }
             return `<div class="detail-page">
                 <div class="detail-title">📖 Детальная успеваемость: ${student.name}</div>
@@ -628,8 +604,8 @@
                 <div class="detail-title">💳 История оплат</div>
                 <table class="subjects-table"><thead><tr><th>Дата</th><th>Описание</th><th>Сумма</th><th>Статус</th></tr></thead>
                 <tbody>
-                    <tr><td>01.05.2026</td><td>Абонемент май</td><td>−4500 ₽</td><td>✅ Оплачено</td></tr>
-                    <tr><td>25.04.2026</td><td>Пополнение с карты</td><td>+5000 ₽</td><td>✅ Зачислено</td></tr>
+                    <tr><td>01.05.2026</td><td>Абонемент май</td><td>−4500 ₽</td><td>✅ Оплачено</span></td></tr>
+                    <tr><td>25.04.2026</span></td><td>Пополнение с карты</span></td><td>+5000 ₽</span></td><td>✅ Зачислено</span></tr>
                 </tbody>
                 </table>
                 <button class="back-link" data-back="dashboard">← Вернуться на главную</button>
@@ -638,7 +614,7 @@
 
         function getFullChatPage() {
             return `<div class="detail-page">
-                <div class="detail-title">💬 Полный чат с куратором</div>
+                <div class="detail-title">💬 Полный чат</div>
                 <div id="chatMessagesFull" style="max-height:450px; overflow-y:auto; display:flex; flex-direction:column; gap:14px; margin-bottom:20px;"></div>
                 <div class="chat-input-modern">
                     <input type="text" id="chatFullInput" placeholder="Напишите сообщение...">
@@ -657,7 +633,7 @@
             else if (user?.role === 'parent') student = getStudentForParent(user.email);
             let filtered = chatMessages.filter(m => !student || m.studentId === student.id || !m.studentId);
             container.innerHTML = filtered.map(msg => `
-                <div class="message-modern ${msg.sender}">
+                <div class="message-modern ${msg.sender === 'parent' ? 'parent' : 'curator'}">
                     <div class="message-avatar">${msg.sender === 'parent' ? '👨‍👩‍👧' : '📚'}</div>
                     <div><div class="message-bubble-modern">${msg.text}</div><div class="message-time-modern">${msg.time}</div></div>
                 </div>
