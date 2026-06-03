@@ -349,6 +349,7 @@
         let curatorGroups = JSON.parse(localStorage.getItem('curatorGroups')) || {};
         let userAvatars = JSON.parse(localStorage.getItem('userAvatars')) || {};
 
+        // Создаём тестовые данные только если их нет
         if (users.length === 0) {
             users.push({ id: `u${Date.now()}`, name: "Анна Куратор", email: "curator@college.com", password: "123456", role: "curator" });
             users.push({ id: `u${Date.now() + 1}`, name: "Елена Родитель", email: "parent@mail.com", password: "123456", role: "parent" });
@@ -436,7 +437,7 @@
             if (!container) return;
             if (grades.length === 0) { container.innerHTML = ''; if (noMsg) noMsg.style.display = 'block'; return; }
             if (noMsg) noMsg.style.display = 'none';
-            container.innerHTML = `<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr><td>${g.date || "—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight === 2 ? 'Контрольная (×2)' : 'Обычная'}</td><td>${g.comment || "—"}</td></tr>`).join('')}</tbody><table>`;
+            container.innerHTML = `<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr><td style="white-space: nowrap;">${g.date || "—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight === 2 ? 'Контрольная (×2)' : 'Обычная'}</td><td>${g.comment || "—"}</td></tr>`).join('')}</tbody></table>`;
         }
 
         function renderGradeDistribution(student) {
@@ -759,7 +760,7 @@
             let parents = users.filter(u => u.role === 'parent');
             let container = document.getElementById('usersTableContainer');
             if (!container) return;
-            container.innerHTML = `<table class="users-table"><thead><tr><th>Имя</th><th>Email</th><th>Студент</th><th>Группа</th><th></th></tr></thead><tbody>${parents.map(p => { let student = students.find(s => s.parentEmail === p.email); return `<tr><td>${p.name}</td><td>${p.email}</td><td>${student?.name || "—"}</td><td>${student?.group || "—"}</td><td><button class="delete-user-btn" data-email="${p.email}">🗑️</button></td>`; }).join('')}</tbody></table>`;
+            container.innerHTML = `<table class="users-table"><thead><tr><th>Имя</th><th>Email</th><th>Студент</th><th>Группа</th><th></th></tr></thead><tbody>${parents.map(p => { let student = students.find(s => s.parentEmail === p.email); return `<table><td>${p.name}</td><td>${p.email}</td><td>${student?.name || "—"}</td><td>${student?.group || "—"}</td><td><button class="delete-user-btn" data-email="${p.email}">🗑️</button></td>`; }).join('')}</tbody></table>`;
             document.querySelectorAll('.delete-user-btn').forEach(btn => { btn.onclick = () => { let email = btn.dataset.email; users = users.filter(u => u.email !== email); saveAll(); renderUsersTable(); alert('Удалено'); }; });
         }
 
@@ -860,7 +861,7 @@
                 let lastDate = lastGrade && typeof lastGrade === 'object' ? lastGrade.date : "";
                 rows += `<tr><td style="font-weight:500;">📚 ${s}</td><td>${avg}</td><td><span class="grade-badge">${lastVal}</span>${lastDate ? `<span class="grade-date"> от ${lastDate}</span>` : ''}</td></tr>`;
             }
-            return `<div class="detail-page"><div class="detail-title">📖 Детальная успеваемость: ${student.name}</div><table class="subjects-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></td></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`;
+            return `<div class="detail-page"><div class="detail-title">📖 Детальная успеваемость: ${student.name}</div><table class="subjects-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`;
         }
 
         function getAttendancePage() {
@@ -980,6 +981,7 @@
         
         function showAuth() { document.getElementById('authBlock').style.display = 'block'; document.getElementById('dashboardBlock').classList.remove('active'); document.getElementById('dashboardBlock').style.display = 'none'; }
         
+        // Устанавливаем сегодняшнюю дату при загрузке
         updateCurrentDate();
         saveAll();
         if (getCurrentUser()) showDashboard();
