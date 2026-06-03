@@ -16,6 +16,7 @@
             --border: #ffe0f0;
             --success: #2d6a4f;
             --warning: #e06b9e;
+            --danger: #c45a8c;
             --grade5: #a8e6cf;
             --grade5-dark: #7bc5a8;
             --grade4: #b8deff;
@@ -108,6 +109,8 @@
         .avatar-option:hover { transform: scale(1.1); border-color: var(--primary); }
         .avatar-option.selected { border-color: var(--primary); box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary); }
         .save-profile-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 16px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 15px; }
+        .delete-account-btn { background: linear-gradient(135deg, #e06b9e, #c45a8c); color: white; border: none; border-radius: 60px; padding: 16px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 15px; transition: all 0.3s; }
+        .delete-account-btn:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(192,57,103,0.4); }
         
         .curator-group-info { background: rgba(255,240,248,0.9); backdrop-filter: blur(10px); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 2px solid #ffd9ec; }
         .group-selector { display: flex; gap: 15px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; }
@@ -131,6 +134,9 @@
         .chat-item:hover { transform: translateX(8px); background: rgba(255,240,248,0.95); border-color: var(--primary); }
         .chat-item.active { border-color: var(--primary); background: linear-gradient(135deg, #ffe0f0, #ffd4e8); }
         .chat-avatar { width: 50px; height: 50px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem; font-weight: bold; }
+        .chat-name { font-weight: 700; }
+        .chat-preview { font-size: 0.8rem; color: var(--text-muted); }
+        .chat-time { font-size: 0.7rem; color: var(--text-muted); }
         
         .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 30px; }
         @media (max-width: 768px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
@@ -209,7 +215,7 @@
 <body>
     <div class="floating-bg" id="floatingBg"></div>
     <div class="app-container" id="app">
-        <div id="profileModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>👤 Мой профиль</h3><button class="close-modal" onclick="closeProfileModal()">×</button></div><div class="profile-field"><label>Имя и фамилия</label><input type="text" id="profileName" placeholder="Иван Иванов"></div><div class="profile-field"><label>Email</label><input type="email" id="profileEmail" readonly style="background:#f5f5f5;"></div><div class="profile-field"><label>🌸 Выберите аватар</label><div class="avatar-selector" id="avatarSelector"></div></div><button class="save-profile-btn" onclick="saveProfileChanges()">💾 Сохранить изменения</button></div></div>
+        <div id="profileModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>👤 Мой профиль</h3><button class="close-modal" onclick="closeProfileModal()">×</button></div><div class="profile-field"><label>Имя и фамилия</label><input type="text" id="profileName" placeholder="Иван Иванов"></div><div class="profile-field"><label>Email</label><input type="email" id="profileEmail" readonly style="background:#f5f5f5;"></div><div class="profile-field"><label>🌸 Выберите аватар</label><div class="avatar-selector" id="avatarSelector"></div></div><button class="save-profile-btn" onclick="saveProfileChanges()">💾 Сохранить изменения</button><button class="delete-account-btn" onclick="deleteAccount()">🗑️ Удалить аккаунт</button></div></div>
 
         <div id="authBlock"><div class="auth-container"><div class="auth-tabs"><button class="auth-tab active" data-tab="login">🌸 Вход</button><button class="auth-tab" data-tab="register">✨ Регистрация</button></div><div id="loginForm" class="auth-form"><input type="email" id="loginEmail" class="auth-input" placeholder="Email"><input type="password" id="loginPassword" class="auth-input" placeholder="Пароль"><button id="doLoginBtn" class="auth-btn">🌟 Войти</button><div id="loginError" class="auth-error"></div></div><div id="registerForm" class="auth-form hidden"><input type="text" id="regName" class="auth-input" placeholder="Имя и фамилия (русские буквы)"><input type="email" id="regEmail" class="auth-input" placeholder="Email"><select id="regRole" class="auth-select"><option value="parent">👨‍👩‍👧 Родитель</option><option value="curator">📚 Куратор</option></select><div id="parentFields"><input type="text" id="regChildName" class="auth-input" placeholder="ФИО студента (русские буквы)"><input type="text" id="regGroupNumber" class="auth-input" placeholder="Номер группы (например, П-201)"></div><div id="curatorFields" style="display: none;"><input type="text" id="regCuratorGroup" class="auth-input" placeholder="Номер вашей группы"></div><input type="password" id="regPassword" class="auth-input" placeholder="Пароль (мин. 6 символов)"><button id="doRegisterBtn" class="auth-btn">✨ Зарегистрироваться</button><div id="regError" class="auth-error"></div></div></div></div>
 
@@ -275,7 +281,6 @@
         function createFloatingElements() { const container = document.getElementById('floatingBg'); if(!container) return; container.innerHTML = ''; const hearts = ['❤️','💖','💗','💓','💕','💝','🌸','🌷','🌺']; for(let i=0;i<25;i++){ const d=document.createElement('div'); d.className='heart'; d.innerHTML=hearts[Math.floor(Math.random()*hearts.length)]; d.style.left=Math.random()*100+'%'; d.style.fontSize=(15+Math.random()*25)+'px'; d.style.animationDuration=(8+Math.random()*12)+'s'; d.style.animationDelay=(Math.random()*15)+'s'; container.appendChild(d); } const stars=['⭐','🌟','✨','💫','⭐']; for(let i=0;i<30;i++){ const s=document.createElement('div'); s.className='star-bg'; s.innerHTML=stars[Math.floor(Math.random()*stars.length)]; s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%'; s.style.fontSize=(10+Math.random()*20)+'px'; s.style.animationDuration=(2+Math.random()*4)+'s'; s.style.animationDelay=(Math.random()*5)+'s'; container.appendChild(s); } const flowers=['🌸','🌼','🌻','🌺','🌷','🌹','🌸']; for(let i=0;i<15;i++){ const f=document.createElement('div'); f.className='flower-bg'; f.innerHTML=flowers[Math.floor(Math.random()*flowers.length)]; f.style.left=Math.random()*100+'%'; f.style.top=Math.random()*100+'%'; f.style.fontSize=(25+Math.random()*40)+'px'; f.style.animationDuration=(15+Math.random()*20)+'s'; f.style.animationDelay=(Math.random()*10)+'s'; container.appendChild(f); } for(let i=0;i<20;i++){ const b=document.createElement('div'); b.className='bubble'; const size=20+Math.random()*60; b.style.width=size+'px'; b.style.height=size+'px'; b.style.left=Math.random()*100+'%'; b.style.animationDuration=(10+Math.random()*15)+'s'; b.style.animationDelay=(Math.random()*20)+'s'; container.appendChild(b); } for(let i=0;i<50;i++){ const g=document.createElement('div'); g.className='glitter'; g.style.left=Math.random()*100+'%'; g.style.top=Math.random()*100+'%'; g.style.animationDuration=(2+Math.random()*5)+'s'; g.style.animationDelay=(Math.random()*8)+'s'; container.appendChild(g); } }
         createFloatingElements(); updateDateBadge(); setInterval(updateDateBadge, 60000);
         
-        // Базовые предметы (добавили Физическую культуру)
         const DEFAULT_SUBJECTS = ["Математика", "Русский язык", "Литература", "Физика", "Химия", "Биология", "История", "Обществознание", "Английский язык", "Информатика", "География", "Физическая культура"];
         
         let students = JSON.parse(localStorage.getItem('students')) || [];
@@ -453,7 +458,21 @@
             if (!chatsGrid) return;
             if (groupStudents.length === 0) { document.getElementById('chatsListContainer').style.display = 'none'; return; }
             document.getElementById('chatsListContainer').style.display = 'block';
-            chatsGrid.innerHTML = groupStudents.map(st => { let pu = users.find(u => u.email === st.parentEmail); let pn = pu ? pu.name : st.parentName || "Родитель"; let last = chatMessages.filter(m => m.studentId === st.id).slice(-1)[0]; let preview = last ? last.text.substring(0, 40) + (last.text.length > 40 ? '...' : '') : 'Нет сообщений'; let time = last ? last.time : ''; return `<div class="chat-item ${selectedChatStudentId === st.id ? 'active' : ''}" onclick="window.selectChatStudent('${st.id}')"><div class="chat-avatar">${pn.charAt(0)}</div><div class="chat-info"><div class="chat-name">${pn}</div><div class="chat-preview">${preview}</div></div><div class="chat-time">${time}</div></div>`; }).join('');
+            chatsGrid.innerHTML = groupStudents.map(st => { 
+                let pu = users.find(u => u.email === st.parentEmail); 
+                let pn = pu ? pu.name : st.parentName || "Родитель"; 
+                let last = chatMessages.filter(m => m.studentId === st.id).slice(-1)[0]; 
+                let preview = last ? last.text.substring(0, 40) + (last.text.length > 40 ? '...' : '') : 'Нет сообщений'; 
+                let time = last ? last.time : ''; 
+                return `<div class="chat-item ${selectedChatStudentId === st.id ? 'active' : ''}" onclick="window.selectChatStudent('${st.id}')">
+                    <div class="chat-avatar">${pn.charAt(0)}</div>
+                    <div class="chat-info">
+                        <div class="chat-name">💬 Чат с ${pn}</div>
+                        <div class="chat-preview">${preview}</div>
+                    </div>
+                    <div class="chat-time">${time}</div>
+                </div>`; 
+            }).join('');
         }
         
         function renderGroupSubjectsUI() {
@@ -579,7 +598,6 @@
             }
         }
         
-        // Удаление группы
         document.getElementById('deleteGroupBtn').onclick = () => {
             if (!currentCuratorActiveGroup) return;
             if (confirm(`Удалить группу "${currentCuratorActiveGroup}"? Все студенты группы останутся в системе, но вы больше не будете её курировать.`)) {
@@ -602,7 +620,6 @@
             }
         };
         
-        // Добавление групп с проверкой на занятость
         document.getElementById('confirmAddGroupBtn').onclick = () => {
             let newGroup = document.getElementById('newGroupNameInput').value.trim();
             if (newGroup && currentUser) {
@@ -626,7 +643,6 @@
             }
         };
         
-        // Навигация
         let mainDash = document.getElementById('mainDashboard'), dynCont = document.getElementById('dynamic-page-content'), navBtns = document.querySelectorAll('.nav-btn');
         function getDetailedPage() { let st = getStudentById(selectedStudentId); if (!st) return '<div class="detail-page">Нет данных о студенте</div>'; let subjects = getSubjectsForGroup(st.group); let rows = subjects.map(s => { let grades = st.grades?.[s] || []; let avg = grades.length ? (grades.reduce((a, b) => a + (typeof b === 'object' ? b.value * (b.weight || 1) : b), 0) / grades.reduce((a, b) => a + (typeof b === 'object' ? (b.weight || 1) : 1), 0)).toFixed(1) : "—"; let last = grades[grades.length - 1]; let lastVal = last ? (typeof last === 'object' ? last.value : last) : "—"; let lastDate = last && typeof last === 'object' ? last.date : ""; let lastComment = last && typeof last === 'object' ? last.comment : ""; let lastWeight = last && typeof last === 'object' ? last.weight : 1; return `<tr><td style="font-weight:500;">📚 ${s}</td><td>${avg}</td><td><span class="grade-badge-sm">${lastVal}</span>${lastDate ? `<span class="grade-date" style="font-size:0.7rem; margin-left:8px;"> от ${lastDate}</span>` : ''}${lastWeight === 2 ? `<span style="font-size:0.7rem; margin-left:8px;">📝×2</span>` : ''}${lastComment ? `<div class="grade-comment" style="font-size:0.7rem;">📝 ${lastComment}</div>` : ''}</td></tr>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Детальная успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
         function getAttendancePage() { let st = getStudentById(selectedStudentId); if (!st) return '<div class="detail-page">Нет данных о студенте</div>'; let days = (st.absences || []).slice().reverse().map(a => `<div style="padding:12px; background:#ffe0f0; border-radius:40px; margin:8px 0;"><span>📅 ${a.date}</span> — <span>${a.type === 'болезнь' ? '❌ Болезнь' : a.type === 'уважительная' ? '📋 Уважительная' : '⚠️ Неуважительная'}</span></div>`).join(''); return `<div class="detail-page"><div class="detail-title">📅 Посещаемость: ${st.name}</div>${days || '<div style="padding:20px; text-align:center;">✨ Нет пропусков</div>'}<button class="back-link" data-back="dashboard">← На главную</button></div>`; }
@@ -634,13 +650,11 @@
         function showMain() { if (mainDash) mainDash.style.display = 'grid'; dynCont.style.display = 'none'; dynCont.innerHTML = ''; navBtns.forEach(btn => btn.classList.toggle('active-dashboard', btn.dataset.page === 'dashboard')); fullUpdate(); }
         function initNav() { showMain(); navBtns.forEach(btn => { btn.onclick = () => { let page = btn.dataset.page; page === 'dashboard' ? showMain() : showDetail(page); }; }); }
         
-        // Обработчики фильтров
         document.getElementById('filterSubject')?.addEventListener('change', () => renderAllGradesTable());
         document.getElementById('filterDateFrom')?.addEventListener('change', () => renderAllGradesTable());
         document.getElementById('filterDateTo')?.addEventListener('change', () => renderAllGradesTable());
         document.getElementById('clearFiltersBtn')?.addEventListener('click', () => { if (document.getElementById('filterSubject')) document.getElementById('filterSubject').value = ""; if (document.getElementById('filterDateFrom')) document.getElementById('filterDateFrom').value = ""; if (document.getElementById('filterDateTo')) document.getElementById('filterDateTo').value = ""; renderAllGradesTable(); });
         
-        // Аватарки
         function renderAvatarSelector() {
             let container = document.getElementById('avatarSelector');
             if (!container) return;
@@ -654,7 +668,38 @@
             });
         }
         
-        // Авторизация
+        window.deleteAccount = function() {
+            if (confirm('⚠️ ВНИМАНИЕ: Вы уверены, что хотите удалить аккаунт? Все ваши данные будут безвозвратно удалены. Это действие нельзя отменить.')) {
+                let userEmail = currentUser.email;
+                let userRole = currentUser.role;
+                
+                if (userRole === 'parent') {
+                    let student = getStudentForParent(userEmail);
+                    if (student) {
+                        student.parentEmail = null;
+                        student.parentName = null;
+                    }
+                } else if (userRole === 'curator') {
+                    delete curatorGroups[userEmail];
+                }
+                
+                users = users.filter(u => u.email !== userEmail);
+                chatMessages = chatMessages.filter(m => {
+                    let student = getStudentById(m.studentId);
+                    if (student && student.parentEmail === userEmail) return false;
+                    return true;
+                });
+                
+                saveAll();
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('curatorActiveGroup');
+                currentUser = null;
+                showAuth();
+                alert('Аккаунт успешно удалён.');
+                closeProfileModal();
+            }
+        };
+        
         document.getElementById('regRole').onchange = function() { let isParent = this.value === 'parent'; document.getElementById('parentFields').style.display = isParent ? 'block' : 'none'; document.getElementById('curatorFields').style.display = isParent ? 'none' : 'block'; };
         document.getElementById('regRole').dispatchEvent(new Event('change'));
         document.querySelectorAll('.auth-tab').forEach(tab => { tab.onclick = () => { let t = tab.dataset.tab; document.querySelectorAll('.auth-tab').forEach(tt => tt.classList.remove('active')); tab.classList.add('active'); document.getElementById('loginForm').classList.toggle('hidden', t !== 'login'); document.getElementById('registerForm').classList.toggle('hidden', t !== 'register'); }; });
@@ -742,7 +787,7 @@
                         selectedGradeStudentId = st.id;
                         displayStudentStats(st);
                         renderGradeDistribution(st);
-                        document.getElementById('chatHeaderName').innerHTML = 'Чат с куратором';
+                        document.getElementById('chatHeaderName').innerHTML = '💬 Чат с куратором';
                         renderChatMessages();
                     } else {
                         document.getElementById('studentStatsBlock').style.display = 'none';
@@ -752,6 +797,7 @@
                     document.getElementById('curatorGroupPanel').style.display = 'block';
                     document.getElementById('curatorPanel').style.display = 'block';
                     document.getElementById('studentStatsBlock').style.display = 'block';
+                    document.getElementById('chatHeaderName').innerHTML = '💬 Чат с родителем';
                     if (!curatorGroups[currentUser.email]) curatorGroups[currentUser.email] = [];
                     renderCuratorGroupsSelect();
                     if (currentCuratorActiveGroup) {
