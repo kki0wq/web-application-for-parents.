@@ -384,7 +384,7 @@ function renderGradesTable() {
     if (to) grades = grades.filter(g => g.date <= to);
     const container = document.getElementById('gradesList');
     if (!grades.length) { container.innerHTML = '<div style="padding:20px;text-align:center">📭 Нет оценок</div>'; return; }
-    container.innerHTML = `<table><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr><td style="white-space:nowrap">${g.date || '—'}</td><td>${g.subject}<td><td style="text-align:center"><span class="grade-badge">${g.value}</span></td><td>${g.weight === 2 ? '📝 Контрольная' : '📝 Обычная'}</td><td>${g.comment || '—'}</td>`).join('')}</tbody></table>`;
+    container.innerHTML = `<table><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr><td style="white-space:nowrap">${g.date || '—'}</td><td>${g.subject}</td><td style="text-align:center"><span class="grade-badge">${g.value}</span></td><td>${g.weight === 2 ? '📝 Контрольная' : '📝 Обычная'}</td><td>${g.comment || '—'}</td>`).join('')}</tbody></table>`;
 }
 
 function sendParentMessage() {
