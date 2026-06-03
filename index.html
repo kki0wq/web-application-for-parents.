@@ -32,10 +32,118 @@
             padding: 20px;
             min-height: 100vh;
             position: relative;
+            overflow-x: hidden;
         }
-        body::before { content: "🌸"; position: fixed; bottom: 20px; left: 20px; font-size: 80px; opacity: 0.06; pointer-events: none; z-index: 0; animation: float 20s infinite ease-in-out; }
-        body::after { content: "✨"; position: fixed; top: 20px; right: 20px; font-size: 70px; opacity: 0.06; pointer-events: none; z-index: 0; animation: float 25s infinite reverse; }
-        @keyframes float { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-20px) rotate(10deg); } }
+        
+        /* ===== ПРИКОЛЬНЫЙ АНИМИРОВАННЫЙ ФОН ===== */
+        .floating-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        /* Летающие сердечки */
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0.15;
+            animation: floatHeart linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.2;
+            }
+            90% {
+                opacity: 0.2;
+            }
+            100% {
+                transform: translateY(-20vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Летающие звёздочки */
+        .star-bg {
+            position: absolute;
+            font-size: 16px;
+            opacity: 0.12;
+            animation: twinkle 3s infinite alternate;
+            pointer-events: none;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.05; transform: scale(0.8); }
+            100% { opacity: 0.2; transform: scale(1.2); }
+        }
+        
+        /* Плавающие цветочки */
+        .flower-bg {
+            position: absolute;
+            font-size: 30px;
+            opacity: 0.08;
+            animation: floatFlower 20s infinite ease-in-out;
+            pointer-events: none;
+        }
+        
+        @keyframes floatFlower {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-30px) rotate(5deg); }
+            75% { transform: translateY(20px) rotate(-5deg); }
+        }
+        
+        /* Пузырьки */
+        .bubble {
+            position: absolute;
+            background: rgba(232,127,176,0.1);
+            border-radius: 50%;
+            animation: bubbleUp linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes bubbleUp {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.3;
+            }
+            80% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-20vh) scale(1.5);
+                opacity: 0;
+            }
+        }
+        
+        /* Блестящие точки */
+        .glitter {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #e87fb0;
+            border-radius: 50%;
+            opacity: 0;
+            animation: glitter 4s infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes glitter {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 0.4; transform: scale(1.5); }
+        }
         
         .app-container {
             max-width: 1400px;
@@ -256,6 +364,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- ПРИКОЛЬНЫЙ АНИМИРОВАННЫЙ ФОН -->
+    <div class="floating-bg" id="floatingBg"></div>
+    
     <div class="app-container" id="app">
         <!-- Модальное окно профиля -->
         <div id="profileModal" class="modal">
@@ -294,7 +405,7 @@
         <div id="dashboardBlock" class="dashboard-content">
             <div class="breadcrumbs" id="breadcrumbs"><a data-page="dashboard">🏠 Главная</a></div>
             <div class="dashboard-header">
-                <div class="date-badge" id="currentDateBadge">📅 </div>
+                <div class="date-badge">📅 21 мая 2026</div>
                 <div class="user-info"><div class="user-avatar" id="userAvatar" onclick="openProfileModal()">🌸</div><span class="user-greeting">Привет, <span id="userNameSpan"></span>!</span><span id="userRoleBadge" class="user-role-badge"></span><button id="logoutBtnMain" class="logout-btn">🚪 Выйти</button></div>
             </div>
 
@@ -360,10 +471,10 @@
                         <label class="grade-type-label"><input type="radio" name="gradeType" value="control"> 📝 Контрольная (×2)</label>
                     </div>
                 </div>
-                <div class="control-group"><label>📅 Дата:</label><input type="date" id="gradeDate" class="curator-input" value="2026-06-03"></div>
+                <div class="control-group"><label>📅 Дата:</label><input type="date" id="gradeDate" class="curator-input" value="2026-05-21"></div>
                 <div class="control-group"><label>💬 Комментарий:</label><input type="text" id="gradeComment" class="curator-input" placeholder="За что выставлена оценка (контрольная, ответ и т.д.)"></div>
                 <div class="control-group"><button id="addGradeBtn" class="curator-btn">➕ Поставить оценку</button></div>
-                <div class="control-group"><label>📅 Пропуск:</label><input type="date" id="absenceDate" class="curator-input"><select id="absenceType" class="curator-select"><option value="болезнь">❌ Болезнь</option><option value="уважительная">📋 Уважительная</option><option value="неуважительная">⚠️ Неуважительная</option></select><button id="addAbsenceBtn" class="curator-btn">📌 Добавить</button></div>
+                <div class="control-group"><label>📅 Пропуск:</label><input type="date" id="absenceDate" class="curator-input" value="2026-05-21"><select id="absenceType" class="curator-select"><option value="болезнь">❌ Болезнь</option><option value="уважительная">📋 Уважительная</option><option value="неуважительная">⚠️ Неуважительная</option></select><button id="addAbsenceBtn" class="curator-btn">📌 Добавить</button></div>
                 <div id="curatorSuccessMsg" class="success-msg"></div>
             </div>
 
@@ -377,75 +488,91 @@
     </div>
 
     <script>
-        // Функция для обновления даты (сегодняшнее число)
-        function updateCurrentDate() {
-            const dateElement = document.getElementById('currentDateBadge');
-            if (dateElement) {
-                const today = new Date();
-                const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
-                const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-                const day = today.getDate();
-                const month = months[today.getMonth()];
-                const weekday = days[today.getDay()];
-                dateElement.innerHTML = `📅 ${day} ${month} • ${weekday}`;
+        // ГЕНЕРАЦИЯ АНИМИРОВАННЫХ ЭЛЕМЕНТОВ ФОНА
+        function createFloatingElements() {
+            const container = document.getElementById('floatingBg');
+            if (!container) return;
+            
+            // Очищаем контейнер
+            container.innerHTML = '';
+            
+            // Создаём летающие сердечки
+            const hearts = ['❤️', '💖', '💗', '💓', '💕', '💝', '🌸', '🌷', '🌺'];
+            for (let i = 0; i < 25; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.fontSize = (15 + Math.random() * 25) + 'px';
+                heart.style.animationDuration = (8 + Math.random() * 12) + 's';
+                heart.style.animationDelay = (Math.random() * 15) + 's';
+                container.appendChild(heart);
+            }
+            
+            // Создаём звёздочки
+            const stars = ['⭐', '🌟', '✨', '💫', '⭐'];
+            for (let i = 0; i < 30; i++) {
+                const star = document.createElement('div');
+                star.className = 'star-bg';
+                star.innerHTML = stars[Math.floor(Math.random() * stars.length)];
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.fontSize = (10 + Math.random() * 20) + 'px';
+                star.style.animationDuration = (2 + Math.random() * 4) + 's';
+                star.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(star);
+            }
+            
+            // Создаём плавающие цветочки
+            const flowers = ['🌸', '🌼', '🌻', '🌺', '🌷', '🌹', '🌸'];
+            for (let i = 0; i < 15; i++) {
+                const flower = document.createElement('div');
+                flower.className = 'flower-bg';
+                flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
+                flower.style.left = Math.random() * 100 + '%';
+                flower.style.top = Math.random() * 100 + '%';
+                flower.style.fontSize = (25 + Math.random() * 40) + 'px';
+                flower.style.animationDuration = (15 + Math.random() * 20) + 's';
+                flower.style.animationDelay = (Math.random() * 10) + 's';
+                container.appendChild(flower);
+            }
+            
+            // Создаём пузырьки
+            for (let i = 0; i < 20; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                const size = 20 + Math.random() * 60;
+                bubble.style.width = size + 'px';
+                bubble.style.height = size + 'px';
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.animationDuration = (10 + Math.random() * 15) + 's';
+                bubble.style.animationDelay = (Math.random() * 20) + 's';
+                container.appendChild(bubble);
+            }
+            
+            // Создаём блестящие точки
+            for (let i = 0; i < 50; i++) {
+                const glitter = document.createElement('div');
+                glitter.className = 'glitter';
+                glitter.style.left = Math.random() * 100 + '%';
+                glitter.style.top = Math.random() * 100 + '%';
+                glitter.style.animationDuration = (2 + Math.random() * 5) + 's';
+                glitter.style.animationDelay = (Math.random() * 8) + 's';
+                container.appendChild(glitter);
             }
         }
+        
+        // ЗАПУСК ГЕНЕРАЦИИ ФОНА
+        createFloatingElements();
         
         const ALL_SUBJECTS = ["Математика","Русский язык","Литература","Физика","Химия","Биология","История","Обществознание","Английский","Информатика","География","Физкультура","ИЗО","Музыка","Технология"];
         const AVATARS = ["🌸", "😊", "🌟", "⭐", "💖", "🌺", "🍎", "📚", "🎓", "🐱", "🐶", "🦊", "🐼", "🦄", "🐨"];
         
-        // ИНИЦИАЛИЗАЦИЯ ТЕСТОВЫХ ДАННЫХ
         let students = JSON.parse(localStorage.getItem('students')) || [];
         let users = JSON.parse(localStorage.getItem('users')) || [];
         let chatMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
         let curatorGroups = JSON.parse(localStorage.getItem('curatorGroups')) || {};
         let userAvatars = JSON.parse(localStorage.getItem('userAvatars')) || {};
-
-        if (users.length === 0) {
-            const curatorId = `u${Date.now()}`;
-            users.push({
-                id: curatorId,
-                name: "Анна Куратор",
-                email: "curator@college.com",
-                password: "123456",
-                role: "curator"
-            });
-            
-            const parentId = `u${Date.now() + 1}`;
-            users.push({
-                id: parentId,
-                name: "Елена Родитель",
-                email: "parent@mail.com",
-                password: "123456",
-                role: "parent"
-            });
-            
-            const studentId = `s${Date.now()}`;
-            const grades = {};
-            for (let subj of ALL_SUBJECTS) {
-                grades[subj] = [
-                    { value: 5, date: "2026-05-10", comment: "Контрольная работа", weight: 2 },
-                    { value: 4, date: "2026-05-15", comment: "Ответ у доски", weight: 1 },
-                    { value: 5, date: "2026-05-20", comment: "Домашняя работа", weight: 1 }
-                ];
-            }
-            
-            students.push({
-                id: studentId,
-                name: "Иван Петров",
-                group: "П-201",
-                parentEmail: "parent@mail.com",
-                parentName: "Елена Родитель",
-                grades: grades,
-                absences: [
-                    { date: "2026-05-12", type: "болезнь" },
-                    { date: "2026-05-14", type: "опоздание" }
-                ]
-            });
-            
-            curatorGroups["curator@college.com"] = "П-201";
-            saveAll();
-        }
 
         function saveAll() {
             localStorage.setItem('students', JSON.stringify(students));
@@ -516,7 +643,7 @@
             if (!container) return;
             if (grades.length === 0) { container.innerHTML = ''; if (noMsg) noMsg.style.display = 'block'; return; }
             if (noMsg) noMsg.style.display = 'none';
-            container.innerHTML = `<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr class="grade-row"><td style="white-space: nowrap;">${g.date || "—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span><td>${g.weight === 2 ? '📝 Контрольная (×2)' : '📝 Обычная'}</td><td>${g.comment || "—"}<td></tr>`).join('')}</tbody></table>`;
+            container.innerHTML = `<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr class="grade-row"><td style="white-space: nowrap;">${g.date || "—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span><td>${g.weight === 2 ? '📝 Контрольная (×2)' : '📝 Обычная'}</td><td>${g.comment || "—"}</td></tr>`).join('')}</tbody></table>`;
         }
 
         function renderGradeDistribution(student) {
@@ -595,19 +722,8 @@
             if (subjectGradesChart) subjectGradesChart.destroy();
             let ctx = document.getElementById('subjectGradesChart')?.getContext('2d');
             if (ctx && dates.length > 0) {
-                subjectGradesChart = new Chart(ctx, { 
-                    type: 'line', 
-                    data: { labels: dates, datasets: [{ label: `Оценки по ${subject}`, data: values, borderColor: '#e87fb0', backgroundColor: 'rgba(232,127,176,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#c45a8c', pointBorderColor: '#fff', pointRadius: 6, pointHoverRadius: 9 }] }, 
-                    options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: (ctx) => `Оценка: ${ctx.raw}` } } }, scales: { y: { min: 1, max: 5, ticks: { stepSize: 1 } } } } 
-                });
-            } else if (ctx) { 
-                if (subjectGradesChart) subjectGradesChart.destroy(); 
-                ctx.fillStyle = '#f0dce8'; 
-                ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height); 
-                ctx.fillStyle = '#c27096'; 
-                ctx.font = '16px Inter'; 
-                ctx.fillText('Нет данных для отображения', 50, 100); 
-            }
+                subjectGradesChart = new Chart(ctx, { type: 'line', data: { labels: dates, datasets: [{ label: `Оценки по ${subject}`, data: values, borderColor: '#e87fb0', backgroundColor: 'rgba(232,127,176,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#c45a8c', pointBorderColor: '#fff', pointRadius: 6, pointHoverRadius: 9 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: (ctx) => `Оценка: ${ctx.raw}` } } }, scales: { y: { min: 1, max: 5, ticks: { stepSize: 1 } } } } });
+            } else if (ctx) { if (subjectGradesChart) subjectGradesChart.destroy(); ctx.fillStyle = '#f0dce8'; ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height); ctx.fillStyle = '#c27096'; ctx.font = '16px Inter'; ctx.fillText('Нет данных для отображения', 50, 100); }
         }
 
         function updateFilterSelect() {
@@ -622,60 +738,21 @@
             document.getElementById('profileName').value = currentUser.name;
             document.getElementById('profileEmail').value = currentUser.email;
             const student = currentUser.role === 'parent' ? getStudentForParent(currentUser.email) : null;
-            if (student) { 
-                document.getElementById('profileChildField').style.display = 'block'; 
-                document.getElementById('profileGroupField').style.display = 'block'; 
-                document.getElementById('profileChildName').value = student.name; 
-                document.getElementById('profileGroup').value = student.group || ""; 
-            } else { 
-                document.getElementById('profileChildField').style.display = 'none'; 
-                document.getElementById('profileGroupField').style.display = 'none'; 
-            }
+            if (student) { document.getElementById('profileChildField').style.display = 'block'; document.getElementById('profileGroupField').style.display = 'block'; document.getElementById('profileChildName').value = student.name; document.getElementById('profileGroup').value = student.group || ""; }
+            else { document.getElementById('profileChildField').style.display = 'none'; document.getElementById('profileGroupField').style.display = 'none'; }
             const avatarOptions = document.getElementById('avatarOptions');
             avatarOptions.innerHTML = AVATARS.map(a => `<div class="avatar-emoji ${userAvatars[currentUser.email] === a ? 'selected' : ''}" onclick="selectAvatar('${a}')">${a}</div>`).join('');
             document.getElementById('profileModal').classList.add('active');
         }
-        
         window.closeProfileModal = function() { document.getElementById('profileModal').classList.remove('active'); }
-        
-        window.selectAvatar = function(avatar) { 
-            userAvatars[currentUser.email] = avatar; 
-            saveAll(); 
-            document.getElementById('userAvatar').innerHTML = avatar; 
-            closeProfileModal(); 
-            openProfileModal(); 
-        }
-        
+        window.selectAvatar = function(avatar) { userAvatars[currentUser.email] = avatar; saveAll(); document.getElementById('userAvatar').innerHTML = avatar; closeProfileModal(); openProfileModal(); }
         window.saveProfileChanges = function() {
             const newName = document.getElementById('profileName').value.trim();
             const nameRegex = /^[А-Яа-я\s]+$/;
-            if (newName && !nameRegex.test(newName)) { 
-                alert('Имя должно содержать только русские буквы'); 
-                return; 
-            }
-            if (newName) { 
-                const userIndex = users.findIndex(u => u.email === currentUser.email); 
-                if (userIndex !== -1) { 
-                    users[userIndex].name = newName; 
-                    currentUser.name = newName; 
-                    setCurrentUser(currentUser); 
-                    saveAll(); 
-                    document.getElementById('userNameSpan').innerText = newName; 
-                } 
-            }
+            if (newName && !nameRegex.test(newName)) { alert('Имя должно содержать только русские буквы'); return; }
+            if (newName) { const userIndex = users.findIndex(u => u.email === currentUser.email); if (userIndex !== -1) { users[userIndex].name = newName; currentUser.name = newName; setCurrentUser(currentUser); saveAll(); document.getElementById('userNameSpan').innerText = newName; } }
             const student = currentUser.role === 'parent' ? getStudentForParent(currentUser.email) : null;
-            if (student) { 
-                const newChildName = document.getElementById('profileChildName').value.trim(); 
-                const newGroup = document.getElementById('profileGroup').value.trim(); 
-                if (newChildName && nameRegex.test(newChildName)) { 
-                    student.name = newChildName; 
-                }
-                if (newGroup) { 
-                    student.group = newGroup; 
-                }
-                saveAll(); 
-                updateUI(); 
-            }
+            if (student) { const newChildName = document.getElementById('profileChildName').value.trim(); const newGroup = document.getElementById('profileGroup').value.trim(); if (newChildName && nameRegex.test(newChildName)) student.name = newChildName; if (newGroup) student.group = newGroup; saveAll(); updateUI(); }
             closeProfileModal();
             alert('Профиль обновлён!');
         }
@@ -785,7 +862,7 @@
             let parents = users.filter(u => u.role === 'parent');
             let container = document.getElementById('usersTableContainer');
             if (!container) return;
-            container.innerHTML = `<table class="users-table"><thead><tr><th>Имя</th><th>Email</th><th>Студент</th><th>Группа</th><th>Действие</th></tr></thead><tbody>${parents.map(p => { let student = students.find(s => s.parentEmail === p.email); return `<tr><td>${p.name}</td><td>${p.email}</td><td>${student?.name || "—"}</td><td>${student?.group || "—"}</td><td><button class="delete-user-btn" data-email="${p.email}">🗑️ Удалить</button></td>`; }).join('')}</tbody></table>`;
+            container.innerHTML = `<table class="users-table"><thead><tr><th>Имя</th><th>Email</th><th>Студент</th><th>Группа</th><th>Действие</th></tr></thead><tbody>${parents.map(p => { let student = students.find(s => s.parentEmail === p.email); return `<tr><td>${p.name}</td><td>${p.email}</td><td>${student?.name || "—"}</td><td>${student?.group || "—"}</td><td><button class="delete-user-btn" data-email="${p.email}">🗑️ Удалить</button></td>`; }).join('')}</tbody></td>`;
             document.querySelectorAll('.delete-user-btn').forEach(btn => { btn.onclick = () => { let email = btn.dataset.email; users = users.filter(u => u.email !== email); saveAll(); renderUsersTable(); alert('Пользователь удалён'); }; });
         }
 
@@ -827,7 +904,7 @@
                 let lastWeight = lastGrade && typeof lastGrade === 'object' ? lastGrade.weight : 1;
                 rows += `<tr><td style="font-weight:500;">📚 ${s}</td><td>${avg}</td><td><span class="grade-badge">${lastVal}</span>${lastDate ? `<span class="grade-date"> от ${lastDate}</span>` : ''}${lastWeight === 2 ? `<span class="grade-date" style="color: var(--primary);"> 📝×2</span>` : ''}${lastComment ? `<div class="grade-comment">📝 ${lastComment}</div>` : ''}</td></tr>`;
             }
-            return `<div class="detail-page"><div class="detail-title">📖 Детальная успеваемость: ${student.name}</div><table class="subjects-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></td><button class="back-link" data-back="dashboard">← На главную</button></div>`;
+            return `<div class="detail-page"><div class="detail-title">📖 Детальная успеваемость: ${student.name}</div><table class="subjects-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody><td><button class="back-link" data-back="dashboard">← На главную</button></div>`;
         }
 
         function getAttendancePage() {
@@ -879,10 +956,8 @@
             setCurrentUser({ id: user.id, name: user.name, email: user.email, role: user.role });
             if (user.role === 'parent') { let s = getStudentForParent(user.email); if (s) { selectedStudentId = s.id; selectedChatStudentId = s.id; selectedGradeStudentId = s.id; } }
             else if (user.role === 'curator') { let curatorGroup = curatorGroups[user.email] || ""; let filtered = students.filter(s => s.group === curatorGroup); if (filtered.length > 0) { selectedStudentId = filtered[0].id; selectedChatStudentId = filtered[0].id; selectedGradeStudentId = filtered[0].id; } }
-            updateCurrentDate();
             showDashboard();
         };
-        
         document.getElementById('logoutBtnMain').onclick = () => { clearCurrentUser(); showAuth(); };
 
         function showDashboard() {
@@ -893,15 +968,10 @@
                 if (currentUser.role === 'curator') { document.getElementById('curatorPanel').style.display = 'block'; document.getElementById('usersManagementBlock').style.display = 'block'; showCuratorGroupUI(); showStudentsList(); renderUsersTable(); initCuratorControls(); updateStudentSelect(); updateFilterSelect(); }
                 else { document.getElementById('curatorPanel').style.display = 'none'; document.getElementById('usersManagementBlock').style.display = 'none'; document.getElementById('curatorGroupBlock').style.display = 'none'; document.getElementById('studentsListContainer').style.display = 'none'; document.getElementById('chatsListContainer').style.display = 'none'; }
                 document.getElementById('authBlock').style.display = 'none'; document.getElementById('dashboardBlock').classList.add('active'); document.getElementById('dashboardBlock').style.display = 'block';
-                updateCurrentDate();
                 updateUI(); initChat(); initNav(); renderAllGradesTable(); renderSubjectGradesChart();
             } else showAuth();
         }
-        
         function showAuth() { document.getElementById('authBlock').style.display = 'block'; document.getElementById('dashboardBlock').classList.remove('active'); document.getElementById('dashboardBlock').style.display = 'none'; }
-        
-        // Устанавливаем сегодняшнюю дату при загрузке
-        updateCurrentDate();
         saveAll();
         if (getCurrentUser()) showDashboard();
         else showAuth();
