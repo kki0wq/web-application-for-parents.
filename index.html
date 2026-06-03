@@ -349,7 +349,7 @@
         let curatorGroups = JSON.parse(localStorage.getItem('curatorGroups')) || {};
         let userAvatars = JSON.parse(localStorage.getItem('userAvatars')) || {};
 
-        // Создаём тестовые данные только если их нет
+        // Создаём тестовые данные если их нет
         if (users.length === 0) {
             users.push({ id: `u${Date.now()}`, name: "Анна Куратор", email: "curator@college.com", password: "123456", role: "curator" });
             users.push({ id: `u${Date.now() + 1}`, name: "Елена Родитель", email: "parent@mail.com", password: "123456", role: "parent" });
@@ -760,7 +760,7 @@
             let parents = users.filter(u => u.role === 'parent');
             let container = document.getElementById('usersTableContainer');
             if (!container) return;
-            container.innerHTML = `<table class="users-table"><thead><tr><th>Имя</th><th>Email</th><th>Студент</th><th>Группа</th><th></th></tr></thead><tbody>${parents.map(p => { let student = students.find(s => s.parentEmail === p.email); return `<table><td>${p.name}</td><td>${p.email}</td><td>${student?.name || "—"}</td><td>${student?.group || "—"}</td><td><button class="delete-user-btn" data-email="${p.email}">🗑️</button></td>`; }).join('')}</tbody></table>`;
+            container.innerHTML = `<table class="users-table"><thead><tr><th>Имя</th><th>Email</th><th>Студент</th><th>Группа</th><th></th></tr></thead><tbody>${parents.map(p => { let student = students.find(s => s.parentEmail === p.email); return `<tr><td>${p.name}</td><td>${p.email}</td><td>${student?.name || "—"}</td><td>${student?.group || "—"}</td><td><button class="delete-user-btn" data-email="${p.email}">🗑️</button></td>`; }).join('')}</tbody></table>`;
             document.querySelectorAll('.delete-user-btn').forEach(btn => { btn.onclick = () => { let email = btn.dataset.email; users = users.filter(u => u.email !== email); saveAll(); renderUsersTable(); alert('Удалено'); }; });
         }
 
@@ -772,17 +772,25 @@
             if (addGrade) { 
                 let nb = addGrade.cloneNode(true); 
                 addGrade.parentNode.replaceChild(nb, addGrade); 
-                nb.onclick = () => { 
+                nb.onclick = function() { 
                     let studentId = selectedGradeStudentId; 
-                    if (!studentId) { msgDiv.style.display = 'block'; msgDiv.innerHTML = '⚠️ Выберите ученика'; setTimeout(() => msgDiv.style.display = 'none', 2000); return; } 
+                    if (!studentId) { 
+                        msgDiv.style.display = 'block'; 
+                        msgDiv.innerHTML = '⚠️ Сначала выберите ученика'; 
+                        setTimeout(() => { msgDiv.style.display = 'none'; }, 2000); 
+                        return; 
+                    } 
                     let student = getStudentById(studentId); 
                     if (student) { 
                         let subj = document.getElementById('subjectSelect').value; 
                         let gradeVal = parseInt(document.getElementById('gradeSelect').value); 
-                        let date = document.getElementById('gradeDate').value || new Date().toISOString().split('T')[0]; 
+                        let date = document.getElementById('gradeDate').value; 
                         let comment = document.getElementById('gradeComment').value.trim(); 
-                        let isControl = document.querySelector('input[name="gradeType"]:checked').value === 'control'; 
+                        let isControl = document.querySelector('input[name="gradeType"]:checked')?.value === 'control'; 
                         let weight = isControl ? 2 : 1; 
+                        if (!date) {
+                            date = new Date().toISOString().split('T')[0];
+                        }
                         if (!student.grades) student.grades = {}; 
                         if (!student.grades[subj]) student.grades[subj] = []; 
                         student.grades[subj].push({ value: gradeVal, date: date, comment: comment || "Без комментария", weight: weight }); 
@@ -790,7 +798,7 @@
                         updateUI(); 
                         msgDiv.style.display = 'block'; 
                         msgDiv.innerHTML = `✅ Оценка ${gradeVal} по ${subj} добавлена`; 
-                        setTimeout(() => msgDiv.style.display = 'none', 2000); 
+                        setTimeout(() => { msgDiv.style.display = 'none'; }, 2000); 
                         renderAllGradesTable(); 
                         renderSubjectGradesChart(); 
                     } 
@@ -800,11 +808,14 @@
             if (addAbsence) { 
                 let nb = addAbsence.cloneNode(true); 
                 addAbsence.parentNode.replaceChild(nb, addAbsence); 
-                nb.onclick = () => { 
+                nb.onclick = function() { 
                     let student = getStudentById(selectedStudentId); 
                     if (student) { 
-                        let date = document.getElementById('absenceDate').value || new Date().toISOString().split('T')[0]; 
+                        let date = document.getElementById('absenceDate').value; 
                         let type = document.getElementById('absenceType').value; 
+                        if (!date) {
+                            date = new Date().toISOString().split('T')[0];
+                        }
                         if (!student.absences) student.absences = []; 
                         if (!student.absences.find(a => a.date === date)) { 
                             student.absences.push({ date, type }); 
@@ -812,11 +823,11 @@
                             updateUI(); 
                             msgDiv.style.display = 'block'; 
                             msgDiv.innerHTML = `📅 Пропуск за ${date} добавлен`; 
-                            setTimeout(() => msgDiv.style.display = 'none', 2000); 
+                            setTimeout(() => { msgDiv.style.display = 'none'; }, 2000); 
                         } else { 
                             msgDiv.style.display = 'block'; 
                             msgDiv.innerHTML = '⚠️ Пропуск уже есть'; 
-                            setTimeout(() => msgDiv.style.display = 'none', 2000); 
+                            setTimeout(() => { msgDiv.style.display = 'none'; }, 2000); 
                         } 
                     } 
                 }; 
@@ -831,7 +842,7 @@
             let setBtn = document.getElementById('setCuratorGroupBtn');
             let newBtn = setBtn.cloneNode(true);
             setBtn.parentNode.replaceChild(newBtn, setBtn);
-            newBtn.onclick = () => { 
+            newBtn.onclick = function() { 
                 let newGroup = document.getElementById('curatorGroupInput').value.trim(); 
                 if (newGroup) { 
                     curatorGroups[currentUser.email] = newGroup; 
@@ -856,12 +867,19 @@
             for (let s of ALL_SUBJECTS) {
                 let grades = student.grades?.[s] || [];
                 let lastGrade = grades.length > 0 ? grades[grades.length - 1] : null;
-                let avg = grades.length > 0 ? (grades.reduce((a, b) => a + (typeof b === 'object' ? b.value * (b.weight || 1) : b), 0) / grades.reduce((a, b) => a + (typeof b === 'object' ? (b.weight || 1) : 1), 0)).toFixed(1) : "—";
+                let totalWeight = 0, sumWeighted = 0;
+                for (let g of grades) {
+                    let val = (typeof g === 'object') ? g.value : g;
+                    let weight = (typeof g === 'object' && g.weight) ? g.weight : 1;
+                    sumWeighted += val * weight;
+                    totalWeight += weight;
+                }
+                let avg = totalWeight > 0 ? (sumWeighted / totalWeight).toFixed(1) : "—";
                 let lastVal = lastGrade ? (typeof lastGrade === 'object' ? lastGrade.value : lastGrade) : "—";
                 let lastDate = lastGrade && typeof lastGrade === 'object' ? lastGrade.date : "";
                 rows += `<tr><td style="font-weight:500;">📚 ${s}</td><td>${avg}</td><td><span class="grade-badge">${lastVal}</span>${lastDate ? `<span class="grade-date"> от ${lastDate}</span>` : ''}</td></tr>`;
             }
-            return `<div class="detail-page"><div class="detail-title">📖 Детальная успеваемость: ${student.name}</div><table class="subjects-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`;
+            return `<div class="detail-page"><div class="detail-title">📖 Детальная успеваемость: ${student.name}</div><table class="subjects-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></td><button class="back-link" data-back="dashboard">← На главную</button></div>`;
         }
 
         function getAttendancePage() {
