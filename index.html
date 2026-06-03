@@ -91,6 +91,7 @@
         .curator-group-set { background: #fff0f8; border-radius: 28px; padding: 15px; margin-bottom: 15px; }
         .info-text { color: #666; font-size: 13px; margin-top: 5px; }
         .group-badge { background: #e87fb0; color: white; padding: 5px 15px; border-radius: 40px; display: inline-block; margin-left: 10px; }
+        .date-badge { background: #ffe0f0; padding: 5px 15px; border-radius: 40px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -131,7 +132,7 @@
     <!-- ОСНОВНОЙ ИНТЕРФЕЙС -->
     <div id="dashboardSection" class="hidden">
         <div class="dashboard-header">
-            <span id="currentDate"></span>
+            <div class="date-badge" id="currentDateDisplay"></div>
             <div class="flex">
                 <div class="avatar" id="userAvatar" onclick="openProfile()">🌸</div>
                 <span>Привет, <span id="userName"></span>!</span>
@@ -149,6 +150,21 @@
 </div>
 
 <script>
+// ========== ФУНКЦИЯ ДЛЯ ПОЛУЧЕНИЯ ТЕКУЩЕЙ ДАТЫ ==========
+function getCurrentDateString() {
+    const today = new Date();
+    const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+    const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+    return `${days[today.getDay()]}, ${today.getDate()} ${months[today.getMonth()]} ${today.getFullYear()}`;
+}
+
+function updateDateDisplay() {
+    const dateElement = document.getElementById('currentDateDisplay');
+    if (dateElement) {
+        dateElement.innerHTML = `📅 ${getCurrentDateString()}`;
+    }
+}
+
 // ========== БАЗОВЫЕ ПРЕДМЕТЫ (БЕЗ ИЗО И МУЗЫКИ) ==========
 const BASE_SUBJECTS = ["Математика","Русский язык","Литература","Физика","Химия","Биология","История","Обществознание","Английский","Информатика","География","Физкультура","Технология"];
 
@@ -251,7 +267,6 @@ function doRegister() {
         const group = document.getElementById('regGroupNumber').value.trim();
         if (!childName || !group) { err.innerText = 'Заполните данные студента'; return; }
         
-        // Проверяем, есть ли уже такой студент
         const existing = students.find(s => s.name === childName);
         if (!existing) {
             students.push({ 
@@ -299,8 +314,10 @@ function showDashboard() {
     document.getElementById('dashboardSection').classList.remove('hidden');
     document.getElementById('userName').innerText = currentUser.name;
     document.getElementById('userRole').innerHTML = currentUser.role === 'parent' ? '👪 Родитель' : '📚 Куратор';
-    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('ru', { day:'numeric', month:'long', year:'numeric' });
     document.getElementById('userAvatar').innerHTML = "🌸";
+    
+    // Обновляем дату при загрузке
+    updateDateDisplay();
     
     if (currentUser.role === 'parent') renderParentView();
     else renderCuratorView();
@@ -367,7 +384,7 @@ function renderGradesTable() {
     if (to) grades = grades.filter(g => g.date <= to);
     const container = document.getElementById('gradesList');
     if (!grades.length) { container.innerHTML = '<div style="padding:20px;text-align:center">📭 Нет оценок</div>'; return; }
-    container.innerHTML = `<table><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr><td style="white-space:nowrap">${g.date || '—'}</td><td>${g.subject}</td><td><span class="grade-badge">${g.value}</span></td><td>${g.weight === 2 ? '📝 Контрольная' : '📝 Обычная'}</td><td>${g.comment || '—'}</td>`).join('')}</tbody></table>`;
+    container.innerHTML = `<table><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr><td style="white-space:nowrap">${g.date || '—'}</td><td>${g.subject}<td><td style="text-align:center"><span class="grade-badge">${g.value}</span></td><td>${g.weight === 2 ? '📝 Контрольная' : '📝 Обычная'}</td><td>${g.comment || '—'}</td>`).join('')}</tbody></table>`;
 }
 
 function sendParentMessage() {
@@ -421,7 +438,7 @@ function renderCuratorView() {
             <div class="card-title">🔧 Управление оценками</div>
             <div class="flex"><label style="min-width:80px">Предмет:</label><select id="gradeSubject">${BASE_SUBJECTS.map(s => `<option>${s}</option>`).join('')}</select></div>
             <div class="flex"><label>Оценка:</label><select id="gradeValue"><option>5</option><option>4</option><option>3</option><option>2</option></select></div>
-            <div class="flex"><label>Тип:</label><label><input type="radio" name="gradeType" value="normal" checked> Обычная</label><label><input type="radio"name="gradeType" value="control"> Контрольная (×2)</label></div>
+            <div class="flex"><label>Тип:</label><label><input type="radio" name="gradeType" value="normal" checked> Обычная</label><label><input type="radio" name="gradeType" value="control"> Контрольная (×2)</label></div>
             <div class="flex"><label>Дата:</label><input type="date" id="gradeDate"></div>
             <div class="flex"><label>Коммент:</label><input type="text" id="gradeComment" placeholder="Комментарий"></div>
             <button onclick="addCuratorGrade()">➕ Поставить оценку</button>
@@ -550,7 +567,7 @@ function showGrades() {
         for (let g of grades) { sum += g.value * (g.weight||1); cnt += (g.weight||1); }
         const avg = cnt ? (sum/cnt).toFixed(1) : '—';
         const lastGrade = grades.length ? grades[grades.length-1] : null;
-        rows += `<tr><td>📚 ${s}</td><td style="text-align:center">${avg}</td><td style="text-align:center">${lastGrade ? `<span class="grade-badge">${lastGrade.value}</span>` : '—'}</td></tr>`;
+        rows += `<tr><td style="font-weight:500">📚 ${s}</td><td style="text-align:center">${avg}</td><td style="text-align:center">${lastGrade ? `<span class="grade-badge">${lastGrade.value}</span>` : '—'}</td></tr>`;
     }
     document.getElementById('mainContent').innerHTML = `
         <div class="card">
@@ -581,6 +598,9 @@ function openProfile() {
 }
 
 // ========== ЗАПУСК ==========
+// Обновляем дату при загрузке страницы
+updateDateDisplay();
+
 const saved = localStorage.getItem('currentUser');
 if (saved) {
     currentUser = JSON.parse(saved);
