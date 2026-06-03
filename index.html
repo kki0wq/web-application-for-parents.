@@ -88,20 +88,18 @@
         .avatar-emoji.selected { border-color: var(--primary); background: #ffe0f0; }
         .save-profile-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; width: 100%; margin-top: 15px; }
 
-        /* Панель управления группами куратора */
         .curator-groups-manager { background: rgba(255,240,248,0.9); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 2px solid #ffd9ec; }
         .curator-groups-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
         .group-tag { background: linear-gradient(135deg, #ffe0f0, #ffd4e8); padding: 6px 14px; border-radius: 40px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 8px; }
         .remove-group-btn { background: none; border: none; cursor: pointer; color: var(--warning); font-size: 1rem; }
-        .add-group-input { display: flex; gap: 10px; margin-top: 15px; }
+        .add-group-input { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
         .add-group-input input { flex: 1; padding: 10px 16px; border: 2px solid #ffcce0; border-radius: 60px; font-family: inherit; }
         
-        /* Управление предметами куратора */
         .subjects-manager { background: rgba(255,240,248,0.9); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 2px solid #ffd9ec; }
         .curator-subjects-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
         .subject-tag { background: linear-gradient(135deg, #e0f0ff, #cce4ff); padding: 6px 14px; border-radius: 40px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 8px; }
         .remove-subject-btn { background: none; border: none; cursor: pointer; color: var(--warning); font-size: 1rem; }
-        .add-subject-input { display: flex; gap: 10px; margin-top: 15px; }
+        .add-subject-input { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
         .add-subject-input input { flex: 1; padding: 10px 16px; border: 2px solid #ffcce0; border-radius: 60px; font-family: inherit; }
 
         .users-management { background: rgba(255,255,255,0.9); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 1px solid var(--border); }
@@ -217,7 +215,6 @@
 </head>
 <body>
     <div class="app-container" id="app">
-        <!-- Модальное окно профиля -->
         <div id="profileModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header"><h3>👤 Мой профиль</h3><button class="close-modal" onclick="closeProfileModal()">×</button></div>
@@ -230,7 +227,6 @@
             </div>
         </div>
 
-        <!-- Авторизация -->
         <div id="authBlock">
             <div class="auth-container">
                 <div class="auth-tabs"><button class="auth-tab active" data-tab="login">🌸 Вход</button><button class="auth-tab" data-tab="register">✨ Регистрация</button></div>
@@ -250,7 +246,6 @@
             </div>
         </div>
 
-        <!-- Дашборд -->
         <div id="dashboardBlock" class="dashboard-content">
             <div class="breadcrumbs" id="breadcrumbs"><a data-page="dashboard">🏠 Главная</a></div>
             <div class="dashboard-header">
@@ -258,7 +253,6 @@
                 <div class="user-info"><div class="user-avatar" id="userAvatar" onclick="openProfileModal()">🌸</div><span class="user-greeting">Привет, <span id="userNameSpan"></span>!</span><span id="userRoleBadge" class="user-role-badge"></span><button id="logoutBtnMain" class="logout-btn">🚪 Выйти</button></div>
             </div>
 
-            <!-- Управление группами куратора -->
             <div id="curatorGroupsManager" class="curator-groups-manager" style="display: none;">
                 <div style="font-weight: 700; margin-bottom: 10px;">📚 Мои группы</div>
                 <div id="curatorGroupsList" class="curator-groups-list"></div>
@@ -268,7 +262,6 @@
                 </div>
             </div>
 
-            <!-- Управление предметами куратора -->
             <div id="subjectsManager" class="subjects-manager" style="display: none;">
                 <div style="font-weight: 700; margin-bottom: 10px;">📚 Предметы моих групп</div>
                 <div id="curatorSubjectsList" class="curator-subjects-list"></div>
@@ -292,7 +285,6 @@
                     <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-value" id="subjectsCountStat">15</div><div class="stat-label">Предметов</div></div>
                 </div>
                 
-                <!-- Таблица всех оценок с фильтром по предметам -->
                 <div class="all-grades-section">
                     <div class="section-title">📋 История всех оценок</div>
                     <div class="filter-bar">
@@ -305,14 +297,12 @@
                     <div id="noGradesMessage" style="text-align: center; padding: 40px; color: var(--text-muted); display: none;">📭 Нет оценок для отображения</div>
                 </div>
                 
-                <!-- График по предмету -->
                 <div class="subject-chart-section">
                     <div class="section-title">📈 Динамика успеваемости по предмету</div>
                     <select id="subjectForChart" class="filter-select" style="width: 100%; max-width: 320px; margin-bottom: 20px;"><option value="">Выберите предмет</option></select>
                     <div class="subject-chart-container"><canvas id="subjectGradesChart"></canvas></div>
                 </div>
                 
-                <!-- ПАСТЕЛЬНОЕ РАСПРЕДЕЛЕНИЕ ОЦЕНОК -->
                 <div class="distribution-container" id="distributionContainer">
                     <div class="section-title">📊 Распределение оценок</div>
                     <div id="distributionContent"></div>
@@ -356,7 +346,6 @@
     </div>
 
     <script>
-        // БАЗОВЫЕ ПРЕДМЕТЫ (без музыки и ИЗО)
         const BASE_SUBJECTS = ["Математика","Русский язык","Литература","Физика","Химия","Биология","История","Обществознание","Английский","Информатика","География","Физкультура","Технология"];
         
         function updateCurrentDate() {
@@ -369,7 +358,6 @@
             }
         }
         
-        // Данные
         let students = JSON.parse(localStorage.getItem('students')) || [];
         let users = JSON.parse(localStorage.getItem('users')) || [];
         let chatMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
@@ -377,11 +365,9 @@
         let curatorSubjects = JSON.parse(localStorage.getItem('curatorSubjects')) || {};
         let userAvatars = JSON.parse(localStorage.getItem('userAvatars')) || {};
 
-        // Создаём тестовые данные
         if (users.length === 0) {
             users.push({ id: `u${Date.now()}`, name: "Анна Куратор", email: "curator@college.com", password: "123456", role: "curator" });
             users.push({ id: `u${Date.now() + 1}`, name: "Елена Родитель", email: "parent@mail.com", password: "123456", role: "parent" });
-            
             const studentId = `s${Date.now()}`;
             const grades = {};
             for (let subj of BASE_SUBJECTS) {
@@ -468,7 +454,7 @@
             if (!container) return;
             if (grades.length === 0) { container.innerHTML = ''; if (noMsg) noMsg.style.display = 'block'; return; }
             if (noMsg) noMsg.style.display = 'none';
-            container.innerHTML = `<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr><td style="white-space: nowrap;">${g.date || "—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight === 2 ? 'Контрольная (×2)' : 'Обычная'}</td><td>${g.comment || "—"}</td></tr>`).join('')}</tbody></td>`;
+            container.innerHTML = `<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr><td style="white-space: nowrap;">${g.date || "—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight === 2 ? 'Контрольная (×2)' : 'Обычная'}</td><td>${g.comment || "—"}</td></tr>`).join('')}</tbody></table>`;
         }
 
         function renderGradeDistribution(student) {
@@ -690,6 +676,13 @@
             }
         });
 
+        document.getElementById('clearFiltersBtn')?.addEventListener('click', () => {
+            document.getElementById('filterSubject').value = '';
+            document.getElementById('filterDateFrom').value = '';
+            document.getElementById('filterDateTo').value = '';
+            renderAllGradesTable();
+        });
+
         function renderChatsList() {
             if (currentUser?.role !== 'curator') return;
             let curatorGroupsList = curatorGroups[currentUser.email] || [];
@@ -774,6 +767,9 @@
             document.getElementById('studentsListContainer').style.display = filtered.length > 0 ? 'block' : 'none';
             let grid = document.getElementById('studentsGrid');
             if (grid) grid.innerHTML = filtered.map(s => `<div class="student-card ${selectedStudentId === s.id ? 'active' : ''}" onclick="window.selectStudent('${s.id}')"><div class="student-avatar">${s.name.charAt(0)}</div><div><strong>${s.name}</strong><br><span style="font-size:0.7rem;">${s.group || "—"}</span></div></div>`).join('');
+            let studentSelect = document.getElementById('studentForGradeSelect');
+            if (studentSelect) studentSelect.innerHTML = filtered.map(s => `<option value="${s.id}" ${selectedGradeStudentId === s.id ? 'selected' : ''}>${s.name} (${s.group})</option>`).join('');
+            studentSelect.onchange = (e) => { selectedGradeStudentId = e.target.value; updateUI(); };
         }
 
         window.selectStudent = function(id) { 
@@ -866,7 +862,7 @@
             let parents = users.filter(u => u.role === 'parent');
             let container = document.getElementById('usersTableContainer');
             if (!container) return;
-            container.innerHTML = `<table class="users-table"><thead><tr><th>Имя</th><th>Email</th><th>Студент</th><th>Группа</th><th></th></tr></thead><tbody>${parents.map(p => { let student = students.find(s => s.parentEmail === p.email); return `<tr><td>${p.name}</td><td>${p.email}</td><td>${student?.name || "—"}</td><td>${student?.group || "—"}</td><td><button class="delete-user-btn" data-email="${p.email}">🗑️</button></td>`; }).join('')}</tbody></tr>`;
+            container.innerHTML = `<table class="users-table"><thead><tr><th>Имя</th><th>Email</th><th>Студент</th><th>Группа</th><th></th></tr></thead><tbody>${parents.map(p => { let student = students.find(s => s.parentEmail === p.email); return `<tr><td>${p.name}</td><td>${p.email}</td><td>${student?.name || "—"}</td><td>${student?.group || "—"}</td><td><button class="delete-user-btn" data-email="${p.email}">🗑️</button></td>`; }).join('')}</tbody></table>`;
             document.querySelectorAll('.delete-user-btn').forEach(btn => { btn.onclick = () => { let email = btn.dataset.email; users = users.filter(u => u.email !== email); saveAll(); renderUsersTable(); alert('Удалено'); }; });
         }
 
@@ -894,9 +890,7 @@
                         let comment = document.getElementById('gradeComment').value.trim(); 
                         let isControl = document.querySelector('input[name="gradeType"]:checked')?.value === 'control'; 
                         let weight = isControl ? 2 : 1; 
-                        if (!date) {
-                            date = new Date().toISOString().split('T')[0];
-                        }
+                        if (!date) { date = new Date().toISOString().split('T')[0]; }
                         if (!student.grades) student.grades = {}; 
                         if (!student.grades[subj]) student.grades[subj] = []; 
                         student.grades[subj].push({ value: gradeVal, date: date, comment: comment || "Без комментария", weight: weight }); 
@@ -919,9 +913,7 @@
                     if (student) { 
                         let date = document.getElementById('absenceDate').value; 
                         let type = document.getElementById('absenceType').value; 
-                        if (!date) {
-                            date = new Date().toISOString().split('T')[0];
-                        }
+                        if (!date) { date = new Date().toISOString().split('T')[0]; }
                         if (!student.absences) student.absences = []; 
                         if (!student.absences.find(a => a.date === date)) { 
                             student.absences.push({ date, type }); 
