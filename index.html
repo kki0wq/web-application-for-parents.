@@ -2,541 +2,909 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Колледж | Успеваемость</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Колледж | Успеваемость, посещаемость</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #e87fb0;
+            --primary-dark: #c45a8c;
+            --primary-light: #f0a0c5;
+            --bg-light: #fff5f9;
+            --text-dark: #4a2c3a;
+            --text-muted: #c27096;
+            --border: #ffe0f0;
+            --success: #2d6a4f;
+            --warning: #e06b9e;
+            --grade5: #a8e6cf;
+            --grade5-dark: #7bc5a8;
+            --grade4: #b8deff;
+            --grade4-dark: #8bbce0;
+            --grade3: #ffd3b6;
+            --grade3-dark: #e0b896;
+            --grade2: #ffb3ba;
+            --grade2-dark: #e099a0;
+        }
         body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #fef0f7 0%, #ffe4f0 100%);
-            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fef0f7 0%, #ffe4f0 40%, #ffd9e8 100%);
+            color: var(--text-dark);
             padding: 20px;
+            min-height: 100vh;
+            position: relative;
         }
-        .container {
-            max-width: 1000px;
+        body::before { content: "🌸"; position: fixed; bottom: 20px; left: 20px; font-size: 80px; opacity: 0.06; pointer-events: none; z-index: 0; animation: float 20s infinite ease-in-out; }
+        body::after { content: "✨"; position: fixed; top: 20px; right: 20px; font-size: 70px; opacity: 0.06; pointer-events: none; z-index: 0; animation: float 25s infinite reverse; }
+        @keyframes float { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-20px) rotate(10deg); } }
+        
+        .app-container {
+            max-width: 1400px;
             margin: 0 auto;
-            background: white;
-            border-radius: 40px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(2px);
+            border-radius: 56px;
+            box-shadow: 0 30px 60px -20px rgba(232,127,176,0.3), inset 0 1px 0 rgba(255,255,255,0.8);
+            overflow: hidden;
+            padding: 32px 34px 44px;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255,255,255,0.5);
         }
-        h1, h2 { color: #c45a8c; margin-bottom: 20px; }
-        input, select, button {
-            padding: 12px 16px;
-            margin: 8px 0;
-            border: 2px solid #ffe0f0;
-            border-radius: 40px;
-            font-size: 14px;
-        }
-        button {
-            background: linear-gradient(135deg, #e87fb0, #f0a0c5);
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-        }
-        button:hover { opacity: 0.9; }
-        .tabs { display: flex; gap: 12px; margin-bottom: 25px; }
-        .tab { flex: 1; text-align: center; padding: 12px; background: #fff0f8; border-radius: 40px; cursor: pointer; }
-        .tab.active { background: linear-gradient(135deg, #e87fb0, #f0a0c5); color: white; }
-        .hidden { display: none; }
-        .error { color: #e06b9e; text-align: center; margin-top: 10px; }
-        .flex { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        @media (max-width: 768px) { body { padding: 12px; } .app-container { padding: 20px 16px 28px; border-radius: 40px; } }
+        
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 5px rgba(232,127,176,0.3); } 50% { box-shadow: 0 0 20px rgba(232,127,176,0.5); } }
+        
+        .auth-container { max-width: 520px; margin: 0 auto; animation: fadeInUp 0.5s ease; }
+        .auth-tabs { display: flex; gap: 20px; background: rgba(255,245,249,0.9); backdrop-filter: blur(10px); padding: 8px; border-radius: 70px; margin-bottom: 28px; border: 1px solid rgba(255,255,255,0.5); }
+        .auth-tab { flex: 1; background: transparent; border: none; font-size: 1.05rem; font-weight: 700; padding: 14px 24px; cursor: pointer; color: var(--text-muted); border-radius: 60px; transition: all 0.3s; }
+        .auth-tab.active { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; box-shadow: 0 8px 20px rgba(232,127,176,0.35); transform: scale(1.02); }
+        .auth-form { display: flex; flex-direction: column; gap: 20px; }
+        .auth-form.hidden { display: none; }
+        .auth-input, .auth-select { padding: 18px 24px; border: 2px solid rgba(255,208,228,0.6); border-radius: 60px; font-size: 1rem; background: rgba(255,255,255,0.95); width: 100%; transition: all 0.2s; }
+        .auth-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(232,127,176,0.15); transform: translateY(-2px); }
+        .auth-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; }
+        .auth-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); transition: left 0.5s; }
+        .auth-btn:hover::before { left: 100%; }
+        .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(232,127,176,0.4); }
+        .auth-error { color: var(--warning); font-size: 0.85rem; text-align: center; background: rgba(255,224,240,0.9); padding: 10px; border-radius: 50px; backdrop-filter: blur(5px); }
+
+        .dashboard-content { display: none; }
+        .dashboard-content.active { display: block; animation: fadeIn 0.6s ease; }
         .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 25px;
-            padding: 15px 20px;
-            background: #fff5f9;
-            border-radius: 60px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+            margin-bottom: 30px; background: rgba(255,245,249,0.8); backdrop-filter: blur(10px);
+            padding: 14px 24px; border-radius: 70px; border: 1px solid rgba(255,255,255,0.5);
         }
-        .avatar {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, #e87fb0, #f0a0c5);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 20px;
+        .date-badge { background: linear-gradient(135deg, #ffe0f0, #ffd4e8); padding: 8px 20px; border-radius: 60px; font-size: 0.9rem; font-weight: 600; color: var(--primary-dark); box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .user-info { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .user-avatar { width: 55px; height: 55px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: white; font-weight: bold; cursor: pointer; border: 3px solid white; box-shadow: 0 5px 15px rgba(232,127,176,0.4); transition: all 0.3s; animation: glowPulse 2s infinite; }
+        .user-avatar:hover { transform: scale(1.05) rotate(5deg); }
+        .user-greeting { font-weight: 600; color: var(--primary-dark); font-size: 1rem; background: rgba(255,255,255,0.6); padding: 6px 16px; border-radius: 40px; }
+        .user-role-badge { padding: 6px 16px; border-radius: 60px; font-size: 0.75rem; font-weight: 700; }
+        .user-role-badge.parent { background: linear-gradient(135deg, #e0f0ff, #cce4ff); color: #4a7a9e; border: 1px solid rgba(100,150,200,0.3); }
+        .user-role-badge.curator { background: linear-gradient(135deg, #ffe0f0, #ffd0e4); color: var(--primary-dark); border: 1px solid rgba(232,127,176,0.3); }
+        .logout-btn { background: rgba(255,224,240,0.8); border: none; padding: 8px 22px; border-radius: 60px; color: var(--primary-dark); font-weight: 600; cursor: pointer; font-size: 0.85rem; transition: all 0.3s; }
+        .logout-btn:hover { background: #ffd0e4; transform: scale(0.97); }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 56px; max-width: 520px; width: 90%; padding: 35px; max-height: 90vh; overflow-y: auto; animation: fadeInUp 0.3s ease; box-shadow: 0 25px 50px rgba(0,0,0,0.2); border: 1px solid rgba(232,127,176,0.2); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .modal-header h3 { color: var(--primary-dark); font-size: 1.6rem; font-weight: 800; }
+        .close-modal { background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-muted); transition: all 0.2s; }
+        .close-modal:hover { transform: scale(1.1); color: var(--warning); }
+        .profile-field { margin-bottom: 25px; }
+        .profile-field label { display: block; font-weight: 700; color: var(--text-muted); margin-bottom: 10px; font-size: 0.9rem; }
+        .profile-field input { width: 100%; padding: 15px 22px; border: 2px solid var(--border); border-radius: 60px; font-size: 1rem; font-family: inherit; transition: all 0.2s; }
+        .profile-field input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(232,127,176,0.1); }
+        .avatar-options { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px; justify-content: center; }
+        .avatar-emoji { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; transition: all 0.2s; background: var(--bg-light); border: 3px solid transparent; }
+        .avatar-emoji:hover { transform: scale(1.15); background: #ffe0f0; }
+        .avatar-emoji.selected { border-color: var(--primary); background: #ffe0f0; box-shadow: 0 0 0 2px white, 0 0 0 5px var(--primary); }
+        .save-profile-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; width: 100%; margin-top: 15px; transition: all 0.3s; }
+        .save-profile-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(232,127,176,0.4); }
+
+        .curator-group-info { background: rgba(255,240,248,0.9); backdrop-filter: blur(10px); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 2px solid #ffd9ec; }
+        .curator-group-input { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-top: 15px; }
+        .curator-group-input input { padding: 14px 22px; border: 2px solid #ffcce0; border-radius: 60px; flex: 1; font-family: inherit; background: rgba(255,255,255,0.9); }
+        .curator-group-input input:focus { outline: none; border-color: var(--primary); }
+        .curator-group-input button { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 14px 28px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .curator-group-input button:hover { transform: scale(1.02); }
+
+        .users-management { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 1px solid var(--border); }
+        .users-table { width: 100%; border-collapse: collapse; margin-top: 18px; overflow-x: auto; display: block; }
+        @media (min-width: 768px) { .users-table { display: table; } }
+        .users-table th, .users-table td { text-align: left; padding: 14px 10px; border-bottom: 1px solid var(--border); }
+        .users-table th { background: rgba(232,127,176,0.05); font-weight: 700; color: var(--primary-dark); }
+        .delete-user-btn { background: #ffe0f0; border: none; padding: 8px 16px; border-radius: 40px; color: var(--warning); cursor: pointer; font-size: 0.8rem; transition: all 0.2s; }
+        .delete-user-btn:hover { background: #ffc0dc; transform: scale(0.95); }
+
+        .chats-list { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 1px solid var(--border); }
+        .chats-grid { display: flex; flex-direction: column; gap: 12px; max-height: 320px; overflow-y: auto; padding-right: 5px; }
+        .chat-item { display: flex; align-items: center; gap: 15px; padding: 14px 20px; background: rgba(255,245,249,0.7); border-radius: 70px; cursor: pointer; transition: all 0.3s; border: 1px solid transparent; }
+        .chat-item:hover { transform: translateX(8px); background: rgba(255,240,248,0.95); border-color: var(--primary); }
+        .chat-item.active { border-color: var(--primary); background: linear-gradient(135deg, #ffe0f0, #ffd4e8); }
+        .chat-avatar { width: 50px; height: 50px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem; font-weight: bold; }
+        .chat-info { flex: 1; }
+        .chat-name { font-weight: 700; color: var(--primary-dark); font-size: 1rem; }
+        .chat-preview { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+        .chat-time { font-size: 0.7rem; color: var(--text-muted); }
+
+        .students-list { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 1px solid var(--border); }
+        .students-grid { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 18px; max-height: 220px; overflow-y: auto; }
+        .student-card { background: rgba(255,245,249,0.7); border-radius: 70px; padding: 12px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; }
+        .student-card:hover { transform: translateY(-3px); background: rgba(255,240,248,0.95); box-shadow: 0 8px 20px rgba(232,127,176,0.2); }
+        .student-card.active { border-color: var(--primary); background: linear-gradient(135deg, #ffe0f0, #ffd4e8); }
+        .student-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.1rem; }
+
+        .no-students-message { background: rgba(255,240,248,0.9); backdrop-filter: blur(10px); border-radius: 56px; padding: 70px 20px; text-align: center; margin-bottom: 30px; border: 2px solid #ffd9ec; animation: fadeInUp 0.5s ease; }
+        .no-students-message .icon { font-size: 5rem; margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(232,127,176,0.3)); animation: float 3s infinite; }
+        .no-students-message h3 { color: var(--primary-dark); margin-bottom: 15px; font-size: 1.5rem; }
+        .no-students-message p { color: var(--text-muted); font-size: 0.95rem; }
+
+        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 30px; }
+        @media (max-width: 768px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+        .stat-card { background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); border-radius: 40px; padding: 25px; text-align: center; border: 1px solid rgba(255,255,255,0.5); transition: all 0.4s; cursor: default; }
+        .stat-card:hover { transform: translateY(-8px) scale(1.02); background: rgba(255,255,255,0.95); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+        .stat-icon { font-size: 2.8rem; margin-bottom: 15px; display: inline-block; filter: drop-shadow(0 3px 8px rgba(232,127,176,0.3)); }
+        .stat-value { font-size: 2.4rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .stat-label { font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; font-weight: 500; }
+
+        .all-grades-section { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 48px; padding: 24px; margin-bottom: 28px; border: 1px solid rgba(255,255,255,0.5); }
+        .section-title { font-weight: 800; font-size: 1.25rem; margin-bottom: 20px; color: var(--primary-dark); display: flex; align-items: center; gap: 12px; }
+        .filter-bar { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+        .filter-select, .filter-input { padding: 10px 18px; border: 2px solid #ffcce0; border-radius: 60px; font-family: inherit; background: white; transition: all 0.2s; }
+        .filter-select:focus, .filter-input:focus { outline: none; border-color: var(--primary); }
+        .grades-table { width: 100%; border-collapse: collapse; }
+        .grades-table th, .grades-table td { text-align: left; padding: 14px 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        .grades-table th { background: rgba(232,127,176,0.05); font-weight: 700; color: var(--primary-dark); }
+        .grade-badge-sm { background: linear-gradient(135deg, #ffe0f0, #ffd4e8); padding: 5px 14px; border-radius: 40px; font-weight: 700; font-size: 0.85rem; display: inline-block; }
+        
+        .subject-chart-section { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 48px; padding: 24px; margin-bottom: 28px; border: 1px solid rgba(255,255,255,0.5); }
+        .subject-chart-container { margin-top: 20px; height: 320px; }
+
+        .distribution-container { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 48px; padding: 24px; margin-bottom: 28px; border: 1px solid rgba(255,255,255,0.5); }
+        .grade-distribution-bar { background: rgba(0,0,0,0.05); border-radius: 40px; height: 40px; overflow: hidden; margin: 10px 0; }
+        .grade-distribution-fill { height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 15px; color: #4a2c3a; font-weight: bold; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 40px; }
+        .grade-item { margin-bottom: 20px; }
+        .grade-label { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+        .grade-icon { font-size: 1.3rem; }
+        .grade-name { font-weight: 700; }
+        .grade-count { color: #888; font-size: 0.85rem; }
+        .grade-percent { font-weight: 800; }
+
+        .main-dashboard { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; margin-bottom: 40px; }
+        @media (max-width: 768px) { .main-dashboard { grid-template-columns: 1fr; } }
+        .card { background: rgba(255,255,255,0.92); backdrop-filter: blur(10px); border-radius: 48px; padding: 28px 26px; box-shadow: 0 15px 35px rgba(232,127,176,0.1); border: 1px solid rgba(255,255,255,0.6); transition: all 0.4s; position: relative; overflow: hidden; }
+        .card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--primary), var(--primary-light), #ffc0dc); background-size: 200% 100%; animation: shimmer 3s infinite linear; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 25px 50px rgba(232,127,176,0.2); background: rgba(255,255,255,0.98); }
+        .card-title { font-weight: 800; font-size: 1.4rem; margin-bottom: 22px; color: var(--primary-dark); display: flex; align-items: center; gap: 12px; }
+        .progress-bar-container { background: #f0dce8; border-radius: 40px; height: 12px; margin: 20px 0; overflow: hidden; }
+        .progress-bar { background: linear-gradient(90deg, var(--primary), var(--primary-light)); border-radius: 40px; height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
+        .progress-bar::after { content: ''; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 2s infinite; }
+
+        .chat-container-modern { background: rgba(254,248,252,0.95); backdrop-filter: blur(10px); border-radius: 40px; overflow: hidden; border: 1px solid rgba(255,255,255,0.5); }
+        .chat-header { padding: 18px 24px; background: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 15px; }
+        .chat-messages-modern { max-height: 380px; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 18px; background: rgba(254,250,253,0.8); }
+        .message-modern { display: flex; gap: 14px; max-width: 85%; animation: fadeIn 0.3s ease; }
+        .message-modern.parent { align-self: flex-end; flex-direction: row-reverse; }
+        .message-modern.curator { align-self: flex-start; }
+        .message-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #e0e0e0, #ccc); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+        .message-modern.parent .message-avatar { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; }
+        .message-bubble-modern { padding: 12px 20px; border-radius: 28px; font-size: 0.95rem; line-height: 1.45; }
+        .message-modern.parent .message-bubble-modern { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border-bottom-right-radius: 8px; }
+        .message-modern.curator .message-bubble-modern { background: white; border: 1px solid var(--border); color: var(--text-dark); border-bottom-left-radius: 8px; }
+        .message-time-modern { font-size: 0.7rem; color: var(--text-muted); margin-top: 6px; margin-left: 14px; }
+        .message-modern.parent .message-time-modern { text-align: right; margin-right: 14px; }
+        .chat-input-modern { padding: 18px 24px; background: white; border-top: 1px solid var(--border); display: flex; gap: 15px; align-items: center; }
+        .chat-input-modern input { flex: 1; padding: 14px 22px; border: 1px solid var(--border); border-radius: 60px; font-family: inherit; background: rgba(254,250,253,0.9); transition: all 0.2s; }
+        .chat-input-modern input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(232,127,176,0.1); }
+        .chat-send-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 14px 32px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .chat-send-btn:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(232,127,176,0.4); }
+
+        .curator-panel { grid-column: 1 / -1; background: rgba(255,240,248,0.95); backdrop-filter: blur(10px); border-radius: 48px; padding: 28px; border: 2px solid #ffd9ec; margin-top: 25px; }
+        .curator-panel h4 { color: var(--primary-dark); margin-bottom: 25px; font-size: 1.3rem; display: flex; align-items: center; gap: 12px; }
+        .control-group { display: flex; gap: 18px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+        .control-group label { font-weight: 700; color: var(--text-muted); min-width: 110px; font-size: 0.9rem; }
+        .curator-input, .curator-select { padding: 14px 20px; border: 2px solid #ffcce0; border-radius: 60px; background: white; flex: 1; min-width: 180px; transition: all 0.2s; }
+        .curator-input:focus, .curator-select:focus { outline: none; border-color: var(--primary); }
+        .grade-type-group { display: flex; gap: 15px; align-items: center; margin-left: 15px; }
+        .grade-type-label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .grade-type-label input { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
+        .curator-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 14px 28px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .curator-btn:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(232,127,176,0.4); }
+        .success-msg { color: var(--success); background: #e8f4e6; padding: 12px; border-radius: 60px; text-align: center; margin-top: 18px; display: none; font-weight: 500; }
+
+        .bottom-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; margin: 30px 0 20px; padding-top: 25px; border-top: 2px dashed rgba(255,224,240,0.8); }
+        .nav-btn { background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); border: 2px solid #ffd0e4; padding: 14px 32px; border-radius: 70px; font-weight: 700; font-size: 0.9rem; color: var(--primary-dark); cursor: pointer; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s; }
+        .nav-btn:hover { background: #fff0f8; border-color: #ffb8d4; transform: translateY(-3px); }
+        .nav-btn.active-dashboard { background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-color: var(--primary); color: white; }
+
+        .dynamic-content { margin-top: 30px; animation: fadeIn 0.45s ease; }
+        .detail-page { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 56px; padding: 28px 32px 36px; border: 1px solid var(--border); }
+        .detail-title { font-size: 2rem; font-weight: 800; margin-bottom: 30px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); -webkit-background-clip: text; background-clip: text; color: transparent; padding-left: 25px; border-left: 7px solid var(--primary); }
+        .subjects-table { width: 100%; border-collapse: collapse; overflow-x: auto; display: block; }
+        @media (min-width: 768px) { .subjects-table { display: table; } }
+        .subjects-table th, .subjects-table td { text-align: left; padding: 16px 12px; border-bottom: 1px solid var(--border); }
+        .grade-badge { background: linear-gradient(135deg, #ffe0f0, #ffd4e8); padding: 8px 18px; border-radius: 50px; font-weight: 700; display: inline-block; }
+        .grade-date { font-size: 0.75rem; color: var(--text-muted); margin-left: 12px; }
+        .grade-comment { font-size: 0.8rem; color: var(--primary-dark); margin-top: 6px; }
+        .back-link { background: transparent; border: none; color: var(--primary); font-weight: 700; margin-top: 30px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; border-radius: 60px; transition: all 0.2s; }
+        .back-link:hover { background: rgba(255,224,240,0.5); transform: translateX(-5px); }
+        .breadcrumbs { display: flex; gap: 10px; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 25px; flex-wrap: wrap; }
+        .breadcrumbs a { color: var(--primary-dark); text-decoration: none; cursor: pointer; transition: all 0.2s; }
+        .breadcrumbs a:hover { text-decoration: underline; color: var(--primary); }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: rgba(255,224,240,0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 10px; }
+
+        @media (max-width: 600px) {
+            .chat-input-modern, .control-group { flex-direction: column; }
+            .nav-btn { padding: 10px 18px; font-size: 0.75rem; }
+            .detail-title { font-size: 1.5rem; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .card-title { font-size: 1.2rem; }
+            .grade-type-group { margin-left: 0; margin-top: 10px; }
         }
-        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
-        .stat-card { background: #fff5f9; border-radius: 28px; padding: 15px; text-align: center; }
-        .stat-value { font-size: 28px; font-weight: bold; color: #e87fb0; }
-        .card { background: #fff5f9; border-radius: 28px; padding: 20px; margin: 15px 0; }
-        .card-title { font-weight: bold; font-size: 18px; margin-bottom: 15px; color: #c45a8c; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ffe0f0; }
-        .grade-badge { background: #ffe0f0; padding: 4px 12px; border-radius: 40px; display: inline-block; }
-        .filter-bar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        .group-tag { background: #ffe0f0; padding: 6px 14px; border-radius: 40px; display: inline-flex; align-items: center; gap: 8px; margin: 4px; }
-        .student-card { background: #fff5f9; padding: 8px 16px; border-radius: 40px; display: inline-block; margin: 4px; cursor: pointer; }
-        .student-card.active { background: linear-gradient(135deg, #e87fb0, #f0a0c5); color: white; }
-        .chat-box { background: white; border-radius: 28px; padding: 15px; margin-top: 15px; }
-        .chat-messages { height: 250px; overflow-y: auto; margin-bottom: 12px; }
-        .message { padding: 8px 14px; margin: 6px; border-radius: 20px; max-width: 75%; }
-        .message.parent { background: linear-gradient(135deg, #e87fb0, #f0a0c5); color: white; margin-left: auto; }
-        .message.curator { background: #f0f0f0; color: #333; }
-        .nav-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 25px; }
-        .nav-btn { padding: 10px 24px; background: #fff0f8; color: #c45a8c; width: auto; }
-        .nav-btn.active { background: linear-gradient(135deg, #e87fb0, #f0a0c5); color: white; }
-        .btn-sm { width: auto; padding: 8px 18px; }
-        hr { margin: 15px 0; border-color: #ffe0f0; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="container" id="app">
-    <!-- АВТОРИЗАЦИЯ -->
-    <div id="authSection">
-        <h1 style="text-align:center">🌸 Колледж</h1>
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab('login')">Вход</div>
-            <div class="tab" onclick="switchTab('register')">Регистрация</div>
-        </div>
-        <div id="loginForm">
-            <input type="email" id="loginEmail" placeholder="Email">
-            <input type="password" id="loginPassword" placeholder="Пароль">
-            <button onclick="doLogin()">🌟 Войти</button>
-            <div id="loginError" class="error"></div>
-        </div>
-        <div id="registerForm" class="hidden">
-            <input type="text" id="regName" placeholder="Имя и фамилия">
-            <input type="email" id="regEmail" placeholder="Email">
-            <select id="regRole">
-                <option value="parent">Родитель</option>
-                <option value="curator">Куратор</option>
-            </select>
-            <div id="parentFields">
-                <input type="text" id="regChildName" placeholder="ФИО студента">
-                <input type="text" id="regGroupNumber" placeholder="Группа (П-201)">
+    <div class="app-container" id="app">
+        <!-- Модальное окно профиля -->
+        <div id="profileModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header"><h3>👤 Мой профиль</h3><button class="close-modal" onclick="closeProfileModal()">×</button></div>
+                <div class="profile-field"><label>Аватар</label><div class="avatar-options" id="avatarOptions"></div></div>
+                <div class="profile-field"><label>Имя и фамилия</label><input type="text" id="profileName" placeholder="Иван Иванов"></div>
+                <div class="profile-field" id="profileChildField" style="display: none;"><label>ФИО студента</label><input type="text" id="profileChildName" placeholder="Иванов Иван Иванович"></div>
+                <div class="profile-field" id="profileGroupField" style="display: none;"><label>Группа студента</label><input type="text" id="profileGroup" placeholder="П-201"></div>
+                <div class="profile-field"><label>Email</label><input type="email" id="profileEmail" readonly style="background:#f5f5f5;"></div>
+                <button class="save-profile-btn" onclick="saveProfileChanges()">💾 Сохранить изменения</button>
             </div>
-            <div id="curatorFields" class="hidden">
-                <input type="text" id="regCuratorGroup" placeholder="Группа (можно позже)">
+        </div>
+
+        <!-- Авторизация -->
+        <div id="authBlock">
+            <div class="auth-container">
+                <div class="auth-tabs"><button class="auth-tab active" data-tab="login">🌸 Вход</button><button class="auth-tab" data-tab="register">✨ Регистрация</button></div>
+                <div id="loginForm" class="auth-form">
+                    <input type="email" id="loginEmail" class="auth-input" placeholder="Email"><input type="password" id="loginPassword" class="auth-input" placeholder="Пароль">
+                    <button id="doLoginBtn" class="auth-btn">🌟 Войти</button><div id="loginError" class="auth-error"></div>
+                </div>
+                <div id="registerForm" class="auth-form hidden">
+                    <input type="text" id="regName" class="auth-input" placeholder="Имя и фамилия (только русские буквы)">
+                    <input type="email" id="regEmail" class="auth-input" placeholder="Email">
+                    <select id="regRole" class="auth-select"><option value="parent">👨‍👩‍👧 Родитель</option><option value="curator">📚 Куратор</option></select>
+                    <div id="parentFields"><input type="text" id="regChildName" class="auth-input" placeholder="ФИО студента (только русские буквы)"><input type="text" id="regGroupNumber" class="auth-input" placeholder="Номер группы (например, П-201)"></div>
+                    <div id="curatorFields" style="display: none;"><input type="text" id="regCuratorGroup" class="auth-input" placeholder="Номер вашей группы"></div>
+                    <input type="password" id="regPassword" class="auth-input" placeholder="Пароль (мин. 6 символов)">
+                    <button id="doRegisterBtn" class="auth-btn">✨ Зарегистрироваться</button><div id="regError" class="auth-error"></div>
+                </div>
             </div>
-            <input type="password" id="regPassword" placeholder="Пароль (мин 6)">
-            <button onclick="doRegister()">✨ Зарегистрироваться</button>
-            <div id="regError" class="error"></div>
+        </div>
+
+        <!-- Дашборд -->
+        <div id="dashboardBlock" class="dashboard-content">
+            <div class="breadcrumbs" id="breadcrumbs"><a data-page="dashboard">🏠 Главная</a></div>
+            <div class="dashboard-header">
+                <div class="date-badge" id="currentDateBadge">📅 </div>
+                <div class="user-info"><div class="user-avatar" id="userAvatar" onclick="openProfileModal()">🌸</div><span class="user-greeting">Привет, <span id="userNameSpan"></span>!</span><span id="userRoleBadge" class="user-role-badge"></span><button id="logoutBtnMain" class="logout-btn">🚪 Выйти</button></div>
+            </div>
+
+            <div id="curatorGroupBlock" class="curator-group-info" style="display: none;"><div style="font-weight: 700;">📚 Моя группа куратора</div><div class="curator-group-input"><input type="text" id="curatorGroupInput" placeholder="Номер группы"><button id="setCuratorGroupBtn">✅ Установить группу</button></div><div id="currentGroupDisplay" style="margin-top: 10px;"></div></div>
+            <div id="usersManagementBlock" class="users-management" style="display: none;"><div style="font-weight: 700;">👥 Управление родителями</div><div id="usersTableContainer"></div></div>
+            <div id="chatsListContainer" class="chats-list" style="display: none;"><div style="font-weight: 700; margin-bottom: 10px;">💬 Чаты с родителями</div><div id="chatsGrid" class="chats-grid"></div></div>
+            <div id="studentsListContainer" class="students-list" style="display: none;"><div style="font-weight: 700; margin-bottom: 10px;">👨‍🎓 Студенты вашей группы</div><div id="studentsGrid" class="students-grid"></div></div>
+
+            <div id="studentStatsBlock">
+                <div id="currentStudentInfo" style="background: linear-gradient(135deg, rgba(255,240,248,0.9), rgba(255,232,244,0.9)); backdrop-filter: blur(10px); border-radius: 40px; padding: 16px 24px; margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                    <span>🎓 <strong id="currentStudentName">Загрузка...</strong></span><span id="studentGroupBadge" style="background: #ffe0f0; padding: 6px 16px; border-radius: 40px; font-size: 0.8rem; font-weight: 600;">Группа</span>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-value" id="avgScoreStat">—</div><div class="stat-label">Средний балл</div></div>
+                    <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-value" id="absencesStat">—</div><div class="stat-label">Пропуски</div></div>
+                    <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-value" id="subjectsCountStat">15</div><div class="stat-label">Предметов</div></div>
+                </div>
+                
+                <!-- Таблица всех оценок -->
+                <div class="all-grades-section">
+                    <div class="section-title">📋 История всех оценок</div>
+                    <div class="filter-bar">
+                        <select id="filterSubject" class="filter-select"><option value="">Все предметы</option></select>
+                        <input type="date" id="filterDateFrom" class="filter-input" placeholder="С даты">
+                        <input type="date" id="filterDateTo" class="filter-input" placeholder="По дату">
+                        <button id="clearFiltersBtn" class="curator-btn" style="padding: 10px 20px;">🗑️ Очистить</button>
+                    </div>
+                    <div id="gradesTableContainer" style="max-height: 400px; overflow-y: auto;"></div>
+                    <div id="noGradesMessage" style="text-align: center; padding: 40px; color: var(--text-muted); display: none;">📭 Нет оценок для отображения</div>
+                </div>
+                
+                <!-- График по предмету -->
+                <div class="subject-chart-section">
+                    <div class="section-title">📈 Динамика успеваемости по предмету</div>
+                    <select id="subjectForChart" class="filter-select" style="width: 100%; max-width: 320px; margin-bottom: 20px;"><option value="">Выберите предмет</option></select>
+                    <div class="subject-chart-container"><canvas id="subjectGradesChart"></canvas></div>
+                </div>
+                
+                <!-- ПАСТЕЛЬНОЕ РАСПРЕДЕЛЕНИЕ ОЦЕНОК -->
+                <div class="distribution-container" id="distributionContainer">
+                    <div class="section-title">📊 Распределение оценок</div>
+                    <div id="distributionContent"></div>
+                </div>
+                
+                <main class="main-dashboard" id="mainDashboard">
+                    <div class="card"><div class="card-title">📊 Успеваемость</div><div style="display: flex; justify-content: space-between;"><span>Средний балл:</span><span id="avgScoreDisplay" style="font-size: 2.2rem; font-weight: 800;">—</span></div><div class="progress-bar-container"><div class="progress-bar" id="avgProgress" style="width: 0%;"></div></div><button class="nav-btn" style="margin-top: 20px; width: 100%;" data-page="detailed-progress">📈 Подробнее →</button></div>
+                    <div class="card"><div class="card-title">📆 Посещаемость</div><div style="display: flex; justify-content: space-between;"><span>Пропуски:</span><span id="absencesDisplay" style="font-size: 2.2rem; font-weight: 800; color: var(--warning);">—</span></div><div class="progress-bar-container"><div class="progress-bar" id="attendanceProgress" style="width: 100%;"></div></div><button class="nav-btn" style="margin-top: 20px; width: 100%;" data-page="attendance-detail">📅 Подробнее →</button></div>
+                    <div class="card" style="grid-column: 1 / -1;"><div class="card-title">💬 Чат</div><div class="chat-container-modern"><div class="chat-header"><div style="width:45px;height:45px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;">💬</div><div><h4 style="font-size:1.1rem;" id="chatHeaderName">Чат</h4></div></div><div id="chatMessagesModern" class="chat-messages-modern"></div><div class="chat-input-modern"><input type="text" id="modernChatInput" placeholder="Напишите сообщение..."><button id="modernSendBtn" class="chat-send-btn">📨 Отправить</button></div></div></div>
+                </main>
+            </div>
+
+            <div id="noStudentsMessage" class="no-students-message" style="display: none;"><div class="icon">👨‍🎓</div><h3>Нет добавленных студентов</h3><p>У вас пока нет студентов. Данные о студенте может добавить куратор или зарегистрироваться родитель.</p></div>
+
+            <div id="curatorPanel" class="curator-panel" style="display: none;">
+                <h4>🔧 Панель управления куратора</h4>
+                <div class="control-group"><label>📝 Выберите ученика:</label><select id="studentForGradeSelect" class="curator-select"></select></div>
+                <div class="control-group">
+                    <label>📝 Оценка:</label>
+                    <select id="subjectSelect" class="curator-select"></select>
+                    <select id="gradeSelect" class="curator-select"><option value="5">5 — Отлично</option><option value="4">4 — Хорошо</option><option value="3">3 — Удовлетворительно</option><option value="2">2 — Неудовлетворительно</option></select>
+                    <div class="grade-type-group">
+                        <label class="grade-type-label"><input type="radio" name="gradeType" value="normal" checked> 📝 Обычная</label>
+                        <label class="grade-type-label"><input type="radio" name="gradeType" value="control"> 📝 Контрольная (×2)</label>
+                    </div>
+                </div>
+                <div class="control-group"><label>📅 Дата:</label><input type="date" id="gradeDate" class="curator-input" value="2026-06-03"></div>
+                <div class="control-group"><label>💬 Комментарий:</label><input type="text" id="gradeComment" class="curator-input" placeholder="За что выставлена оценка (контрольная, ответ и т.д.)"></div>
+                <div class="control-group"><button id="addGradeBtn" class="curator-btn">➕ Поставить оценку</button></div>
+                <div class="control-group"><label>📅 Пропуск:</label><input type="date" id="absenceDate" class="curator-input"><select id="absenceType" class="curator-select"><option value="болезнь">❌ Болезнь</option><option value="уважительная">📋 Уважительная</option><option value="неуважительная">⚠️ Неуважительная</option></select><button id="addAbsenceBtn" class="curator-btn">📌 Добавить</button></div>
+                <div id="curatorSuccessMsg" class="success-msg"></div>
+            </div>
+
+            <nav class="bottom-nav">
+                <button class="nav-btn active-dashboard" data-page="dashboard">📋 Главная</button>
+                <button class="nav-btn" data-page="detailed-progress">📈 Успеваемость</button>
+                <button class="nav-btn" data-page="attendance-detail">📅 Посещаемость</button>
+            </nav>
+            <div id="dynamic-page-content" class="dynamic-content"></div>
         </div>
     </div>
 
-    <!-- ОСНОВНОЙ ИНТЕРФЕЙС -->
-    <div id="dashboardSection" class="hidden">
-        <div class="dashboard-header">
-            <span id="currentDate"></span>
-            <div class="flex">
-                <div class="avatar" id="userAvatar" onclick="alert('Профиль: '+currentUser.name)">🌸</div>
-                <span>Привет, <span id="userName"></span>!</span>
-                <span id="userRole"></span>
-                <button class="btn-sm" onclick="logout()">Выйти</button>
-            </div>
-        </div>
-        <div id="mainContent"></div>
-        <div class="nav-buttons">
-            <button class="nav-btn active" onclick="showMain()">📋 Главная</button>
-            <button class="nav-btn" onclick="showGrades()">📈 Успеваемость</button>
-            <button class="nav-btn" onclick="showAttendance()">📅 Посещаемость</button>
-        </div>
-    </div>
-</div>
-
-<script>
-// ========== ДАННЫЕ ==========
-let students = JSON.parse(localStorage.getItem('students')) || [];
-let users = JSON.parse(localStorage.getItem('users')) || [];
-let messages = JSON.parse(localStorage.getItem('messages')) || [];
-let curatorGroups = JSON.parse(localStorage.getItem('curatorGroups')) || {};
-let groupSubjects = JSON.parse(localStorage.getItem('groupSubjects')) || {};
-let currentUser = null;
-let selectedStudentId = null;
-let selectedChatId = null;
-
-const BASE_SUBJECTS = ["Математика","Русский язык","Литература","Физика","Химия","Биология","История","Обществознание","Английский","Информатика","География","Физкультура","Технология"];
-
-function saveAll() {
-    localStorage.setItem('students', JSON.stringify(students));
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('messages', JSON.stringify(messages));
-    localStorage.setItem('curatorGroups', JSON.stringify(curatorGroups));
-    localStorage.setItem('groupSubjects', JSON.stringify(groupSubjects));
-}
-
-// ========== ПОМОЩНИКИ ==========
-function getSubjects(group) {
-    return (groupSubjects[group] && groupSubjects[group].length) ? groupSubjects[group] : [...BASE_SUBJECTS];
-}
-
-function getStudentById(id) { return students.find(s => s.id === id); }
-function getStudentForParent(email) { return students.find(s => s.parentEmail === email); }
-
-function avgGrade(student) {
-    if (!student?.grades) return "—";
-    let sum = 0, cnt = 0;
-    for (let subj in student.grades) {
-        for (let g of (student.grades[subj] || [])) {
-            sum += g.value * (g.weight || 1);
-            cnt += (g.weight || 1);
+    <script>
+        // Функция для обновления даты (сегодняшнее число)
+        function updateCurrentDate() {
+            const dateElement = document.getElementById('currentDateBadge');
+            if (dateElement) {
+                const today = new Date();
+                const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+                const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+                const day = today.getDate();
+                const month = months[today.getMonth()];
+                const weekday = days[today.getDay()];
+                dateElement.innerHTML = `📅 ${day} ${month} • ${weekday}`;
+            }
         }
-    }
-    return cnt === 0 ? "—" : (sum / cnt).toFixed(2);
-}
+        
+        const ALL_SUBJECTS = ["Математика","Русский язык","Литература","Физика","Химия","Биология","История","Обществознание","Английский","Информатика","География","Физкультура","ИЗО","Музыка","Технология"];
+        const AVATARS = ["🌸", "😊", "🌟", "⭐", "💖", "🌺", "🍎", "📚", "🎓", "🐱", "🐶", "🦊", "🐼", "🦄", "🐨"];
+        
+        // ИНИЦИАЛИЗАЦИЯ ТЕСТОВЫХ ДАННЫХ
+        let students = JSON.parse(localStorage.getItem('students')) || [];
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let chatMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+        let curatorGroups = JSON.parse(localStorage.getItem('curatorGroups')) || {};
+        let userAvatars = JSON.parse(localStorage.getItem('userAvatars')) || {};
 
-function getAllGrades(student) {
-    let list = [];
-    for (let subj in (student?.grades || {})) {
-        for (let g of (student.grades[subj] || [])) {
-            list.push({ subject: subj, value: g.value, date: g.date, comment: g.comment, weight: g.weight || 1 });
+        if (users.length === 0) {
+            const curatorId = `u${Date.now()}`;
+            users.push({
+                id: curatorId,
+                name: "Анна Куратор",
+                email: "curator@college.com",
+                password: "123456",
+                role: "curator"
+            });
+            
+            const parentId = `u${Date.now() + 1}`;
+            users.push({
+                id: parentId,
+                name: "Елена Родитель",
+                email: "parent@mail.com",
+                password: "123456",
+                role: "parent"
+            });
+            
+            const studentId = `s${Date.now()}`;
+            const grades = {};
+            for (let subj of ALL_SUBJECTS) {
+                grades[subj] = [
+                    { value: 5, date: "2026-05-10", comment: "Контрольная работа", weight: 2 },
+                    { value: 4, date: "2026-05-15", comment: "Ответ у доски", weight: 1 },
+                    { value: 5, date: "2026-05-20", comment: "Домашняя работа", weight: 1 }
+                ];
+            }
+            
+            students.push({
+                id: studentId,
+                name: "Иван Петров",
+                group: "П-201",
+                parentEmail: "parent@mail.com",
+                parentName: "Елена Родитель",
+                grades: grades,
+                absences: [
+                    { date: "2026-05-12", type: "болезнь" },
+                    { date: "2026-05-14", type: "опоздание" }
+                ]
+            });
+            
+            curatorGroups["curator@college.com"] = "П-201";
+            saveAll();
         }
-    }
-    return list.sort((a,b) => (b.date || "").localeCompare(a.date || ""));
-}
 
-// ========== АВТОРИЗАЦИЯ ==========
-function switchTab(tab) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
-    document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
-    document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
-}
-
-document.getElementById('regRole').onchange = function() {
-    const isParent = this.value === 'parent';
-    document.getElementById('parentFields').classList.toggle('hidden', !isParent);
-    document.getElementById('curatorFields').classList.toggle('hidden', isParent);
-};
-
-function doLogin() {
-    const email = document.getElementById('loginEmail').value.trim();
-    const pwd = document.getElementById('loginPassword').value;
-    const user = users.find(u => u.email === email && u.password === pwd);
-    if (!user) {
-        document.getElementById('loginError').innerText = 'Неверный email или пароль';
-        return;
-    }
-    currentUser = { id: user.id, name: user.name, email: user.email, role: user.role };
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    if (user.role === 'parent') {
-        const s = getStudentForParent(user.email);
-        if (s) selectedStudentId = s.id;
-    }
-    showDashboard();
-}
-
-function doRegister() {
-    const name = document.getElementById('regName').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
-    const role = document.getElementById('regRole').value;
-    const pwd = document.getElementById('regPassword').value;
-    const err = document.getElementById('regError');
-    
-    if (!name || !email || !pwd) { err.innerText = 'Заполните все поля'; return; }
-    if (pwd.length < 6) { err.innerText = 'Пароль минимум 6 символов'; return; }
-    if (users.find(u => u.email === email)) { err.innerText = 'Email уже существует'; return; }
-    
-    if (role === 'parent') {
-        const childName = document.getElementById('regChildName').value.trim();
-        const group = document.getElementById('regGroupNumber').value.trim();
-        if (!childName || !group) { err.innerText = 'Заполните данные студента'; return; }
-        const existing = students.find(s => s.name === childName);
-        if (!existing) {
-            students.push({ id: 's' + Date.now(), name: childName, group, parentEmail: email, parentName: name, grades: {}, absences: [] });
-        } else if (existing.parentEmail && existing.parentEmail !== email) {
-            err.innerText = 'Студент уже привязан к другому родителю';
-            return;
-        } else {
-            existing.parentEmail = email;
-            existing.parentName = name;
-            existing.group = group;
+        function saveAll() {
+            localStorage.setItem('students', JSON.stringify(students));
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
+            localStorage.setItem('curatorGroups', JSON.stringify(curatorGroups));
+            localStorage.setItem('userAvatars', JSON.stringify(userAvatars));
         }
-    } else {
-        const curatorGroup = document.getElementById('regCuratorGroup').value.trim();
-        curatorGroups[email] = curatorGroup ? [curatorGroup] : [];
-        if (curatorGroup && !groupSubjects[curatorGroup]) groupSubjects[curatorGroup] = [...BASE_SUBJECTS];
-    }
-    users.push({ id: 'u' + Date.now(), name, email, password: pwd, role });
-    saveAll();
-    alert('Регистрация успешна! Войдите.');
-    document.getElementById('loginEmail').value = email;
-    document.getElementById('loginPassword').value = '';
-    document.querySelector('.tab').click();
-}
 
-function logout() {
-    localStorage.removeItem('currentUser');
-    currentUser = null;
-    document.getElementById('authSection').classList.remove('hidden');
-    document.getElementById('dashboardSection').classList.add('hidden');
-}
+        let selectedStudentId = null;
+        let selectedChatStudentId = null;
+        let selectedGradeStudentId = null;
+        let subjectGradesChart;
+        let currentUser = null;
 
-// ========== ОСНОВНОЙ ИНТЕРФЕЙС ==========
-function showDashboard() {
-    document.getElementById('authSection').classList.add('hidden');
-    document.getElementById('dashboardSection').classList.remove('hidden');
-    document.getElementById('userName').innerText = currentUser.name;
-    document.getElementById('userRole').innerText = currentUser.role === 'parent' ? '👪 Родитель' : '📚 Куратор';
-    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('ru', { day:'numeric', month:'long' });
-    
-    if (currentUser.role === 'parent') renderParent();
-    else renderCurator();
-    showMain();
-}
+        function getCurrentUser() { const u = localStorage.getItem('currentUser'); return u ? JSON.parse(u) : null; }
+        function setCurrentUser(u) { localStorage.setItem('currentUser', JSON.stringify(u)); currentUser = u; }
+        function clearCurrentUser() { localStorage.removeItem('currentUser'); currentUser = null; }
+        function getStudentById(id) { return students.find(s => s.id === id); }
+        function getStudentForParent(email) { return students.find(s => s.parentEmail === email); }
 
-function renderParent() {
-    const student = getStudentForParent(currentUser.email);
-    if (!student) {
-        document.getElementById('mainContent').innerHTML = '<div class="card" style="text-align:center">👨‍🎓 Нет привязанного студента</div>';
-        return;
-    }
-    selectedStudentId = student.id;
-    document.getElementById('mainContent').innerHTML = `
-        <div style="background:#fff0f8;border-radius:40px;padding:15px;margin-bottom:20px">🎓 <strong>${student.name}</strong> | Группа ${student.group}</div>
-        <div class="stats">
-            <div class="stat-card"><div class="stat-value">${avgGrade(student)}</div><div>Средний балл</div></div>
-            <div class="stat-card"><div class="stat-value">${student.absences?.length || 0}</div><div>Пропуски</div></div>
-            <div class="stat-card"><div class="stat-value">${getSubjects(student.group).length}</div><div>Предметов</div></div>
-        </div>
-        <div id="gradesTableContainer" class="card">
-            <div class="card-title">📋 История оценок</div>
-            <div class="filter-bar">
-                <select id="filterSubject"><option value="">Все предметы</option>${getSubjects(student.group).map(s => `<option>${s}</option>`).join('')}</select>
-                <input type="date" id="filterFrom" placeholder="С даты">
-                <input type="date" id="filterTo" placeholder="По дату">
-                <button class="btn-sm" onclick="applyFilter()">Очистить</button>
-            </div>
-            <div id="gradesList"></div>
-        </div>
-        <div class="card">
-            <div class="card-title">💬 Чат с куратором</div>
-            <div id="chatMessages" class="chat-messages"></div>
-            <div class="flex"><input type="text" id="chatInput" placeholder="Сообщение..." style="flex:1"><button onclick="sendParentMessage()">📨 Отправить</button></div>
-        </div>
-    `;
-    renderGradesTable();
-    renderParentChat();
-}
+        function avgGradeWeighted(student) { 
+            if (!student?.grades) return "—"; 
+            let totalWeight = 0, sumWeighted = 0;
+            for (let subj in student.grades) {
+                if (student.grades[subj] && Array.isArray(student.grades[subj])) {
+                    for (let g of student.grades[subj]) {
+                        let val = (typeof g === 'object') ? g.value : g;
+                        let weight = (typeof g === 'object' && g.weight) ? g.weight : 1;
+                        sumWeighted += val * weight;
+                        totalWeight += weight;
+                    }
+                }
+            }
+            if (totalWeight === 0) return "—"; 
+            return (sumWeighted / totalWeight).toFixed(2).replace('.', ','); 
+        }
 
-function renderGradesTable() {
-    const student = getStudentById(selectedStudentId);
-    if (!student) return;
-    let grades = getAllGrades(student);
-    const subject = document.getElementById('filterSubject')?.value;
-    const from = document.getElementById('filterFrom')?.value;
-    const to = document.getElementById('filterTo')?.value;
-    if (subject) grades = grades.filter(g => g.subject === subject);
-    if (from) grades = grades.filter(g => g.date >= from);
-    if (to) grades = grades.filter(g => g.date <= to);
-    const container = document.getElementById('gradesList');
-    if (!grades.length) { container.innerHTML = '<div style="padding:20px;text-align:center">Нет оценок</div>'; return; }
-    container.innerHTML = `<table><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th></tr></thead><tbody>${grades.map(g => `<tr><td>${g.date || '—'}</td><td>${g.subject}</td><td><span class="grade-badge">${g.value}</span></td><td>${g.weight === 2 ? 'Контрольная' : 'Обычная'}</td></tr>`).join('')}</tbody></table>`;
-}
+        function getAllGrades(student) {
+            let gradesList = [];
+            if (!student?.grades) return gradesList;
+            for (let subject in student.grades) {
+                if (Array.isArray(student.grades[subject])) {
+                    for (let g of student.grades[subject]) {
+                        if (typeof g === 'object') {
+                            gradesList.push({ subject, value: g.value, date: g.date, comment: g.comment, weight: g.weight || 1 });
+                        } else if (typeof g === 'number') {
+                            gradesList.push({ subject, value: g, date: "", comment: "", weight: 1 });
+                        }
+                    }
+                }
+            }
+            return gradesList.sort((a,b) => (b.date || "").localeCompare(a.date || ""));
+        }
 
-function applyFilter() { renderGradesTable(); }
-document.getElementById('filterSubject')?.addEventListener('change', renderGradesTable);
-document.getElementById('filterFrom')?.addEventListener('change', renderGradesTable);
-document.getElementById('filterTo')?.addEventListener('change', renderGradesTable);
+        function renderAllGradesTable() {
+            let student = getStudentById(selectedStudentId);
+            if (!student) return;
+            let grades = getAllGrades(student);
+            let filterSubject = document.getElementById('filterSubject')?.value || "";
+            let filterDateFrom = document.getElementById('filterDateFrom')?.value || "";
+            let filterDateTo = document.getElementById('filterDateTo')?.value || "";
+            if (filterSubject) grades = grades.filter(g => g.subject === filterSubject);
+            if (filterDateFrom) grades = grades.filter(g => g.date >= filterDateFrom);
+            if (filterDateTo) grades = grades.filter(g => g.date <= filterDateTo);
+            const container = document.getElementById('gradesTableContainer');
+            const noMsg = document.getElementById('noGradesMessage');
+            if (!container) return;
+            if (grades.length === 0) { container.innerHTML = ''; if (noMsg) noMsg.style.display = 'block'; return; }
+            if (noMsg) noMsg.style.display = 'none';
+            container.innerHTML = `<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr class="grade-row"><td style="white-space: nowrap;">${g.date || "—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span><td>${g.weight === 2 ? '📝 Контрольная (×2)' : '📝 Обычная'}</td><td>${g.comment || "—"}<td></tr>`).join('')}</tbody></table>`;
+        }
 
-function sendParentMessage() {
-    const inp = document.getElementById('chatInput');
-    if (!inp.value.trim() || !selectedStudentId) return;
-    messages.push({ text: inp.value.trim(), sender: 'parent', time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), studentId: selectedStudentId });
-    saveAll();
-    renderParentChat();
-    inp.value = '';
-}
+        function renderGradeDistribution(student) {
+            if (!student) return;
+            let counts = [0, 0, 0, 0];
+            let totalWeight = 0;
+            for (let subj in student.grades) {
+                if (Array.isArray(student.grades[subj])) {
+                    for (let g of student.grades[subj]) {
+                        let val = (typeof g === 'object') ? g.value : g;
+                        let weight = (typeof g === 'object' && g.weight) ? g.weight : 1;
+                        if (val === 5) counts[0] += weight;
+                        else if (val === 4) counts[1] += weight;
+                        else if (val === 3) counts[2] += weight;
+                        else if (val === 2) counts[3] += weight;
+                        totalWeight += weight;
+                    }
+                }
+            }
+            
+            const gradesInfo = [
+                { value: 5, name: "Отлично", icon: "🌟", color: "var(--grade5)", darkColor: "var(--grade5-dark)" },
+                { value: 4, name: "Хорошо", icon: "📘", color: "var(--grade4)", darkColor: "var(--grade4-dark)" },
+                { value: 3, name: "Удовлетворительно", icon: "📙", color: "var(--grade3)", darkColor: "var(--grade3-dark)" },
+                { value: 2, name: "Неудовлетворительно", icon: "⚠️", color: "var(--grade2)", darkColor: "var(--grade2-dark)" }
+            ];
+            
+            const container = document.getElementById('distributionContent');
+            if (!container) return;
+            
+            if (totalWeight === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">📊 Нет оценок для отображения</div>';
+                return;
+            }
+            
+            container.innerHTML = `
+                <div style="margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, #fef0f8, #fff5f9); border-radius: 30px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div><span style="font-weight: 800;">📊 Всего оценок (с учётом веса):</span> <span style="font-size: 1.3rem; font-weight: 800; color: var(--primary);">${totalWeight}</span></div>
+                    <div><span style="font-weight: 800;">🎯 Средний балл:</span> <span style="font-size: 1.3rem; font-weight: 800; color: var(--primary);">${avgGradeWeighted(student)}</span></div>
+                </div>
+                ${gradesInfo.map((grade, idx) => {
+                    const count = counts[idx];
+                    const percent = totalWeight > 0 ? ((count / totalWeight) * 100).toFixed(1) : 0;
+                    return `
+                        <div class="grade-item">
+                            <div class="grade-label">
+                                <span class="grade-icon">${grade.icon}</span>
+                                <span class="grade-name" style="color: ${grade.darkColor};">${grade.name} (${grade.value})</span>
+                                <span class="grade-count">${count} шт.</span>
+                                <span class="grade-percent" style="color: ${grade.darkColor};">${percent}%</span>
+                            </div>
+                            <div class="grade-distribution-bar">
+                                <div class="grade-distribution-fill" style="width: ${percent}%; background: linear-gradient(90deg, ${grade.color}, ${grade.darkColor});">
+                                    ${percent > 15 ? `${percent}%` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+                <div style="margin-top: 20px; padding: 12px; background: linear-gradient(135deg, #e8f8f5, #e8f5e9); border-radius: 20px; text-align: center;">
+                    <span style="font-weight: 600;">📈 Контрольные работы учитываются с двойным весом!</span>
+                </div>
+            `;
+        }
 
-function renderParentChat() {
-    const container = document.getElementById('chatMessages');
-    if (!container) return;
-    const msgs = messages.filter(m => m.studentId === selectedStudentId);
-    container.innerHTML = msgs.map(m => `<div class="message ${m.sender}">${m.text}<div style="font-size:10px;opacity:0.7">${m.time}</div></div>`).join('');
-    container.scrollTop = container.scrollHeight;
-}
+        function renderSubjectGradesChart() {
+            let student = getStudentById(selectedStudentId);
+            let subject = document.getElementById('subjectForChart')?.value;
+            if (!student || !subject) { if (subjectGradesChart) subjectGradesChart.destroy(); return; }
+            let grades = student.grades?.[subject] || [];
+            let dates = [], values = [];
+            for (let g of grades) {
+                if (typeof g === 'object') { dates.push(g.date || "Дата не указана"); values.push(g.value); }
+                else if (typeof g === 'number') { dates.push(`Оценка ${g}`); values.push(g); }
+            }
+            if (subjectGradesChart) subjectGradesChart.destroy();
+            let ctx = document.getElementById('subjectGradesChart')?.getContext('2d');
+            if (ctx && dates.length > 0) {
+                subjectGradesChart = new Chart(ctx, { 
+                    type: 'line', 
+                    data: { labels: dates, datasets: [{ label: `Оценки по ${subject}`, data: values, borderColor: '#e87fb0', backgroundColor: 'rgba(232,127,176,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#c45a8c', pointBorderColor: '#fff', pointRadius: 6, pointHoverRadius: 9 }] }, 
+                    options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: (ctx) => `Оценка: ${ctx.raw}` } } }, scales: { y: { min: 1, max: 5, ticks: { stepSize: 1 } } } } 
+                });
+            } else if (ctx) { 
+                if (subjectGradesChart) subjectGradesChart.destroy(); 
+                ctx.fillStyle = '#f0dce8'; 
+                ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height); 
+                ctx.fillStyle = '#c27096'; 
+                ctx.font = '16px Inter'; 
+                ctx.fillText('Нет данных для отображения', 50, 100); 
+            }
+        }
 
-// ========== КУРАТОР ==========
-function renderCurator() {
-    const myGroups = curatorGroups[currentUser.email] || [];
-    const myStudents = students.filter(s => myGroups.includes(s.group));
-    
-    document.getElementById('mainContent').innerHTML = `
-        <div class="card">
-            <div class="card-title">📚 Мои группы</div>
-            <div id="groupsList">${myGroups.map(g => `<span class="group-tag">${g} <button onclick="removeGroup('${g}')">✖</button></span>`).join('')}</div>
-            <div class="flex" style="margin-top:12px"><input type="text" id="newGroup" placeholder="Новая группа"><button onclick="addGroup()" class="btn-sm">➕ Добавить</button></div>
-        </div>
-        <div class="card">
-            <div class="card-title">📚 Предметы</div>
-            <div id="subjectsList">${myGroups.map(g => `<div><strong>${g}</strong>: ${getSubjects(g).map(s => `<span class="grade-badge" style="margin:2px">${s}</span>`).join('')}</div>`).join('')}</div>
-            <div class="flex" style="margin-top:12px">
-                <select id="groupForSubject"><option value="">Выберите группу</option>${myGroups.map(g => `<option>${g}</option>`).join('')}</select>
-                <input type="text" id="newSubject" placeholder="Новый предмет">
-                <button onclick="addSubject()" class="btn-sm">➕ Добавить</button>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-title">👨‍🎓 Студенты (${myStudents.length})</div>
-            <div id="studentsList">${myStudents.map(s => `<span class="student-card" onclick="selectStudentCurator('${s.id}')">${s.name} (${s.group})</span>`).join('')}</div>
-        </div>
-        <div class="card">
-            <div class="card-title">💬 Чаты</div>
-            <div id="chatsList">${myStudents.map(s => `<span class="student-card" onclick="openChat('${s.id}')">💬 ${s.name}</span>`).join('')}</div>
-        </div>
-        <div id="curatorPanel" class="card hidden">
-            <div class="card-title">🔧 Управление</div>
-            <div class="flex"><label style="min-width:80px">Оценка:</label><select id="gradeSubject"></select><select id="gradeValue"><option>5</option><option>4</option><option>3</option><option>2</option></select></div>
-            <div class="flex"><label>Тип:</label><label><input type="radio" name="gradeType" value="normal" checked> Обычная</label><label><input type="radio" name="gradeType" value="control"> Контрольная (×2)</label></div>
-            <div class="flex"><label>Дата:</label><input type="date" id="gradeDate"></div>
-            <div class="flex"><label>Коммент:</label><input type="text" id="gradeComment" placeholder="Комментарий"></div>
-            <button onclick="addCuratorGrade()">➕ Поставить оценку</button>
-            <hr>
-            <div class="flex"><label>Пропуск:</label><input type="date" id="absenceDate"><select id="absenceType"><option>болезнь</option><option>уважительная</option><option>неуважительная</option></select><button onclick="addCuratorAbsence()">📌 Добавить</button></div>
-            <div id="curatorMsg" class="error" style="margin-top:10px"></div>
-        </div>
-        <div id="chatBox" class="card hidden">
-            <div class="card-title">💬 <span id="chatTitle">Чат</span></div>
-            <div id="chatMessagesCurator" class="chat-messages"></div>
-            <div class="flex"><input type="text" id="chatInputCurator" placeholder="Сообщение..." style="flex:1"><button onclick="sendCuratorMessage()">📨 Отправить</button></div>
-        </div>
-    `;
-}
+        function updateFilterSelect() {
+            let select = document.getElementById('filterSubject');
+            if (select) select.innerHTML = '<option value="">Все предметы</option>' + ALL_SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
+            let chartSelect = document.getElementById('subjectForChart');
+            if (chartSelect) { chartSelect.innerHTML = '<option value="">-- Выберите предмет --</option>' + ALL_SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join(''); chartSelect.onchange = () => renderSubjectGradesChart(); }
+        }
 
-function selectStudentCurator(id) {
-    selectedStudentId = id;
-    document.querySelectorAll('.student-card').forEach(c => c.classList.remove('active'));
-    event.target.classList.add('active');
-    const student = getStudentById(id);
-    if (student) {
-        document.getElementById('curatorPanel').classList.remove('hidden');
-        document.getElementById('gradeSubject').innerHTML = getSubjects(student.group).map(s => `<option>${s}</option>`).join('');
-        document.getElementById('gradeDate').value = new Date().toISOString().split('T')[0];
-    }
-}
+        window.openProfileModal = function() {
+            if (!currentUser) return;
+            document.getElementById('profileName').value = currentUser.name;
+            document.getElementById('profileEmail').value = currentUser.email;
+            const student = currentUser.role === 'parent' ? getStudentForParent(currentUser.email) : null;
+            if (student) { 
+                document.getElementById('profileChildField').style.display = 'block'; 
+                document.getElementById('profileGroupField').style.display = 'block'; 
+                document.getElementById('profileChildName').value = student.name; 
+                document.getElementById('profileGroup').value = student.group || ""; 
+            } else { 
+                document.getElementById('profileChildField').style.display = 'none'; 
+                document.getElementById('profileGroupField').style.display = 'none'; 
+            }
+            const avatarOptions = document.getElementById('avatarOptions');
+            avatarOptions.innerHTML = AVATARS.map(a => `<div class="avatar-emoji ${userAvatars[currentUser.email] === a ? 'selected' : ''}" onclick="selectAvatar('${a}')">${a}</div>`).join('');
+            document.getElementById('profileModal').classList.add('active');
+        }
+        
+        window.closeProfileModal = function() { document.getElementById('profileModal').classList.remove('active'); }
+        
+        window.selectAvatar = function(avatar) { 
+            userAvatars[currentUser.email] = avatar; 
+            saveAll(); 
+            document.getElementById('userAvatar').innerHTML = avatar; 
+            closeProfileModal(); 
+            openProfileModal(); 
+        }
+        
+        window.saveProfileChanges = function() {
+            const newName = document.getElementById('profileName').value.trim();
+            const nameRegex = /^[А-Яа-я\s]+$/;
+            if (newName && !nameRegex.test(newName)) { 
+                alert('Имя должно содержать только русские буквы'); 
+                return; 
+            }
+            if (newName) { 
+                const userIndex = users.findIndex(u => u.email === currentUser.email); 
+                if (userIndex !== -1) { 
+                    users[userIndex].name = newName; 
+                    currentUser.name = newName; 
+                    setCurrentUser(currentUser); 
+                    saveAll(); 
+                    document.getElementById('userNameSpan').innerText = newName; 
+                } 
+            }
+            const student = currentUser.role === 'parent' ? getStudentForParent(currentUser.email) : null;
+            if (student) { 
+                const newChildName = document.getElementById('profileChildName').value.trim(); 
+                const newGroup = document.getElementById('profileGroup').value.trim(); 
+                if (newChildName && nameRegex.test(newChildName)) { 
+                    student.name = newChildName; 
+                }
+                if (newGroup) { 
+                    student.group = newGroup; 
+                }
+                saveAll(); 
+                updateUI(); 
+            }
+            closeProfileModal();
+            alert('Профиль обновлён!');
+        }
 
-function openChat(id) {
-    selectedChatId = id;
-    const student = getStudentById(id);
-    document.getElementById('chatTitle').innerText = `Чат с родителем ${student?.name || ''}`;
-    document.getElementById('chatBox').classList.remove('hidden');
-    renderCuratorChat();
-}
+        function updateStudentSelect() {
+            if (currentUser?.role !== 'curator') return;
+            let curatorGroup = curatorGroups[currentUser.email] || "";
+            let groupStudents = students.filter(s => s.group === curatorGroup);
+            let select = document.getElementById('studentForGradeSelect');
+            if (select) { select.innerHTML = '<option value="">-- Выберите ученика --</option>' + groupStudents.map(s => `<option value="${s.id}" ${selectedGradeStudentId === s.id ? 'selected' : ''}>${s.name} (${s.group})</option>`).join(''); select.onchange = function() { if (this.value) { selectedGradeStudentId = this.value; selectedStudentId = this.value; selectedChatStudentId = this.value; updateUI(); renderChatMessages(); } }; }
+        }
 
-function renderCuratorChat() {
-    const container = document.getElementById('chatMessagesCurator');
-    if (!container) return;
-    const msgs = messages.filter(m => m.studentId === selectedChatId);
-    container.innerHTML = msgs.map(m => `<div class="message ${m.sender}">${m.text}<div style="font-size:10px;opacity:0.7">${m.time}</div></div>`).join('');
-    container.scrollTop = container.scrollHeight;
-}
+        function renderChatsList() {
+            if (currentUser?.role !== 'curator') return;
+            let curatorGroup = curatorGroups[currentUser.email] || "";
+            let groupStudents = students.filter(s => s.group === curatorGroup);
+            let chatsGrid = document.getElementById('chatsGrid');
+            if (!chatsGrid) return;
+            if (groupStudents.length === 0) { document.getElementById('chatsListContainer').style.display = 'none'; return; }
+            document.getElementById('chatsListContainer').style.display = 'block';
+            chatsGrid.innerHTML = groupStudents.map(student => { let parentUser = users.find(u => u.email === student.parentEmail); let parentName = parentUser ? parentUser.name : student.parentName || "Родитель"; let lastMsg = chatMessages.filter(m => m.studentId === student.id).slice(-1)[0]; let preview = lastMsg ? lastMsg.text.substring(0, 40) + (lastMsg.text.length > 40 ? '...' : '') : 'Нет сообщений'; let time = lastMsg ? lastMsg.time : ''; return `<div class="chat-item ${selectedChatStudentId === student.id ? 'active' : ''}" onclick="selectChatStudent('${student.id}')"><div class="chat-avatar">${parentName.charAt(0)}</div><div class="chat-info"><div class="chat-name">${parentName}</div><div class="chat-preview">${preview}</div></div><div class="chat-time">${time}</div></div>`; }).join('');
+        }
 
-function sendCuratorMessage() {
-    const inp = document.getElementById('chatInputCurator');
-    if (!inp.value.trim() || !selectedChatId) return;
-    messages.push({ text: inp.value.trim(), sender: 'curator', time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), studentId: selectedChatId });
-    saveAll();
-    renderCuratorChat();
-    inp.value = '';
-}
+        window.selectChatStudent = function(studentId) { selectedChatStudentId = studentId; selectedStudentId = studentId; selectedGradeStudentId = studentId; let student = getStudentById(studentId); if (student) { let parentUser = users.find(u => u.email === student.parentEmail); let parentName = parentUser ? parentUser.name : student.parentName || "Родитель"; document.getElementById('chatHeaderName').innerHTML = `Чат с ${parentName}`; updateUI(); updateStudentSelect(); } renderChatsList(); renderChatMessages(); };
 
-function addCuratorGrade() {
-    if (!selectedStudentId) { alert('Выберите ученика'); return; }
-    const student = getStudentById(selectedStudentId);
-    const subject = document.getElementById('gradeSubject').value;
-    const value = parseInt(document.getElementById('gradeValue').value);
-    const date = document.getElementById('gradeDate').value || new Date().toISOString().split('T')[0];
-    const comment = document.getElementById('gradeComment').value;
-    const isControl = document.querySelector('input[name="gradeType"]:checked').value === 'control';
-    const weight = isControl ? 2 : 1;
-    if (!student.grades) student.grades = {};
-    if (!student.grades[subject]) student.grades[subject] = [];
-    student.grades[subject].push({ value, date, comment, weight });
-    saveAll();
-    document.getElementById('curatorMsg').innerText = `✅ Оценка ${value} добавлена`;
-    setTimeout(() => document.getElementById('curatorMsg').innerText = '', 2000);
-    document.getElementById('gradeComment').value = '';
-}
+        function renderChatMessages() {
+            let container = document.getElementById('chatMessagesModern');
+            if (!container) return;
+            let studentId = null;
+            if (currentUser?.role === 'curator') studentId = selectedChatStudentId;
+            else if (currentUser?.role === 'parent') { let student = getStudentForParent(currentUser.email); if (student) studentId = student.id; }
+            let filtered = chatMessages.filter(m => m.studentId === studentId);
+            container.innerHTML = filtered.map(msg => `<div class="message-modern ${msg.sender === 'parent' ? 'parent' : 'curator'}"><div class="message-avatar">${msg.sender === 'parent' ? '👨‍👩‍👧' : '📚'}</div><div class="message-content"><div class="message-bubble-modern">${msg.text}</div><div class="message-time-modern">${msg.time}</div></div></div>`).join('');
+            container.scrollTop = container.scrollHeight;
+        }
 
-function addCuratorAbsence() {
-    if (!selectedStudentId) { alert('Выберите ученика'); return; }
-    const student = getStudentById(selectedStudentId);
-    const date = document.getElementById('absenceDate').value || new Date().toISOString().split('T')[0];
-    const type = document.getElementById('absenceType').value;
-    if (!student.absences) student.absences = [];
-    if (student.absences.find(a => a.date === date)) { alert('Пропуск уже есть'); return; }
-    student.absences.push({ date, type });
-    saveAll();
-    document.getElementById('curatorMsg').innerText = `📅 Пропуск добавлен`;
-    setTimeout(() => document.getElementById('curatorMsg').innerText = '', 2000);
-}
+        function addChatMessage(text, sender, senderName) {
+            let studentId = null;
+            if (currentUser?.role === 'curator') studentId = selectedChatStudentId;
+            else if (currentUser?.role === 'parent') { let student = getStudentForParent(currentUser.email); if (student) studentId = student.id; }
+            if (!studentId) return;
+            chatMessages.push({ text, sender, senderName, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), studentId });
+            saveAll(); renderChatMessages(); if (currentUser?.role === 'curator') renderChatsList();
+        }
 
-function addGroup() {
-    const newGroup = document.getElementById('newGroup').value.trim();
-    if (newGroup && !curatorGroups[currentUser.email].includes(newGroup)) {
-        curatorGroups[currentUser.email].push(newGroup);
-        if (!groupSubjects[newGroup]) groupSubjects[newGroup] = [...BASE_SUBJECTS];
+        function initChat() {
+            let sendBtn = document.getElementById('modernSendBtn');
+            let input = document.getElementById('modernChatInput');
+            if (sendBtn) { let newBtn = sendBtn.cloneNode(true); sendBtn.parentNode.replaceChild(newBtn, sendBtn); newBtn.onclick = () => { let msg = input?.value.trim(); if (msg && currentUser) { addChatMessage(msg, currentUser.role === 'parent' ? 'parent' : 'curator', currentUser.name); input.value = ''; } }; }
+            if (input) { input.onkeypress = (e) => { if (e.key === 'Enter') { let msg = input.value.trim(); if (msg && currentUser) { addChatMessage(msg, currentUser.role === 'parent' ? 'parent' : 'curator', currentUser.name); input.value = ''; } } }; }
+        }
+
+        function showStudentsList() {
+            if (currentUser?.role !== 'curator') return;
+            let curatorGroup = curatorGroups[currentUser.email] || "";
+            let filtered = students.filter(s => s.group === curatorGroup);
+            document.getElementById('studentsListContainer').style.display = filtered.length > 0 ? 'block' : 'none';
+            let grid = document.getElementById('studentsGrid');
+            if (grid) grid.innerHTML = filtered.map(s => `<div class="student-card ${selectedStudentId === s.id ? 'active' : ''}" onclick="window.selectStudent('${s.id}')"><div class="student-avatar">${s.name.charAt(0)}</div><div><strong>${s.name}</strong><br><span style="font-size:0.7rem;">${s.group || "—"}</span></div></div>`).join('');
+        }
+
+        window.selectStudent = function(id) { selectedStudentId = id; selectedChatStudentId = id; selectedGradeStudentId = id; updateUI(); showStudentsList(); renderChatsList(); renderChatMessages(); updateStudentSelect(); renderAllGradesTable(); renderSubjectGradesChart(); };
+
+        function updateUI() {
+            if (!currentUser) return;
+            document.getElementById('userNameSpan').innerText = currentUser.name;
+            document.getElementById('userAvatar').innerHTML = userAvatars[currentUser.email] || "🌸";
+            const badge = document.getElementById('userRoleBadge');
+            badge.innerText = currentUser.role === 'parent' ? 'Родитель' : 'Куратор';
+            badge.className = `user-role-badge ${currentUser.role === 'parent' ? 'parent' : 'curator'}`;
+            if (currentUser.role === 'parent') {
+                let student = getStudentForParent(currentUser.email);
+                if (student) { selectedStudentId = student.id; selectedChatStudentId = student.id; selectedGradeStudentId = student.id; displayStudentStats(student); document.getElementById('studentStatsBlock').style.display = 'block'; document.getElementById('noStudentsMessage').style.display = 'none'; document.getElementById('chatHeaderName').innerHTML = `Чат с куратором`; renderChatMessages(); renderAllGradesTable(); renderSubjectGradesChart(); renderGradeDistribution(student); }
+                else { document.getElementById('studentStatsBlock').style.display = 'none'; document.getElementById('noStudentsMessage').style.display = 'block'; }
+            } else if (currentUser.role === 'curator') {
+                let curatorGroup = curatorGroups[currentUser.email] || "";
+                let filtered = students.filter(s => s.group === curatorGroup);
+                if (filtered.length === 0) { document.getElementById('studentStatsBlock').style.display = 'none'; document.getElementById('noStudentsMessage').style.display = 'block'; return; }
+                document.getElementById('studentStatsBlock').style.display = 'block'; document.getElementById('noStudentsMessage').style.display = 'none';
+                if (!selectedStudentId || !filtered.find(s => s.id === selectedStudentId)) { selectedStudentId = filtered[0].id; selectedChatStudentId = filtered[0].id; selectedGradeStudentId = filtered[0].id; }
+                let student = getStudentById(selectedStudentId);
+                if (student) { displayStudentStats(student); let parentUser = users.find(u => u.email === student.parentEmail); let parentName = parentUser ? parentUser.name : student.parentName || "Родитель"; document.getElementById('chatHeaderName').innerHTML = `Чат с ${parentName}`; renderGradeDistribution(student); }
+                showStudentsList(); renderChatsList(); renderChatMessages(); updateStudentSelect(); renderAllGradesTable(); renderSubjectGradesChart(); updateFilterSelect();
+            }
+        }
+
+        function displayStudentStats(student) {
+            if (!student) return;
+            let avg = avgGradeWeighted(student);
+            let abs = totalAbs(student);
+            let avgPercent = avg !== "—" ? (parseFloat(avg.replace(',', '.')) / 5 * 100) : 0;
+            document.getElementById('avgScoreDisplay').innerText = avg;
+            document.getElementById('avgScoreStat').innerText = avg;
+            document.getElementById('absencesDisplay').innerText = abs;
+            document.getElementById('absencesStat').innerText = abs;
+            document.getElementById('subjectsCountStat').innerText = ALL_SUBJECTS.length;
+            document.getElementById('avgProgress').style.width = avgPercent + "%";
+            document.getElementById('attendanceProgress').style.width = Math.min(100, 100 - (abs / 30 * 100)) + "%";
+            document.getElementById('currentStudentName').innerHTML = student.name;
+            document.getElementById('studentGroupBadge').innerHTML = `Группа ${student.group || "—"}`;
+            let sel = document.getElementById('subjectSelect'); if (sel) { sel.innerHTML = ''; ALL_SUBJECTS.forEach(s => { sel.innerHTML += `<option value="${s}">📚 ${s}</option>`; }); }
+        }
+
+        function totalAbs(student) { return student?.absences?.length || 0; }
+
+        function renderUsersTable() {
+            let parents = users.filter(u => u.role === 'parent');
+            let container = document.getElementById('usersTableContainer');
+            if (!container) return;
+            container.innerHTML = `<table class="users-table"><thead><tr><th>Имя</th><th>Email</th><th>Студент</th><th>Группа</th><th>Действие</th></tr></thead><tbody>${parents.map(p => { let student = students.find(s => s.parentEmail === p.email); return `<tr><td>${p.name}</td><td>${p.email}</td><td>${student?.name || "—"}</td><td>${student?.group || "—"}</td><td><button class="delete-user-btn" data-email="${p.email}">🗑️ Удалить</button></td>`; }).join('')}</tbody></table>`;
+            document.querySelectorAll('.delete-user-btn').forEach(btn => { btn.onclick = () => { let email = btn.dataset.email; users = users.filter(u => u.email !== email); saveAll(); renderUsersTable(); alert('Пользователь удалён'); }; });
+        }
+
+        function initCuratorControls() {
+            let addGrade = document.getElementById('addGradeBtn');
+            let addAbsence = document.getElementById('addAbsenceBtn');
+            let msgDiv = document.getElementById('curatorSuccessMsg');
+            if (addGrade) { let nb = addGrade.cloneNode(true); addGrade.parentNode.replaceChild(nb, addGrade); nb.onclick = () => { let studentId = selectedGradeStudentId; if (!studentId) { msgDiv.style.display = 'block'; msgDiv.innerHTML = '⚠️ Сначала выберите ученика'; setTimeout(() => msgDiv.style.display = 'none', 2000); return; } let student = getStudentById(studentId); if (student) { let subj = document.getElementById('subjectSelect').value; let gradeVal = parseInt(document.getElementById('gradeSelect').value); let date = document.getElementById('gradeDate').value; let comment = document.getElementById('gradeComment').value.trim(); let isControl = document.querySelector('input[name="gradeType"]:checked').value === 'control'; let weight = isControl ? 2 : 1; let typeText = isControl ? 'контрольная' : 'обычная'; if (!student.grades) student.grades = {}; if (!student.grades[subj]) student.grades[subj] = []; student.grades[subj].push({ value: gradeVal, date: date, comment: comment || "Без комментария", weight: weight }); saveAll(); updateUI(); msgDiv.style.display = 'block'; msgDiv.innerHTML = `✅ Оценка ${gradeVal} по ${subj} (${typeText}) выставлена ученику ${student.name}${isControl ? ' (с двойным весом)' : ''}`; setTimeout(() => msgDiv.style.display = 'none', 2000); renderAllGradesTable(); renderSubjectGradesChart(); } }; }
+            if (addAbsence) { let nb = addAbsence.cloneNode(true); addAbsence.parentNode.replaceChild(nb, addAbsence); nb.onclick = () => { let student = getStudentById(selectedStudentId); if (student) { let date = document.getElementById('absenceDate').value; let type = document.getElementById('absenceType').value; if (!student.absences) student.absences = []; if (!student.absences.find(a => a.date === date)) { student.absences.push({ date, type }); saveAll(); updateUI(); msgDiv.style.display = 'block'; msgDiv.innerHTML = `📅 Пропуск за ${date} добавлен ученику ${student.name}`; setTimeout(() => msgDiv.style.display = 'none', 2000); } else { msgDiv.style.display = 'block'; msgDiv.innerHTML = '⚠️ Пропуск уже есть'; setTimeout(() => msgDiv.style.display = 'none', 2000); } } }; }
+        }
+
+        function showCuratorGroupUI() {
+            if (currentUser?.role !== 'curator') return;
+            document.getElementById('curatorGroupBlock').style.display = 'block';
+            let savedGroup = curatorGroups[currentUser.email] || "";
+            document.getElementById('currentGroupDisplay').innerHTML = savedGroup ? `Текущая группа: <strong>${savedGroup}</strong>` : 'Группа не выбрана';
+            let setBtn = document.getElementById('setCuratorGroupBtn');
+            let newBtn = setBtn.cloneNode(true);
+            setBtn.parentNode.replaceChild(newBtn, setBtn);
+            newBtn.onclick = () => { let newGroup = document.getElementById('curatorGroupInput').value.trim(); if (newGroup) { curatorGroups[currentUser.email] = newGroup; saveAll(); document.getElementById('currentGroupDisplay').innerHTML = `Текущая группа: <strong>${newGroup}</strong>`; let filtered = students.filter(s => s.group === newGroup); if (filtered.length > 0) { selectedStudentId = filtered[0].id; selectedChatStudentId = filtered[0].id; selectedGradeStudentId = filtered[0].id; } updateUI(); renderUsersTable(); updateStudentSelect(); } };
+        }
+
+        document.getElementById('filterSubject')?.addEventListener('change', () => renderAllGradesTable());
+        document.getElementById('filterDateFrom')?.addEventListener('change', () => renderAllGradesTable());
+        document.getElementById('filterDateTo')?.addEventListener('change', () => renderAllGradesTable());
+        document.getElementById('clearFiltersBtn')?.addEventListener('click', () => { if (document.getElementById('filterSubject')) document.getElementById('filterSubject').value = ""; if (document.getElementById('filterDateFrom')) document.getElementById('filterDateFrom').value = ""; if (document.getElementById('filterDateTo')) document.getElementById('filterDateTo').value = ""; renderAllGradesTable(); });
+
+        function getDetailedPage() {
+            let student = getStudentById(selectedStudentId);
+            if (!student) return '<div class="detail-page">Нет данных о студенте</div>';
+            let rows = '';
+            for (let s of ALL_SUBJECTS) {
+                let grades = student.grades?.[s] || [];
+                let lastGrade = grades.length > 0 ? grades[grades.length - 1] : null;
+                let avg = grades.length > 0 ? (grades.reduce((a, b) => a + (typeof b === 'object' ? b.value * (b.weight || 1) : b), 0) / grades.reduce((a, b) => a + (typeof b === 'object' ? (b.weight || 1) : 1), 0)).toFixed(1) : "—";
+                let lastVal = lastGrade ? (typeof lastGrade === 'object' ? lastGrade.value : lastGrade) : "—";
+                let lastDate = lastGrade && typeof lastGrade === 'object' ? lastGrade.date : "";
+                let lastComment = lastGrade && typeof lastGrade === 'object' ? lastGrade.comment : "";
+                let lastWeight = lastGrade && typeof lastGrade === 'object' ? lastGrade.weight : 1;
+                rows += `<tr><td style="font-weight:500;">📚 ${s}</td><td>${avg}</td><td><span class="grade-badge">${lastVal}</span>${lastDate ? `<span class="grade-date"> от ${lastDate}</span>` : ''}${lastWeight === 2 ? `<span class="grade-date" style="color: var(--primary);"> 📝×2</span>` : ''}${lastComment ? `<div class="grade-comment">📝 ${lastComment}</div>` : ''}</td></tr>`;
+            }
+            return `<div class="detail-page"><div class="detail-title">📖 Детальная успеваемость: ${student.name}</div><table class="subjects-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></td><button class="back-link" data-back="dashboard">← На главную</button></div>`;
+        }
+
+        function getAttendancePage() {
+            let student = getStudentById(selectedStudentId);
+            if (!student) return '<div class="detail-page">Нет данных о студенте</div>';
+            let days = '';
+            (student.absences || []).slice().reverse().forEach(a => { let icon = a.type === 'болезнь' ? '❌' : a.type === 'опоздание' ? '⚠️' : '📋'; days += `<div class="att-day"><span>📅 ${a.date}</span><span>${icon} ${a.type}</span></div>`; });
+            return `<div class="detail-page"><div class="detail-title">📅 Посещаемость: ${student.name}</div>${days || '<div class="att-day">✨ Нет пропусков</div>'}<button class="back-link" data-back="dashboard">← На главную</button></div>`;
+        }
+
+        let mainDash = document.getElementById('mainDashboard'), dynCont = document.getElementById('dynamic-page-content'), navBtns = document.querySelectorAll('.nav-btn');
+        function showDetail(pageId) { if (mainDash) mainDash.style.display = 'none'; let content = pageId === 'detailed-progress' ? getDetailedPage() : getAttendancePage(); dynCont.innerHTML = content; dynCont.style.display = 'block'; navBtns.forEach(btn => btn.dataset.page === pageId ? btn.classList.add('active-dashboard') : btn.classList.remove('active-dashboard')); document.querySelectorAll('.back-link').forEach(btn => btn.onclick = () => showMain()); document.getElementById('breadcrumbs').innerHTML = `<a data-page="dashboard">🏠 Главная</a> › <span>${pageId === 'detailed-progress' ? 'Успеваемость' : 'Посещаемость'}</span>`; document.querySelectorAll('#breadcrumbs a').forEach(a => a.onclick = () => showMain()); }
+        function showMain() { if (mainDash) mainDash.style.display = 'grid'; dynCont.style.display = 'none'; dynCont.innerHTML = ''; navBtns.forEach(btn => btn.dataset.page === 'dashboard' ? btn.classList.add('active-dashboard') : btn.classList.remove('active-dashboard')); updateUI(); renderAllGradesTable(); renderSubjectGradesChart(); document.getElementById('breadcrumbs').innerHTML = `<a data-page="dashboard">🏠 Главная</a>`; document.querySelectorAll('#breadcrumbs a').forEach(a => a.onclick = () => showMain()); }
+        function initNav() { showMain(); navBtns.forEach(btn => { btn.removeEventListener('click', navHandler); btn.addEventListener('click', navHandler); }); }
+        function navHandler(e) { let page = this.dataset.page; page === 'dashboard' ? showMain() : showDetail(page); }
+
+        document.getElementById('regRole').onchange = function() { let isParent = this.value === 'parent'; document.getElementById('parentFields').style.display = isParent ? 'block' : 'none'; document.getElementById('curatorFields').style.display = isParent ? 'none' : 'block'; };
+        document.getElementById('regRole').dispatchEvent(new Event('change'));
+        document.querySelectorAll('.auth-tab').forEach(tab => { tab.onclick = () => { let target = tab.dataset.tab; document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active')); tab.classList.add('active'); document.getElementById('loginForm').classList.toggle('hidden', target !== 'login'); document.getElementById('registerForm').classList.toggle('hidden', target !== 'register'); }; });
+
+        function validateEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+        function validateRussianName(name) { return /^[А-Яа-я\s]+$/.test(name); }
+
+        document.getElementById('doRegisterBtn').onclick = () => {
+            let name = document.getElementById('regName').value.trim(), email = document.getElementById('regEmail').value.trim(), role = document.getElementById('regRole').value, pwd = document.getElementById('regPassword').value, regError = document.getElementById('regError');
+            if (!name || !email || !pwd) { regError.innerText = 'Заполните все поля'; return; }
+            if (pwd.length < 6) { regError.innerText = 'Пароль должен быть минимум 6 символов'; return; }
+            if (!validateEmail(email)) { regError.innerText = 'Введите корректный email'; return; }
+            if (!validateRussianName(name)) { regError.innerText = 'Имя должно содержать только русские буквы'; return; }
+            if (users.find(u => u.email === email)) { regError.innerText = 'Пользователь с таким email уже существует'; return; }
+            if (role === 'parent') {
+                let childName = document.getElementById('regChildName').value.trim(), groupNum = document.getElementById('regGroupNumber').value.trim();
+                if (!childName) { regError.innerText = 'Укажите ФИО студента'; return; }
+                if (!validateRussianName(childName)) { regError.innerText = 'ФИО студента должно содержать только русские буквы'; return; }
+                if (!groupNum) { regError.innerText = 'Укажите номер группы студента'; return; }
+                let existing = students.find(s => s.name === childName);
+                if (!existing) { students.push({ id: `s${Date.now()}`, name: childName, group: groupNum, parentEmail: email, parentName: name, grades: {}, absences: [] }); }
+                else if (existing.parentEmail && existing.parentEmail !== email) { regError.innerText = 'Этот студент уже привязан к другому родителю'; return; }
+                else { existing.parentEmail = email; existing.parentName = name; existing.group = groupNum; }
+            } else if (role === 'curator') { let curatorGroup = document.getElementById('regCuratorGroup').value.trim(); if (!curatorGroup) { regError.innerText = 'Укажите номер вашей группы'; return; } curatorGroups[email] = curatorGroup; }
+            users.push({ id: `u${Date.now()}`, name, email, password: pwd, role }); saveAll();
+            alert('Регистрация успешна! Теперь войдите в аккаунт.');
+            document.querySelector('.auth-tab[data-tab="login"]').click(); document.getElementById('loginEmail').value = email; document.getElementById('loginPassword').value = '';
+        };
+
+        document.getElementById('doLoginBtn').onclick = () => {
+            let email = document.getElementById('loginEmail').value.trim(), pwd = document.getElementById('loginPassword').value, user = users.find(u => u.email === email && u.password === pwd);
+            if (!user) { document.getElementById('loginError').innerText = 'Неверный email или пароль'; return; }
+            setCurrentUser({ id: user.id, name: user.name, email: user.email, role: user.role });
+            if (user.role === 'parent') { let s = getStudentForParent(user.email); if (s) { selectedStudentId = s.id; selectedChatStudentId = s.id; selectedGradeStudentId = s.id; } }
+            else if (user.role === 'curator') { let curatorGroup = curatorGroups[user.email] || ""; let filtered = students.filter(s => s.group === curatorGroup); if (filtered.length > 0) { selectedStudentId = filtered[0].id; selectedChatStudentId = filtered[0].id; selectedGradeStudentId = filtered[0].id; } }
+            updateCurrentDate();
+            showDashboard();
+        };
+        
+        document.getElementById('logoutBtnMain').onclick = () => { clearCurrentUser(); showAuth(); };
+
+        function showDashboard() {
+            if (currentUser) {
+                document.getElementById('userNameSpan').innerText = currentUser.name;
+                document.getElementById('userAvatar').innerHTML = userAvatars[currentUser.email] || "🌸";
+                let badge = document.getElementById('userRoleBadge'); badge.innerText = currentUser.role === 'parent' ? 'Родитель' : 'Куратор'; badge.className = `user-role-badge ${currentUser.role === 'parent' ? 'parent' : 'curator'}`;
+                if (currentUser.role === 'curator') { document.getElementById('curatorPanel').style.display = 'block'; document.getElementById('usersManagementBlock').style.display = 'block'; showCuratorGroupUI(); showStudentsList(); renderUsersTable(); initCuratorControls(); updateStudentSelect(); updateFilterSelect(); }
+                else { document.getElementById('curatorPanel').style.display = 'none'; document.getElementById('usersManagementBlock').style.display = 'none'; document.getElementById('curatorGroupBlock').style.display = 'none'; document.getElementById('studentsListContainer').style.display = 'none'; document.getElementById('chatsListContainer').style.display = 'none'; }
+                document.getElementById('authBlock').style.display = 'none'; document.getElementById('dashboardBlock').classList.add('active'); document.getElementById('dashboardBlock').style.display = 'block';
+                updateCurrentDate();
+                updateUI(); initChat(); initNav(); renderAllGradesTable(); renderSubjectGradesChart();
+            } else showAuth();
+        }
+        
+        function showAuth() { document.getElementById('authBlock').style.display = 'block'; document.getElementById('dashboardBlock').classList.remove('active'); document.getElementById('dashboardBlock').style.display = 'none'; }
+        
+        // Устанавливаем сегодняшнюю дату при загрузке
+        updateCurrentDate();
         saveAll();
-        renderCurator();
-    } else alert('Группа уже есть или поле пусто');
-}
-
-function removeGroup(group) {
-    curatorGroups[currentUser.email] = curatorGroups[currentUser.email].filter(g => g !== group);
-    saveAll();
-    renderCurator();
-}
-
-function addSubject() {
-    const group = document.getElementById('groupForSubject').value;
-    const newSubj = document.getElementById('newSubject').value.trim();
-    if (group && newSubj && !groupSubjects[group].includes(newSubj)) {
-        groupSubjects[group].push(newSubj);
-        saveAll();
-        renderCurator();
-        document.getElementById('newSubject').value = '';
-    } else alert('Выберите группу и введите предмет');
-}
-
-// ========== НАВИГАЦИЯ ==========
-function showMain() {
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-    if (currentUser.role === 'parent') renderParent();
-    else renderCurator();
-}
-
-function showGrades() {
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-    const student = getStudentById(selectedStudentId);
-    if (!student) { alert('Нет студента'); return; }
-    const subjects = getSubjects(student.group);
-    let rows = '';
-    for (let s of subjects) {
-        const grades = student.grades?.[s] || [];
-        let sum = 0, cnt = 0;
-        for (let g of grades) { sum += g.value * (g.weight||1); cnt += (g.weight||1); }
-        const avg = cnt ? (sum/cnt).toFixed(1) : '—';
-        rows += `<tr><td>${s}</td><td>${avg}</td><td>${grades.length ? grades[grades.length-1].value : '—'}</td></tr>`;
-    }
-    document.getElementById('mainContent').innerHTML = `<div class="card"><div class="card-title">📖 Успеваемость: ${student.name}</div><table><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-}
-
-function showAttendance() {
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-    const student = getStudentById(selectedStudentId);
-    if (!student) { alert('Нет студента'); return; }
-    let list = '';
-    (student.absences || []).slice().reverse().forEach(a => { list += `<div style="padding:10px;border-bottom:1px solid #ffe0f0">📅 ${a.date} — ${a.type}</div>`; });
-    document.getElementById('mainContent').innerHTML = `<div class="card"><div class="card-title">📅 Посещаемость: ${student.name}</div>${list || '<div style="padding:20px;text-align:center">✨ Нет пропусков</div>'}</div>`;
-}
-
-// ========== ЗАПУСК ==========
-const saved = localStorage.getItem('currentUser');
-if (saved) {
-    currentUser = JSON.parse(saved);
-    showDashboard();
-}
-</script>
+        if (getCurrentUser()) showDashboard();
+        else showAuth();
+    </script>
 </body>
 </html>
