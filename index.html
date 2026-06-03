@@ -236,18 +236,17 @@
                 <button class="auth-tab" data-tab="register">✨ Регистрация</button>
             </div>
             <div id="loginForm" class="auth-form">
-                <input type="email" id="loginEmail" class="auth-input" placeholder="Email" value="parent@mail.com">
-                <input type="password" id="loginPassword" class="auth-input" placeholder="Пароль" value="123456">
+                <input type="email" id="loginEmail" class="auth-input" placeholder="Email">
+                <input type="password" id="loginPassword" class="auth-input" placeholder="Пароль">
                 <button id="doLoginBtn" class="auth-btn">🌟 Войти</button>
                 <div id="loginError" class="auth-error"></div>
-                <div style="font-size: 0.8rem; text-align: center; margin-top: 10px; color: #c27096;">Тестовые: parent@mail.com / 123456 | curator@college.com / 123456</div>
             </div>
             <div id="registerForm" class="auth-form hidden">
                 <input type="text" id="regName" class="auth-input" placeholder="Имя и фамилия (только русские буквы)">
                 <input type="email" id="regEmail" class="auth-input" placeholder="Email">
                 <select id="regRole" class="auth-select"><option value="parent">👨‍👩‍👧 Родитель</option><option value="curator">📚 Куратор</option></select>
                 <div id="parentFields"><input type="text" id="regChildName" class="auth-input" placeholder="ФИО студента (только русские буквы)"><input type="text" id="regGroupNumber" class="auth-input" placeholder="Номер группы (например, П-201)"></div>
-                <div id="curatorFields" style="display: none;"><input type="text" id="regCuratorGroup" class="auth-input" placeholder="Номер вашей группы"></div>
+                <div id="curatorFields" style="display: none;"><input type="text" id="regCuratorGroup" class="auth-input" placeholder="Номер вашей группы (необязательно)"></div>
                 <input type="password" id="regPassword" class="auth-input" placeholder="Пароль (мин. 6 символов)">
                 <button id="doRegisterBtn" class="auth-btn">✨ Зарегистрироваться</button>
                 <div id="regError" class="auth-error"></div>
@@ -399,27 +398,13 @@
             curatorSubjects = JSON.parse(localStorage.getItem('curatorSubjects')) || {};
             userAvatars = JSON.parse(localStorage.getItem('userAvatars')) || {};
         } else {
-            // Создаём тестовые данные
-            const curatorId = `u${Date.now()}`;
-            const parentId = `u${Date.now() + 1}`;
-            users = [
-                { id: curatorId, name: "Анна Куратор", email: "curator@college.com", password: "123456", role: "curator" },
-                { id: parentId, name: "Елена Родитель", email: "parent@mail.com", password: "123456", role: "parent" }
-            ];
-            const studentId = `s${Date.now()}`;
-            const grades = {};
-            for (let subj of BASE_SUBJECTS) {
-                grades[subj] = [
-                    { value: 5, date: "2026-05-10", comment: "Контрольная работа", weight: 2 },
-                    { value: 4, date: "2026-05-15", comment: "Ответ у доски", weight: 1 },
-                    { value: 5, date: "2026-05-20", comment: "Домашняя работа", weight: 1 }
-                ];
-            }
-            students = [{ id: studentId, name: "Иван Петров", group: "П-201", parentEmail: "parent@mail.com", parentName: "Елена Родитель", grades: grades, absences: [{ date: "2026-05-12", type: "болезнь" }, { date: "2026-05-14", type: "опоздание" }] }];
-            curatorGroups = { "curator@college.com": ["П-201"] };
-            curatorSubjects = { "curator@college.com": [...BASE_SUBJECTS] };
-            userAvatars = {};
+            // Пустая база данных - без тестовых пользователей
+            students = [];
+            users = [];
             chatMessages = [];
+            curatorGroups = {};
+            curatorSubjects = {};
+            userAvatars = {};
             saveAll();
         }
     }
