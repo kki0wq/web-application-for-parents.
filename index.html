@@ -88,10 +88,21 @@
         .avatar-emoji.selected { border-color: var(--primary); background: #ffe0f0; }
         .save-profile-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; width: 100%; margin-top: 15px; }
 
-        .curator-group-info { background: rgba(255,240,248,0.9); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 2px solid #ffd9ec; }
-        .curator-group-input { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-top: 15px; }
-        .curator-group-input input { padding: 14px 22px; border: 2px solid #ffcce0; border-radius: 60px; flex: 1; font-family: inherit; background: rgba(255,255,255,0.9); }
-        .curator-group-input button { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 14px 28px; font-weight: 700; cursor: pointer; }
+        /* Панель управления группами куратора */
+        .curator-groups-manager { background: rgba(255,240,248,0.9); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 2px solid #ffd9ec; }
+        .curator-groups-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+        .group-tag { background: linear-gradient(135deg, #ffe0f0, #ffd4e8); padding: 6px 14px; border-radius: 40px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 8px; }
+        .remove-group-btn { background: none; border: none; cursor: pointer; color: var(--warning); font-size: 1rem; }
+        .add-group-input { display: flex; gap: 10px; margin-top: 15px; }
+        .add-group-input input { flex: 1; padding: 10px 16px; border: 2px solid #ffcce0; border-radius: 60px; font-family: inherit; }
+        
+        /* Управление предметами куратора */
+        .subjects-manager { background: rgba(255,240,248,0.9); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 2px solid #ffd9ec; }
+        .curator-subjects-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+        .subject-tag { background: linear-gradient(135deg, #e0f0ff, #cce4ff); padding: 6px 14px; border-radius: 40px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 8px; }
+        .remove-subject-btn { background: none; border: none; cursor: pointer; color: var(--warning); font-size: 1rem; }
+        .add-subject-input { display: flex; gap: 10px; margin-top: 15px; }
+        .add-subject-input input { flex: 1; padding: 10px 16px; border: 2px solid #ffcce0; border-radius: 60px; font-family: inherit; }
 
         .users-management { background: rgba(255,255,255,0.9); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 1px solid var(--border); }
         .users-table { width: 100%; border-collapse: collapse; margin-top: 18px; overflow-x: auto; display: block; }
@@ -247,10 +258,29 @@
                 <div class="user-info"><div class="user-avatar" id="userAvatar" onclick="openProfileModal()">🌸</div><span class="user-greeting">Привет, <span id="userNameSpan"></span>!</span><span id="userRoleBadge" class="user-role-badge"></span><button id="logoutBtnMain" class="logout-btn">🚪 Выйти</button></div>
             </div>
 
-            <div id="curatorGroupBlock" class="curator-group-info" style="display: none;"><div style="font-weight: 700;">📚 Моя группа куратора</div><div class="curator-group-input"><input type="text" id="curatorGroupInput" placeholder="Номер группы"><button id="setCuratorGroupBtn">✅ Установить группу</button></div><div id="currentGroupDisplay" style="margin-top: 10px;"></div></div>
+            <!-- Управление группами куратора -->
+            <div id="curatorGroupsManager" class="curator-groups-manager" style="display: none;">
+                <div style="font-weight: 700; margin-bottom: 10px;">📚 Мои группы</div>
+                <div id="curatorGroupsList" class="curator-groups-list"></div>
+                <div class="add-group-input">
+                    <input type="text" id="newGroupName" placeholder="Название новой группы">
+                    <button id="addGroupBtn" class="curator-btn">➕ Добавить группу</button>
+                </div>
+            </div>
+
+            <!-- Управление предметами куратора -->
+            <div id="subjectsManager" class="subjects-manager" style="display: none;">
+                <div style="font-weight: 700; margin-bottom: 10px;">📚 Предметы моих групп</div>
+                <div id="curatorSubjectsList" class="curator-subjects-list"></div>
+                <div class="add-subject-input">
+                    <input type="text" id="newSubjectName" placeholder="Название нового предмета">
+                    <button id="addSubjectBtn" class="curator-btn">➕ Добавить предмет</button>
+                </div>
+            </div>
+
             <div id="usersManagementBlock" class="users-management" style="display: none;"><div style="font-weight: 700;">👥 Управление родителями</div><div id="usersTableContainer"></div></div>
             <div id="chatsListContainer" class="chats-list" style="display: none;"><div style="font-weight: 700; margin-bottom: 10px;">💬 Чаты с родителями</div><div id="chatsGrid" class="chats-grid"></div></div>
-            <div id="studentsListContainer" class="students-list" style="display: none;"><div style="font-weight: 700; margin-bottom: 10px;">👨‍🎓 Студенты вашей группы</div><div id="studentsGrid" class="students-grid"></div></div>
+            <div id="studentsListContainer" class="students-list" style="display: none;"><div style="font-weight: 700; margin-bottom: 10px;">👨‍🎓 Студенты ваших групп</div><div id="studentsGrid" class="students-grid"></div></div>
 
             <div id="studentStatsBlock">
                 <div id="currentStudentInfo" style="background: linear-gradient(135deg, rgba(255,240,248,0.9), rgba(255,232,244,0.9)); border-radius: 40px; padding: 16px 24px; margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
@@ -262,7 +292,7 @@
                     <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-value" id="subjectsCountStat">15</div><div class="stat-label">Предметов</div></div>
                 </div>
                 
-                <!-- Таблица всех оценок -->
+                <!-- Таблица всех оценок с фильтром по предметам -->
                 <div class="all-grades-section">
                     <div class="section-title">📋 История всех оценок</div>
                     <div class="filter-bar">
@@ -326,37 +356,35 @@
     </div>
 
     <script>
-        // Функция для обновления даты (сегодняшнее число)
+        // БАЗОВЫЕ ПРЕДМЕТЫ (без музыки и ИЗО)
+        const BASE_SUBJECTS = ["Математика","Русский язык","Литература","Физика","Химия","Биология","История","Обществознание","Английский","Информатика","География","Физкультура","Технология"];
+        
         function updateCurrentDate() {
             const dateElement = document.getElementById('currentDateBadge');
             if (dateElement) {
                 const today = new Date();
                 const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
                 const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-                const day = today.getDate();
-                const month = months[today.getMonth()];
-                const weekday = days[today.getDay()];
-                dateElement.innerHTML = `📅 ${day} ${month} • ${weekday}`;
+                dateElement.innerHTML = `📅 ${today.getDate()} ${months[today.getMonth()]} • ${days[today.getDay()]}`;
             }
         }
         
-        const ALL_SUBJECTS = ["Математика","Русский язык","Литература","Физика","Химия","Биология","История","Обществознание","Английский","Информатика","География","Физкультура","ИЗО","Музыка","Технология"];
-        const AVATARS = ["🌸", "😊", "🌟", "⭐", "💖", "🌺", "🍎", "📚", "🎓", "🐱", "🐶", "🦊", "🐼", "🦄", "🐨"];
-        
+        // Данные
         let students = JSON.parse(localStorage.getItem('students')) || [];
         let users = JSON.parse(localStorage.getItem('users')) || [];
         let chatMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
         let curatorGroups = JSON.parse(localStorage.getItem('curatorGroups')) || {};
+        let curatorSubjects = JSON.parse(localStorage.getItem('curatorSubjects')) || {};
         let userAvatars = JSON.parse(localStorage.getItem('userAvatars')) || {};
 
-        // Создаём тестовые данные если их нет
+        // Создаём тестовые данные
         if (users.length === 0) {
             users.push({ id: `u${Date.now()}`, name: "Анна Куратор", email: "curator@college.com", password: "123456", role: "curator" });
             users.push({ id: `u${Date.now() + 1}`, name: "Елена Родитель", email: "parent@mail.com", password: "123456", role: "parent" });
             
             const studentId = `s${Date.now()}`;
             const grades = {};
-            for (let subj of ALL_SUBJECTS) {
+            for (let subj of BASE_SUBJECTS) {
                 grades[subj] = [
                     { value: 5, date: "2026-05-10", comment: "Контрольная работа", weight: 2 },
                     { value: 4, date: "2026-05-15", comment: "Ответ у доски", weight: 1 },
@@ -364,7 +392,8 @@
                 ];
             }
             students.push({ id: studentId, name: "Иван Петров", group: "П-201", parentEmail: "parent@mail.com", parentName: "Елена Родитель", grades: grades, absences: [{ date: "2026-05-12", type: "болезнь" }, { date: "2026-05-14", type: "опоздание" }] });
-            curatorGroups["curator@college.com"] = "П-201";
+            curatorGroups["curator@college.com"] = ["П-201"];
+            curatorSubjects["curator@college.com"] = [...BASE_SUBJECTS];
             saveAll();
         }
 
@@ -373,6 +402,7 @@
             localStorage.setItem('users', JSON.stringify(users));
             localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
             localStorage.setItem('curatorGroups', JSON.stringify(curatorGroups));
+            localStorage.setItem('curatorSubjects', JSON.stringify(curatorSubjects));
             localStorage.setItem('userAvatars', JSON.stringify(userAvatars));
         }
 
@@ -387,6 +417,7 @@
         function clearCurrentUser() { localStorage.removeItem('currentUser'); currentUser = null; }
         function getStudentById(id) { return students.find(s => s.id === id); }
         function getStudentForParent(email) { return students.find(s => s.parentEmail === email); }
+        function getCuratorSubjectList(email) { return curatorSubjects[email] || [...BASE_SUBJECTS]; }
 
         function avgGradeWeighted(student) { 
             if (!student?.grades) return "—"; 
@@ -437,7 +468,7 @@
             if (!container) return;
             if (grades.length === 0) { container.innerHTML = ''; if (noMsg) noMsg.style.display = 'block'; return; }
             if (noMsg) noMsg.style.display = 'none';
-            container.innerHTML = `<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr><td style="white-space: nowrap;">${g.date || "—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight === 2 ? 'Контрольная (×2)' : 'Обычная'}</td><td>${g.comment || "—"}</td></tr>`).join('')}</tbody></table>`;
+            container.innerHTML = `<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr><td style="white-space: nowrap;">${g.date || "—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight === 2 ? 'Контрольная (×2)' : 'Обычная'}</td><td>${g.comment || "—"}</td></tr>`).join('')}</tbody></td>`;
         }
 
         function renderGradeDistribution(student) {
@@ -534,7 +565,8 @@
                 document.getElementById('profileGroupField').style.display = 'none'; 
             }
             const avatarOptions = document.getElementById('avatarOptions');
-            avatarOptions.innerHTML = AVATARS.map(a => `<div class="avatar-emoji ${userAvatars[currentUser.email] === a ? 'selected' : ''}" onclick="selectAvatar('${a}')">${a}</div>`).join('');
+            const avatars = ["🌸", "😊", "🌟", "⭐", "💖", "🌺", "🍎", "📚", "🎓", "🐱", "🐶", "🦊", "🐼", "🦄", "🐨"];
+            avatarOptions.innerHTML = avatars.map(a => `<div class="avatar-emoji ${userAvatars[currentUser.email] === a ? 'selected' : ''}" onclick="selectAvatar('${a}')">${a}</div>`).join('');
             document.getElementById('profileModal').classList.add('active');
         }
         
@@ -576,16 +608,92 @@
         }
 
         function updateFilterSelect() {
+            let subjectList = currentUser?.role === 'curator' ? getCuratorSubjectList(currentUser.email) : BASE_SUBJECTS;
             let select = document.getElementById('filterSubject');
-            if (select) select.innerHTML = '<option value="">Все предметы</option>' + ALL_SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join('');
+            if (select) select.innerHTML = '<option value="">Все предметы</option>' + subjectList.map(s => `<option value="${s}">${s}</option>`).join('');
             let chartSelect = document.getElementById('subjectForChart');
-            if (chartSelect) { chartSelect.innerHTML = '<option value="">-- Выберите предмет --</option>' + ALL_SUBJECTS.map(s => `<option value="${s}">${s}</option>`).join(''); chartSelect.onchange = () => renderSubjectGradesChart(); }
+            if (chartSelect) { chartSelect.innerHTML = '<option value="">-- Выберите предмет --</option>' + subjectList.map(s => `<option value="${s}">${s}</option>`).join(''); chartSelect.onchange = () => renderSubjectGradesChart(); }
+            let subjectSelect = document.getElementById('subjectSelect');
+            if (subjectSelect) subjectSelect.innerHTML = subjectList.map(s => `<option value="${s}">📚 ${s}</option>`).join('');
         }
+
+        function renderCuratorGroupsUI() {
+            if (currentUser?.role !== 'curator') return;
+            let groups = curatorGroups[currentUser.email] || [];
+            let container = document.getElementById('curatorGroupsList');
+            if (container) {
+                container.innerHTML = groups.map(g => `<span class="group-tag">📁 ${g} <button class="remove-group-btn" data-group="${g}">✖</button></span>`).join('');
+                document.querySelectorAll('.remove-group-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        let groupToRemove = btn.dataset.group;
+                        let groupsList = curatorGroups[currentUser.email] || [];
+                        curatorGroups[currentUser.email] = groupsList.filter(g => g !== groupToRemove);
+                        saveAll();
+                        renderCuratorGroupsUI();
+                        showStudentsList();
+                        updateUI();
+                    };
+                });
+            }
+        }
+
+        function renderCuratorSubjectsUI() {
+            if (currentUser?.role !== 'curator') return;
+            let subjects = curatorSubjects[currentUser.email] || [...BASE_SUBJECTS];
+            let container = document.getElementById('curatorSubjectsList');
+            if (container) {
+                container.innerHTML = subjects.map(s => `<span class="subject-tag">📚 ${s} <button class="remove-subject-btn" data-subject="${s}">✖</button></span>`).join('');
+                document.querySelectorAll('.remove-subject-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        let subjectToRemove = btn.dataset.subject;
+                        let subjectsList = curatorSubjects[currentUser.email] || [...BASE_SUBJECTS];
+                        curatorSubjects[currentUser.email] = subjectsList.filter(s => s !== subjectToRemove);
+                        saveAll();
+                        renderCuratorSubjectsUI();
+                        updateFilterSelect();
+                        updateUI();
+                    };
+                });
+            }
+        }
+
+        document.getElementById('addGroupBtn')?.addEventListener('click', () => {
+            let newGroup = document.getElementById('newGroupName').value.trim();
+            if (newGroup && currentUser?.role === 'curator') {
+                let groups = curatorGroups[currentUser.email] || [];
+                if (!groups.includes(newGroup)) {
+                    curatorGroups[currentUser.email] = [...groups, newGroup];
+                    saveAll();
+                    renderCuratorGroupsUI();
+                    showStudentsList();
+                    document.getElementById('newGroupName').value = '';
+                } else {
+                    alert('Такая группа уже есть');
+                }
+            }
+        });
+
+        document.getElementById('addSubjectBtn')?.addEventListener('click', () => {
+            let newSubject = document.getElementById('newSubjectName').value.trim();
+            if (newSubject && currentUser?.role === 'curator') {
+                let subjects = curatorSubjects[currentUser.email] || [...BASE_SUBJECTS];
+                if (!subjects.includes(newSubject)) {
+                    curatorSubjects[currentUser.email] = [...subjects, newSubject];
+                    saveAll();
+                    renderCuratorSubjectsUI();
+                    updateFilterSelect();
+                    updateUI();
+                    document.getElementById('newSubjectName').value = '';
+                } else {
+                    alert('Такой предмет уже есть');
+                }
+            }
+        });
 
         function renderChatsList() {
             if (currentUser?.role !== 'curator') return;
-            let curatorGroup = curatorGroups[currentUser.email] || "";
-            let groupStudents = students.filter(s => s.group === curatorGroup);
+            let curatorGroupsList = curatorGroups[currentUser.email] || [];
+            let groupStudents = students.filter(s => curatorGroupsList.includes(s.group));
             let chatsGrid = document.getElementById('chatsGrid');
             if (!chatsGrid) return;
             if (groupStudents.length === 0) { document.getElementById('chatsListContainer').style.display = 'none'; return; }
@@ -661,8 +769,8 @@
 
         function showStudentsList() {
             if (currentUser?.role !== 'curator') return;
-            let curatorGroup = curatorGroups[currentUser.email] || "";
-            let filtered = students.filter(s => s.group === curatorGroup);
+            let curatorGroupsList = curatorGroups[currentUser.email] || [];
+            let filtered = students.filter(s => curatorGroupsList.includes(s.group));
             document.getElementById('studentsListContainer').style.display = filtered.length > 0 ? 'block' : 'none';
             let grid = document.getElementById('studentsGrid');
             if (grid) grid.innerHTML = filtered.map(s => `<div class="student-card ${selectedStudentId === s.id ? 'active' : ''}" onclick="window.selectStudent('${s.id}')"><div class="student-avatar">${s.name.charAt(0)}</div><div><strong>${s.name}</strong><br><span style="font-size:0.7rem;">${s.group || "—"}</span></div></div>`).join('');
@@ -707,8 +815,8 @@
                     document.getElementById('noStudentsMessage').style.display = 'block'; 
                 }
             } else if (currentUser.role === 'curator') {
-                let curatorGroup = curatorGroups[currentUser.email] || "";
-                let filtered = students.filter(s => s.group === curatorGroup);
+                let curatorGroupsList = curatorGroups[currentUser.email] || [];
+                let filtered = students.filter(s => curatorGroupsList.includes(s.group));
                 if (filtered.length === 0) { 
                     document.getElementById('studentStatsBlock').style.display = 'none'; 
                     document.getElementById('noStudentsMessage').style.display = 'block'; 
@@ -747,20 +855,18 @@
             document.getElementById('avgScoreStat').innerText = avg;
             document.getElementById('absencesDisplay').innerText = abs;
             document.getElementById('absencesStat').innerText = abs;
-            document.getElementById('subjectsCountStat').innerText = ALL_SUBJECTS.length;
+            document.getElementById('subjectsCountStat').innerText = (curatorSubjects[currentUser?.email] || BASE_SUBJECTS).length;
             document.getElementById('avgProgress').style.width = avgPercent + "%";
             document.getElementById('attendanceProgress').style.width = Math.min(100, 100 - (abs / 30 * 100)) + "%";
             document.getElementById('currentStudentName').innerHTML = student.name;
             document.getElementById('studentGroupBadge').innerHTML = `Группа ${student.group || "—"}`;
-            let sel = document.getElementById('subjectSelect'); 
-            if (sel) { sel.innerHTML = ''; ALL_SUBJECTS.forEach(s => { sel.innerHTML += `<option value="${s}">📚 ${s}</option>`; }); }
         }
 
         function renderUsersTable() {
             let parents = users.filter(u => u.role === 'parent');
             let container = document.getElementById('usersTableContainer');
             if (!container) return;
-            container.innerHTML = `<table class="users-table"><thead><tr><th>Имя</th><th>Email</th><th>Студент</th><th>Группа</th><th></th></tr></thead><tbody>${parents.map(p => { let student = students.find(s => s.parentEmail === p.email); return `<tr><td>${p.name}</td><td>${p.email}</td><td>${student?.name || "—"}</td><td>${student?.group || "—"}</td><td><button class="delete-user-btn" data-email="${p.email}">🗑️</button></td>`; }).join('')}</tbody></table>`;
+            container.innerHTML = `<table class="users-table"><thead><tr><th>Имя</th><th>Email</th><th>Студент</th><th>Группа</th><th></th></tr></thead><tbody>${parents.map(p => { let student = students.find(s => s.parentEmail === p.email); return `<tr><td>${p.name}</td><td>${p.email}</td><td>${student?.name || "—"}</td><td>${student?.group || "—"}</td><td><button class="delete-user-btn" data-email="${p.email}">🗑️</button></td>`; }).join('')}</tbody></tr>`;
             document.querySelectorAll('.delete-user-btn').forEach(btn => { btn.onclick = () => { let email = btn.dataset.email; users = users.filter(u => u.email !== email); saveAll(); renderUsersTable(); alert('Удалено'); }; });
         }
 
@@ -834,37 +940,12 @@
             }
         }
 
-        function showCuratorGroupUI() {
-            if (currentUser?.role !== 'curator') return;
-            document.getElementById('curatorGroupBlock').style.display = 'block';
-            let savedGroup = curatorGroups[currentUser.email] || "";
-            document.getElementById('currentGroupDisplay').innerHTML = savedGroup ? `Текущая группа: <strong>${savedGroup}</strong>` : 'Группа не выбрана';
-            let setBtn = document.getElementById('setCuratorGroupBtn');
-            let newBtn = setBtn.cloneNode(true);
-            setBtn.parentNode.replaceChild(newBtn, setBtn);
-            newBtn.onclick = function() { 
-                let newGroup = document.getElementById('curatorGroupInput').value.trim(); 
-                if (newGroup) { 
-                    curatorGroups[currentUser.email] = newGroup; 
-                    saveAll(); 
-                    document.getElementById('currentGroupDisplay').innerHTML = `Текущая группа: <strong>${newGroup}</strong>`; 
-                    let filtered = students.filter(s => s.group === newGroup); 
-                    if (filtered.length > 0) { 
-                        selectedStudentId = filtered[0].id; 
-                        selectedChatStudentId = filtered[0].id; 
-                        selectedGradeStudentId = filtered[0].id; 
-                    } 
-                    updateUI(); 
-                    renderUsersTable(); 
-                } 
-            };
-        }
-
         function getDetailedPage() {
             let student = getStudentById(selectedStudentId);
             if (!student) return '<div class="detail-page">Нет данных</div>';
+            let subjectList = currentUser?.role === 'curator' ? getCuratorSubjectList(currentUser.email) : BASE_SUBJECTS;
             let rows = '';
-            for (let s of ALL_SUBJECTS) {
+            for (let s of subjectList) {
                 let grades = student.grades?.[s] || [];
                 let lastGrade = grades.length > 0 ? grades[grades.length - 1] : null;
                 let totalWeight = 0, sumWeighted = 0;
@@ -879,7 +960,7 @@
                 let lastDate = lastGrade && typeof lastGrade === 'object' ? lastGrade.date : "";
                 rows += `<tr><td style="font-weight:500;">📚 ${s}</td><td>${avg}</td><td><span class="grade-badge">${lastVal}</span>${lastDate ? `<span class="grade-date"> от ${lastDate}</span>` : ''}</td></tr>`;
             }
-            return `<div class="detail-page"><div class="detail-title">📖 Детальная успеваемость: ${student.name}</div><table class="subjects-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></td><button class="back-link" data-back="dashboard">← На главную</button></div>`;
+            return `<div class="detail-page"><div class="detail-title">📖 Детальная успеваемость: ${student.name}</div><table class="subjects-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`;
         }
 
         function getAttendancePage() {
@@ -945,7 +1026,7 @@
                 if (!existing) { students.push({ id: `s${Date.now()}`, name: childName, group: groupNum, parentEmail: email, parentName: name, grades: {}, absences: [] }); }
                 else if (existing.parentEmail && existing.parentEmail !== email) { regError.innerText = 'Этот студент уже привязан к другому родителю'; return; }
                 else { existing.parentEmail = email; existing.parentName = name; existing.group = groupNum; }
-            } else if (role === 'curator') { let curatorGroup = document.getElementById('regCuratorGroup').value.trim(); if (!curatorGroup) { regError.innerText = 'Укажите номер вашей группы'; return; } curatorGroups[email] = curatorGroup; }
+            } else if (role === 'curator') { let curatorGroup = document.getElementById('regCuratorGroup').value.trim(); if (curatorGroup) { curatorGroups[email] = [curatorGroup]; } else { curatorGroups[email] = []; } curatorSubjects[email] = [...BASE_SUBJECTS]; }
             users.push({ id: `u${Date.now()}`, name, email, password: pwd, role }); saveAll();
             alert('Регистрация успешна! Войдите.');
             document.querySelector('.auth-tab[data-tab="login"]').click(); document.getElementById('loginEmail').value = email; document.getElementById('loginPassword').value = '';
@@ -956,7 +1037,13 @@
             if (!user) { document.getElementById('loginError').innerText = 'Неверный email или пароль'; return; }
             setCurrentUser({ id: user.id, name: user.name, email: user.email, role: user.role });
             if (user.role === 'parent') { let s = getStudentForParent(user.email); if (s) { selectedStudentId = s.id; selectedChatStudentId = s.id; selectedGradeStudentId = s.id; } }
-            else if (user.role === 'curator') { let curatorGroup = curatorGroups[user.email] || ""; let filtered = students.filter(s => s.group === curatorGroup); if (filtered.length > 0) { selectedStudentId = filtered[0].id; selectedChatStudentId = filtered[0].id; selectedGradeStudentId = filtered[0].id; } }
+            else if (user.role === 'curator') { 
+                let curatorGroupsList = curatorGroups[user.email] || [];
+                let filtered = students.filter(s => curatorGroupsList.includes(s.group));
+                if (filtered.length > 0) { selectedStudentId = filtered[0].id; selectedChatStudentId = filtered[0].id; selectedGradeStudentId = filtered[0].id; }
+                if (!curatorSubjects[user.email]) curatorSubjects[user.email] = [...BASE_SUBJECTS];
+                saveAll();
+            }
             updateCurrentDate();
             showDashboard();
         };
@@ -973,7 +1060,10 @@
                 if (currentUser.role === 'curator') { 
                     document.getElementById('curatorPanel').style.display = 'block'; 
                     document.getElementById('usersManagementBlock').style.display = 'block'; 
-                    showCuratorGroupUI(); 
+                    document.getElementById('curatorGroupsManager').style.display = 'block';
+                    document.getElementById('subjectsManager').style.display = 'block';
+                    renderCuratorGroupsUI();
+                    renderCuratorSubjectsUI();
                     showStudentsList(); 
                     renderUsersTable(); 
                     initCuratorControls(); 
@@ -981,7 +1071,8 @@
                 } else { 
                     document.getElementById('curatorPanel').style.display = 'none'; 
                     document.getElementById('usersManagementBlock').style.display = 'none'; 
-                    document.getElementById('curatorGroupBlock').style.display = 'none'; 
+                    document.getElementById('curatorGroupsManager').style.display = 'none';
+                    document.getElementById('subjectsManager').style.display = 'none';
                     document.getElementById('studentsListContainer').style.display = 'none'; 
                     document.getElementById('chatsListContainer').style.display = 'none'; 
                 }
@@ -999,7 +1090,6 @@
         
         function showAuth() { document.getElementById('authBlock').style.display = 'block'; document.getElementById('dashboardBlock').classList.remove('active'); document.getElementById('dashboardBlock').style.display = 'none'; }
         
-        // Устанавливаем сегодняшнюю дату при загрузке
         updateCurrentDate();
         saveAll();
         if (getCurrentUser()) showDashboard();
