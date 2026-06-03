@@ -20,13 +20,14 @@
             padding: 30px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
-        h1, h2 { color: #c45a8c; margin-bottom: 20px; }
+        h1, h2 { color: #c45a8c; margin-bottom: 20px; text-align:center; }
         input, select, button {
             padding: 12px 16px;
             margin: 8px 0;
             border: 2px solid #ffe0f0;
             border-radius: 40px;
             font-size: 14px;
+            width: 100%;
         }
         button {
             background: linear-gradient(135deg, #e87fb0, #f0a0c5);
@@ -35,13 +36,14 @@
             cursor: pointer;
             border: none;
         }
-        button:hover { opacity: 0.9; transform: scale(0.98); }
+        button:hover { opacity: 0.9; }
         .tabs { display: flex; gap: 12px; margin-bottom: 25px; }
         .tab { flex: 1; text-align: center; padding: 12px; background: #fff0f8; border-radius: 40px; cursor: pointer; }
         .tab.active { background: linear-gradient(135deg, #e87fb0, #f0a0c5); color: white; }
         .hidden { display: none; }
         .error { color: #e06b9e; text-align: center; margin-top: 10px; }
         .flex { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .flex input, .flex select, .flex button { width: auto; flex: 1; }
         .dashboard-header {
             display: flex;
             justify-content: space-between;
@@ -72,26 +74,30 @@
         th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ffe0f0; }
         .grade-badge { background: #ffe0f0; padding: 4px 12px; border-radius: 40px; display: inline-block; }
         .filter-bar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        .group-tag { background: #ffe0f0; padding: 8px 16px; border-radius: 40px; display: inline-block; margin: 4px; }
-        .student-card { background: #fff5f9; padding: 8px 16px; border-radius: 40px; display: inline-block; margin: 4px; cursor: pointer; }
+        .group-tag { background: #ffe0f0; padding: 8px 16px; border-radius: 40px; display: inline-block; margin: 4px; font-size: 18px; font-weight: bold; }
+        .student-card { background: #fff5f9; padding: 10px 20px; border-radius: 40px; display: inline-block; margin: 5px; cursor: pointer; transition: all 0.2s; }
+        .student-card:hover { background: #ffe0f0; transform: scale(1.02); }
         .student-card.active { background: linear-gradient(135deg, #e87fb0, #f0a0c5); color: white; }
         .chat-box { background: white; border-radius: 28px; padding: 15px; margin-top: 15px; }
-        .chat-messages { height: 250px; overflow-y: auto; margin-bottom: 12px; }
-        .message { padding: 8px 14px; margin: 6px; border-radius: 20px; max-width: 75%; }
+        .chat-messages { height: 250px; overflow-y: auto; margin-bottom: 12px; border: 1px solid #ffe0f0; border-radius: 20px; padding: 10px; }
+        .message { padding: 8px 14px; margin: 6px; border-radius: 20px; max-width: 75%; word-wrap: break-word; }
         .message.parent { background: linear-gradient(135deg, #e87fb0, #f0a0c5); color: white; margin-left: auto; }
         .message.curator { background: #f0f0f0; color: #333; }
         .nav-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 25px; }
-        .nav-btn { padding: 10px 24px; background: #fff0f8; color: #c45a8c; width: auto; }
+        .nav-btn { padding: 10px 24px; background: #fff0f8; color: #c45a8c; width: auto; cursor: pointer; border-radius: 40px; text-align: center; }
         .nav-btn.active { background: linear-gradient(135deg, #e87fb0, #f0a0c5); color: white; }
         .btn-sm { width: auto; padding: 8px 18px; }
         hr { margin: 15px 0; border-color: #ffe0f0; }
+        .curator-group-set { background: #fff0f8; border-radius: 28px; padding: 15px; margin-bottom: 15px; }
+        .info-text { color: #666; font-size: 13px; margin-top: 5px; }
+        .group-badge { background: #e87fb0; color: white; padding: 5px 15px; border-radius: 40px; display: inline-block; margin-left: 10px; }
     </style>
 </head>
 <body>
 <div class="container" id="app">
     <!-- АВТОРИЗАЦИЯ -->
     <div id="authSection">
-        <h1 style="text-align:center">🌸 Колледж</h1>
+        <h1>🌸 Колледж</h1>
         <div class="tabs">
             <div class="tab active" onclick="switchTab('login')">Вход</div>
             <div class="tab" onclick="switchTab('register')">Регистрация</div>
@@ -106,15 +112,15 @@
             <input type="text" id="regName" placeholder="Имя и фамилия">
             <input type="email" id="regEmail" placeholder="Email">
             <select id="regRole">
-                <option value="parent">Родитель</option>
-                <option value="curator">Куратор</option>
+                <option value="parent">👨‍👩‍👧 Родитель</option>
+                <option value="curator">📚 Куратор</option>
             </select>
             <div id="parentFields">
                 <input type="text" id="regChildName" placeholder="ФИО студента">
-                <input type="text" id="regGroupNumber" placeholder="Группа (П-201)">
+                <input type="text" id="regGroupNumber" placeholder="Группа (например П-201)">
             </div>
             <div id="curatorFields" class="hidden">
-                <input type="text" id="regCuratorGroup" placeholder="Номер вашей группы">
+                <input type="text" id="regCuratorGroup" placeholder="Номер вашей группы (например П-201)">
             </div>
             <input type="password" id="regPassword" placeholder="Пароль (мин 6)">
             <button onclick="doRegister()">✨ Зарегистрироваться</button>
@@ -135,9 +141,9 @@
         </div>
         <div id="mainContent"></div>
         <div class="nav-buttons">
-            <button class="nav-btn active" onclick="showMain()">📋 Главная</button>
-            <button class="nav-btn" onclick="showGrades()">📈 Успеваемость</button>
-            <button class="nav-btn" onclick="showAttendance()">📅 Посещаемость</button>
+            <div class="nav-btn active" onclick="showMain()">📋 Главная</div>
+            <div class="nav-btn" onclick="showGrades()">📈 Успеваемость</div>
+            <div class="nav-btn" onclick="showAttendance()">📅 Посещаемость</div>
         </div>
     </div>
 </div>
@@ -245,9 +251,18 @@ function doRegister() {
         const group = document.getElementById('regGroupNumber').value.trim();
         if (!childName || !group) { err.innerText = 'Заполните данные студента'; return; }
         
+        // Проверяем, есть ли уже такой студент
         const existing = students.find(s => s.name === childName);
         if (!existing) {
-            students.push({ id: 's' + Date.now(), name: childName, group: group, parentEmail: email, parentName: name, grades: {}, absences: [] });
+            students.push({ 
+                id: 's' + Date.now(), 
+                name: childName, 
+                group: group, 
+                parentEmail: email, 
+                parentName: name, 
+                grades: {}, 
+                absences: [] 
+            });
         } else if (existing.parentEmail && existing.parentEmail !== email) {
             err.innerText = 'Этот студент уже привязан к другому родителю';
             return;
@@ -261,9 +276,11 @@ function doRegister() {
         if (!curatorGroup) { err.innerText = 'Укажите номер вашей группы'; return; }
         curatorGroups[email] = curatorGroup;
     }
+    
     users.push({ id: 'u' + Date.now(), name: name, email: email, password: pwd, role: role });
     saveAll();
-    alert('Регистрация успешна! Войдите.');
+    
+    alert('✅ Регистрация успешна! Теперь войдите в аккаунт.');
     document.getElementById('loginEmail').value = email;
     document.getElementById('loginPassword').value = '';
     document.querySelector('.tab').click();
@@ -281,8 +298,8 @@ function showDashboard() {
     document.getElementById('authSection').classList.add('hidden');
     document.getElementById('dashboardSection').classList.remove('hidden');
     document.getElementById('userName').innerText = currentUser.name;
-    document.getElementById('userRole').innerText = currentUser.role === 'parent' ? '👪 Родитель' : '📚 Куратор';
-    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('ru', { day:'numeric', month:'long' });
+    document.getElementById('userRole').innerHTML = currentUser.role === 'parent' ? '👪 Родитель' : '📚 Куратор';
+    document.getElementById('currentDate').innerText = new Date().toLocaleDateString('ru', { day:'numeric', month:'long', year:'numeric' });
     document.getElementById('userAvatar').innerHTML = "🌸";
     
     if (currentUser.role === 'parent') renderParentView();
@@ -293,7 +310,12 @@ function showDashboard() {
 function renderParentView() {
     const student = getStudentForParent(currentUser.email);
     if (!student) {
-        document.getElementById('mainContent').innerHTML = '<div class="card" style="text-align:center">👨‍🎓 Нет привязанного студента</div>';
+        document.getElementById('mainContent').innerHTML = `
+            <div class="card" style="text-align:center">
+                <div style="font-size:48px; margin-bottom:15px;">👨‍🎓</div>
+                <h3>Нет привязанного студента</h3>
+                <p>Обратитесь к куратору, чтобы он добавил вас в систему</p>
+            </div>`;
         return;
     }
     selectedStudentId = student.id;
@@ -301,7 +323,9 @@ function renderParentView() {
     const absences = student.absences?.length || 0;
     
     document.getElementById('mainContent').innerHTML = `
-        <div style="background:#fff0f8;border-radius:40px;padding:15px;margin-bottom:20px">🎓 <strong>${student.name}</strong> | Группа ${student.group}</div>
+        <div style="background:#fff0f8;border-radius:40px;padding:15px;margin-bottom:20px;text-align:center">
+            🎓 <strong>${student.name}</strong> <span style="background:#e87fb0;color:white;padding:4px 12px;border-radius:40px;margin-left:10px;">${student.group}</span>
+        </div>
         <div class="stats">
             <div class="stat-card"><div class="stat-value">${avg}</div><div>Средний балл</div></div>
             <div class="stat-card"><div class="stat-value">${absences}</div><div>Пропуски</div></div>
@@ -310,21 +334,25 @@ function renderParentView() {
         <div class="card">
             <div class="card-title">📋 История оценок</div>
             <div class="filter-bar">
-                <select id="filterSubject"><option value="">Все предметы</option>${BASE_SUBJECTS.map(s => `<option>${s}</option>`).join('')}</select>
-                <input type="date" id="filterFrom" placeholder="С даты">
-                <input type="date" id="filterTo" placeholder="По дату">
-                <button class="btn-sm" onclick="renderGradesTable()">Применить</button>
+                <select id="filterSubject" style="width:auto;flex:1"><option value="">Все предметы</option>${BASE_SUBJECTS.map(s => `<option>${s}</option>`).join('')}</select>
+                <input type="date" id="filterFrom" style="width:auto">
+                <input type="date" id="filterTo" style="width:auto">
+                <button onclick="renderGradesTable()" style="width:auto">🔍 Применить</button>
             </div>
             <div id="gradesList"></div>
         </div>
         <div class="card">
             <div class="card-title">💬 Чат с куратором</div>
             <div id="chatMessages" class="chat-messages"></div>
-            <div class="flex"><input type="text" id="chatInput" placeholder="Сообщение..." style="flex:1"><button onclick="sendParentMessage()">📨 Отправить</button></div>
+            <div class="flex"><input type="text" id="chatInput" placeholder="Сообщение..."><button onclick="sendParentMessage()">📨 Отправить</button></div>
         </div>
     `;
     renderGradesTable();
     renderParentChat();
+    
+    document.getElementById('filterSubject').onchange = () => renderGradesTable();
+    document.getElementById('filterFrom').onchange = () => renderGradesTable();
+    document.getElementById('filterTo').onchange = () => renderGradesTable();
 }
 
 function renderGradesTable() {
@@ -338,14 +366,19 @@ function renderGradesTable() {
     if (from) grades = grades.filter(g => g.date >= from);
     if (to) grades = grades.filter(g => g.date <= to);
     const container = document.getElementById('gradesList');
-    if (!grades.length) { container.innerHTML = '<div style="padding:20px;text-align:center">Нет оценок</div>'; return; }
-    container.innerHTML = `<table><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr><td>${g.date || '—'}</td><td>${g.subject}</td><td><span class="grade-badge">${g.value}</span></td><td>${g.weight === 2 ? 'Контрольная' : 'Обычная'}</td><td>${g.comment || '—'}</td></tr>`).join('')}</tbody></table>`;
+    if (!grades.length) { container.innerHTML = '<div style="padding:20px;text-align:center">📭 Нет оценок</div>'; return; }
+    container.innerHTML = `<table><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr><td style="white-space:nowrap">${g.date || '—'}</td><td>${g.subject}</td><td><span class="grade-badge">${g.value}</span></td><td>${g.weight === 2 ? '📝 Контрольная' : '📝 Обычная'}</td><td>${g.comment || '—'}</td>`).join('')}</tbody></table>`;
 }
 
 function sendParentMessage() {
     const inp = document.getElementById('chatInput');
     if (!inp.value.trim() || !selectedStudentId) return;
-    messages.push({ text: inp.value.trim(), sender: 'parent', time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), studentId: selectedStudentId });
+    messages.push({ 
+        text: inp.value.trim(), 
+        sender: 'parent', 
+        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), 
+        studentId: selectedStudentId 
+    });
     saveAll();
     renderParentChat();
     inp.value = '';
@@ -355,7 +388,7 @@ function renderParentChat() {
     const container = document.getElementById('chatMessages');
     if (!container) return;
     const msgs = messages.filter(m => m.studentId === selectedStudentId);
-    container.innerHTML = msgs.map(m => `<div class="message ${m.sender}">${m.text}<div style="font-size:10px;opacity:0.7">${m.time}</div></div>`).join('');
+    container.innerHTML = msgs.map(m => `<div class="message ${m.sender}"><strong>${m.sender === 'parent' ? 'Вы' : 'Куратор'}:</strong> ${m.text}<div style="font-size:10px;opacity:0.7">${m.time}</div></div>`).join('');
     container.scrollTop = container.scrollHeight;
 }
 
@@ -365,64 +398,71 @@ function renderCuratorView() {
     const myStudents = students.filter(s => s.group === myGroup);
     
     document.getElementById('mainContent').innerHTML = `
-        <div class="card">
+        <div class="curator-group-set">
             <div class="card-title">📚 Моя группа</div>
-            <div class="group-tag">${myGroup || 'Группа не выбрана'}</div>
-            <div class="flex" style="margin-top:12px">
-                <input type="text" id="newGroup" placeholder="Номер группы" value="${myGroup}">
-                <button onclick="setCuratorGroup()" class="btn-sm">✅ Сохранить группу</button>
+            <div class="flex">
+                <input type="text" id="newGroup" placeholder="Номер группы" value="${myGroup}" style="flex:2">
+                <button onclick="setCuratorGroup()" class="btn-sm">✅ Сохранить</button>
             </div>
+            ${myGroup ? `<div class="info-text">Текущая группа: <span class="group-badge">${myGroup}</span></div>` : '<div class="info-text">⚠️ Укажите номер вашей группы, чтобы видеть студентов</div>'}
         </div>
+        
         <div class="card">
-            <div class="card-title">👨‍🎓 Студенты (${myStudents.length})</div>
-            <div id="studentsList">${myStudents.map(s => `<span class="student-card" onclick="selectStudentCurator('${s.id}')">${s.name}</span>`).join('')}</div>
+            <div class="card-title">👨‍🎓 Студенты группы "${myGroup || '?'}" (${myStudents.length})</div>
+            <div id="studentsList">${myStudents.length === 0 ? '<div class="info-text" style="text-align:center;padding:20px">😢 Нет студентов. Попросите родителей зарегистрироваться в вашу группу.</div>' : myStudents.map(s => `<div class="student-card" onclick="selectStudentCurator('${s.id}')">📖 ${s.name} (родитель: ${s.parentName || '?'})</div>`).join('')}</div>
         </div>
+        
         <div class="card">
             <div class="card-title">💬 Чаты с родителями</div>
-            <div id="chatsList">${myStudents.map(s => `<span class="student-card" onclick="openChat('${s.id}')">💬 ${s.name}</span>`).join('')}</div>
+            <div id="chatsList">${myStudents.map(s => `<div class="student-card" onclick="openChat('${s.id}')">💬 ${s.name}</div>`).join('')}</div>
         </div>
+        
         <div id="curatorPanel" class="card hidden">
             <div class="card-title">🔧 Управление оценками</div>
             <div class="flex"><label style="min-width:80px">Предмет:</label><select id="gradeSubject">${BASE_SUBJECTS.map(s => `<option>${s}</option>`).join('')}</select></div>
             <div class="flex"><label>Оценка:</label><select id="gradeValue"><option>5</option><option>4</option><option>3</option><option>2</option></select></div>
-            <div class="flex"><label>Тип:</label><label><input type="radio" name="gradeType" value="normal" checked> Обычная</label><label><input type="radio" name="gradeType" value="control"> Контрольная (×2)</label></div>
+            <div class="flex"><label>Тип:</label><label><input type="radio" name="gradeType" value="normal" checked> Обычная</label><label><input type="radio"name="gradeType" value="control"> Контрольная (×2)</label></div>
             <div class="flex"><label>Дата:</label><input type="date" id="gradeDate"></div>
             <div class="flex"><label>Коммент:</label><input type="text" id="gradeComment" placeholder="Комментарий"></div>
             <button onclick="addCuratorGrade()">➕ Поставить оценку</button>
             <hr>
             <div class="flex"><label>Пропуск:</label><input type="date" id="absenceDate"><select id="absenceType"><option>болезнь</option><option>уважительная</option><option>неуважительная</option></select><button onclick="addCuratorAbsence()">📌 Добавить</button></div>
-            <div id="curatorMsg" class="error" style="margin-top:10px"></div>
+            <div id="curatorMsg" class="error"></div>
         </div>
+        
         <div id="chatBox" class="card hidden">
             <div class="card-title">💬 <span id="chatTitle">Чат</span></div>
             <div id="chatMessagesCurator" class="chat-messages"></div>
-            <div class="flex"><input type="text" id="chatInputCurator" placeholder="Сообщение..." style="flex:1"><button onclick="sendCuratorMessage()">📨 Отправить</button></div>
+            <div class="flex"><input type="text" id="chatInputCurator" placeholder="Сообщение..."><button onclick="sendCuratorMessage()">📨 Отправить</button></div>
         </div>
     `;
 }
 
 function setCuratorGroup() {
     const newGroup = document.getElementById('newGroup').value.trim();
-    if (newGroup) {
-        curatorGroups[currentUser.email] = newGroup;
-        saveAll();
-        renderCuratorView();
-        alert(`Группа "${newGroup}" сохранена`);
+    if (!newGroup) {
+        alert('Введите номер группы');
+        return;
     }
+    curatorGroups[currentUser.email] = newGroup;
+    saveAll();
+    renderCuratorView();
+    alert(`✅ Группа "${newGroup}" сохранена! Теперь вы видите студентов этой группы.`);
 }
 
 function selectStudentCurator(id) {
     selectedStudentId = id;
     document.querySelectorAll('.student-card').forEach(c => c.classList.remove('active'));
-    event.target.classList.add('active');
+    if(event.target) event.target.classList.add('active');
     document.getElementById('curatorPanel').classList.remove('hidden');
     document.getElementById('gradeDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('absenceDate').value = new Date().toISOString().split('T')[0];
 }
 
 function openChat(id) {
     selectedChatId = id;
     const student = getStudentById(id);
-    document.getElementById('chatTitle').innerText = `Чат с родителем ${student?.name || ''}`;
+    document.getElementById('chatTitle').innerHTML = `Чат с родителем ${student?.name || ''}`;
     document.getElementById('chatBox').classList.remove('hidden');
     renderCuratorChat();
 }
@@ -431,21 +471,26 @@ function renderCuratorChat() {
     const container = document.getElementById('chatMessagesCurator');
     if (!container) return;
     const msgs = messages.filter(m => m.studentId === selectedChatId);
-    container.innerHTML = msgs.map(m => `<div class="message ${m.sender}">${m.text}<div style="font-size:10px;opacity:0.7">${m.time}</div></div>`).join('');
+    container.innerHTML = msgs.map(m => `<div class="message ${m.sender}"><strong>${m.sender === 'parent' ? 'Родитель' : 'Вы'}:</strong> ${m.text}<div style="font-size:10px;opacity:0.7">${m.time}</div></div>`).join('');
     container.scrollTop = container.scrollHeight;
 }
 
 function sendCuratorMessage() {
     const inp = document.getElementById('chatInputCurator');
     if (!inp.value.trim() || !selectedChatId) return;
-    messages.push({ text: inp.value.trim(), sender: 'curator', time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), studentId: selectedChatId });
+    messages.push({ 
+        text: inp.value.trim(), 
+        sender: 'curator', 
+        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), 
+        studentId: selectedChatId 
+    });
     saveAll();
     renderCuratorChat();
     inp.value = '';
 }
 
 function addCuratorGrade() {
-    if (!selectedStudentId) { alert('Выберите ученика'); return; }
+    if (!selectedStudentId) { alert('Сначала выберите ученика'); return; }
     const student = getStudentById(selectedStudentId);
     const subject = document.getElementById('gradeSubject').value;
     const value = parseInt(document.getElementById('gradeValue').value);
@@ -459,37 +504,44 @@ function addCuratorGrade() {
     student.grades[subject].push({ value, date, comment, weight });
     saveAll();
     
-    document.getElementById('curatorMsg').innerText = `✅ Оценка ${value} по ${subject} добавлена`;
-    setTimeout(() => document.getElementById('curatorMsg').innerText = '', 2000);
+    const msgDiv = document.getElementById('curatorMsg');
+    msgDiv.style.color = '#2d6a4f';
+    msgDiv.innerText = `✅ Оценка ${value} по ${subject} добавлена студенту ${student.name}`;
+    setTimeout(() => msgDiv.innerText = '', 2000);
     document.getElementById('gradeComment').value = '';
 }
 
 function addCuratorAbsence() {
-    if (!selectedStudentId) { alert('Выберите ученика'); return; }
+    if (!selectedStudentId) { alert('Сначала выберите ученика'); return; }
     const student = getStudentById(selectedStudentId);
     const date = document.getElementById('absenceDate').value || new Date().toISOString().split('T')[0];
     const type = document.getElementById('absenceType').value;
     if (!student.absences) student.absences = [];
-    if (student.absences.find(a => a.date === date)) { alert('Пропуск уже есть'); return; }
+    if (student.absences.find(a => a.date === date)) { 
+        alert('⚠️ Пропуск за эту дату уже есть'); 
+        return; 
+    }
     student.absences.push({ date, type });
     saveAll();
-    document.getElementById('curatorMsg').innerText = `📅 Пропуск за ${date} добавлен`;
-    setTimeout(() => document.getElementById('curatorMsg').innerText = '', 2000);
+    const msgDiv = document.getElementById('curatorMsg');
+    msgDiv.style.color = '#2d6a4f';
+    msgDiv.innerText = `📅 Пропуск за ${date} добавлен студенту ${student.name}`;
+    setTimeout(() => msgDiv.innerText = '', 2000);
 }
 
 // ========== НАВИГАЦИЯ ==========
 function showMain() {
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    if(event.target) event.target.classList.add('active');
     if (currentUser.role === 'parent') renderParentView();
     else renderCuratorView();
 }
 
 function showGrades() {
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    if(event.target) event.target.classList.add('active');
     const student = getStudentById(selectedStudentId);
-    if (!student) { alert('Нет студента'); return; }
+    if (!student) { alert('Нет выбранного студента'); return; }
     
     let rows = '';
     for (let s of BASE_SUBJECTS) {
@@ -497,23 +549,35 @@ function showGrades() {
         let sum = 0, cnt = 0;
         for (let g of grades) { sum += g.value * (g.weight||1); cnt += (g.weight||1); }
         const avg = cnt ? (sum/cnt).toFixed(1) : '—';
-        rows += `<td>${s}</td><td>${avg}</td><td>${grades.length ? grades[grades.length-1].value : '—'}</td></tr>`;
+        const lastGrade = grades.length ? grades[grades.length-1] : null;
+        rows += `<tr><td>📚 ${s}</td><td style="text-align:center">${avg}</td><td style="text-align:center">${lastGrade ? `<span class="grade-badge">${lastGrade.value}</span>` : '—'}</td></tr>`;
     }
-    document.getElementById('mainContent').innerHTML = `<div class="card"><div class="card-title">📖 Успеваемость: ${student.name}</div><table><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    document.getElementById('mainContent').innerHTML = `
+        <div class="card">
+            <div class="card-title">📖 Успеваемость: ${student.name} (${student.group})</div>
+            <table style="width:100%"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table>
+        </div>`;
 }
 
 function showAttendance() {
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    if(event.target) event.target.classList.add('active');
     const student = getStudentById(selectedStudentId);
-    if (!student) { alert('Нет студента'); return; }
+    if (!student) { alert('Нет выбранного студента'); return; }
     let list = '';
-    (student.absences || []).slice().reverse().forEach(a => { list += `<div style="padding:10px;border-bottom:1px solid #ffe0f0">📅 ${a.date} — ${a.type}</div>`; });
-    document.getElementById('mainContent').innerHTML = `<div class="card"><div class="card-title">📅 Посещаемость: ${student.name}</div>${list || '<div style="padding:20px;text-align:center">✨ Нет пропусков</div>'}</div>`;
+    (student.absences || []).slice().reverse().forEach(a => { 
+        const icon = a.type === 'болезнь' ? '🤒' : (a.type === 'уважительная' ? '📋' : '⚠️');
+        list += `<div style="padding:10px;border-bottom:1px solid #ffe0f0">📅 ${a.date} ${icon} ${a.type}</div>`; 
+    });
+    document.getElementById('mainContent').innerHTML = `
+        <div class="card">
+            <div class="card-title">📅 Посещаемость: ${student.name} (${student.group})</div>
+            ${list || '<div style="padding:20px;text-align:center">✨ Нет пропусков</div>'}
+        </div>`;
 }
 
 function openProfile() {
-    alert('👤 ' + currentUser.name + '\n📧 ' + currentUser.email);
+    alert('👤 ' + currentUser.name + '\n📧 ' + currentUser.email + '\n👔 ' + (currentUser.role === 'parent' ? 'Родитель' : 'Куратор'));
 }
 
 // ========== ЗАПУСК ==========
