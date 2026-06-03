@@ -25,7 +25,6 @@
             min-height: 100vh;
         }
         
-        /* Анимации фона */
         .heart { position: fixed; font-size: 20px; opacity: 0.15; animation: floatHeart linear infinite; pointer-events: none; z-index: 0; }
         @keyframes floatHeart { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.2; } 90% { opacity: 0.2; } 100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; } }
         .star-bg { position: fixed; font-size: 16px; opacity: 0.12; animation: twinkle 3s infinite alternate; pointer-events: none; z-index: 0; }
@@ -87,7 +86,7 @@
         
         .curator-group-info { background: rgba(255,240,248,0.9); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 2px solid #ffd9ec; }
         .group-list { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-        .group-item { background: linear-gradient(135deg, #ffe0f0, #ffd4e8); border-radius: 60px; padding: 8px 16px 8px 20px; display: inline-flex; align-items: center; gap: 10px; }
+        .group-item { background: linear-gradient(135deg, #ffe0f0, #ffd4e8); border-radius: 60px; padding: 8px 16px 8px 20px; display: inline-flex; align-items: center; gap: 10px; cursor: pointer; }
         .group-item.active { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; }
         .group-item.active .delete-group-btn { color: white; }
         .delete-group-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); padding: 0 5px; }
@@ -275,8 +274,8 @@
     </div>
 
     <script>
-        // Базовые предметы
-        const DEFAULT_SUBJECTS = ["Математика", "Русский язык", "Литература", "Физика", "Химия", "Биология", "История", "Обществознание", "Английский язык", "Информатика", "География"];
+        // Базовые предметы с физкультурой
+        const DEFAULT_SUBJECTS = ["Математика", "Русский язык", "Литература", "Физика", "Химия", "Биология", "История", "Обществознание", "Английский язык", "Информатика", "География", "Физическая культура"];
         
         let students = JSON.parse(localStorage.getItem('students')) || [];
         let users = JSON.parse(localStorage.getItem('users')) || [];
@@ -291,6 +290,26 @@
         let selectedGradeStudentId = null;
         let currentCuratorActiveGroup = null;
         let subjectGradesChart = null;
+        
+        // Глобальный список всех групп, занятых кураторами (для проверки уникальности)
+        function getAllOccupiedGroups() {
+            let occupied = [];
+            for (let curatorEmail in curatorGroups) {
+                if (curatorGroups[curatorEmail] && Array.isArray(curatorGroups[curatorEmail])) {
+                    occupied.push(...curatorGroups[curatorEmail]);
+                }
+            }
+            return occupied;
+        }
+        
+        function isGroupTakenByOther(groupName, currentCuratorEmail) {
+            for (let curatorEmail in curatorGroups) {
+                if (curatorEmail !== currentCuratorEmail && curatorGroups[curatorEmail] && curatorGroups[curatorEmail].includes(groupName)) {
+                    return true;
+                }
+            }
+            return false;
+        }
         
         function saveAll() {
             localStorage.setItem('students', JSON.stringify(students));
@@ -351,7 +370,7 @@
             const container = document.getElementById('gradesTableContainer');
             if (!container) return;
             if (grades.length === 0) { container.innerHTML = '<div style="padding:40px; text-align:center;">📭 Нет оценок</div>'; return; }
-            container.innerHTML = `<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr><td>${g.date || "—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight === 2 ? '📝 Контрольная (×2)' : '📝 Обычная'}</td><td>${g.comment || "—"}</td></tr>`).join('')}</tbody></table>`;
+            container.innerHTML = `<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g => `<tr><td style="white-space: nowrap;">${g.date || "—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight === 2 ? '📝 Контрольная (×2)' : '📝 Обычная'}</td><td>${g.comment || "—"}</td></tr>`).join('')}</tbody></table>`;
         }
         
         function renderGradeDistribution(student) {
@@ -396,9 +415,13 @@
             let filterSel = document.getElementById('filterSubject');
             let chartSel = document.getElementById('subjectForChart');
             let subjectSel = document.getElementById('subjectSelect');
+            let currentSubject = subjectSel ? subjectSel.value : null;
             if (filterSel) filterSel.innerHTML = '<option value="">Все предметы</option>' + subjects.map(s => `<option value="${s}">${s}</option>`).join('');
             if (chartSel) { chartSel.innerHTML = '<option value="">-- Выберите предмет --</option>' + subjects.map(s => `<option value="${s}">${s}</option>`).join(''); chartSel.onchange = () => renderSubjectGradesChart(); }
-            if (subjectSel) subjectSel.innerHTML = subjects.map(s => `<option value="${s}">📚 ${s}</option>`).join('');
+            if (subjectSel) {
+                subjectSel.innerHTML = subjects.map(s => `<option value="${s}">📚 ${s}</option>`).join('');
+                if (currentSubject && subjects.includes(currentSubject)) subjectSel.value = currentSubject;
+            }
             document.getElementById('subjectsCountStat').innerText = subjects.length;
         }
         
@@ -452,7 +475,6 @@
             chatsGrid.innerHTML = groupStudents.map(st => { let pu = users.find(u => u.email === st.parentEmail); let pn = pu ? pu.name : st.parentName || "Родитель"; let last = chatMessages.filter(m => m.studentId === st.id).slice(-1)[0]; return `<div class="chat-item ${selectedChatStudentId === st.id ? 'active' : ''}" onclick="selectChatStudent('${st.id}')"><div class="chat-avatar" style="width:50px;height:50px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;">${pn.charAt(0)}</div><div><div class="chat-name">${pn}</div><div style="font-size:0.7rem;">${last ? last.text.substring(0,30) : 'Нет сообщений'}</div></div></div>`; }).join('');
         }
         
-        // Отрисовка списка групп с кнопками удаления
         function renderGroupsList() {
             let groups = curatorGroups[currentUser?.email] || [];
             let container = document.getElementById('groupList');
@@ -575,6 +597,7 @@
                     let student = getStudentById(selectedGradeStudentId);
                     if (!student) { msgDiv.style.display = 'block'; msgDiv.innerHTML = '⚠️ Выберите ученика'; setTimeout(()=>msgDiv.style.display='none',2000); return; }
                     let subj = document.getElementById('subjectSelect').value;
+                    if (!subj) { msgDiv.style.display = 'block'; msgDiv.innerHTML = '⚠️ Выберите предмет'; setTimeout(()=>msgDiv.style.display='none',2000); return; }
                     let gradeVal = parseInt(document.getElementById('gradeSelect').value);
                     let date = document.getElementById('gradeDate').value || new Date().toISOString().slice(0,10);
                     let comment = document.getElementById('gradeComment').value.trim();
@@ -608,26 +631,33 @@
             }
         }
         
-        // Добавление группы - одна кнопка
+        // Добавление группы с проверкой уникальности
         document.getElementById('addGroupBtn').onclick = () => {
             let newGroup = document.getElementById('newGroupNameInput').value.trim();
-            if (newGroup && currentUser) {
+            if (!newGroup) { alert('Введите номер группы'); return; }
+            if (currentUser) {
                 if (!curatorGroups[currentUser.email]) curatorGroups[currentUser.email] = [];
-                if (!curatorGroups[currentUser.email].includes(newGroup)) {
-                    curatorGroups[currentUser.email].push(newGroup);
-                    if (!groupSubjects[newGroup]) groupSubjects[newGroup] = [...DEFAULT_SUBJECTS];
-                    saveAll();
-                    renderGroupsList();
-                    currentCuratorActiveGroup = newGroup;
-                    renderGroupsList();
-                    document.getElementById('subjectsArea').style.display = 'block';
-                    fullUpdate();
-                    document.getElementById('newGroupNameInput').value = '';
-                } else alert('Такая группа уже есть');
+                if (curatorGroups[currentUser.email].includes(newGroup)) {
+                    alert('Эта группа уже есть у вас');
+                    return;
+                }
+                if (isGroupTakenByOther(newGroup, currentUser.email)) {
+                    alert(`Группа "${newGroup}" уже принадлежит другому куратору. Вы не можете её добавить.`);
+                    return;
+                }
+                curatorGroups[currentUser.email].push(newGroup);
+                if (!groupSubjects[newGroup]) groupSubjects[newGroup] = [...DEFAULT_SUBJECTS];
+                saveAll();
+                renderGroupsList();
+                currentCuratorActiveGroup = newGroup;
+                renderGroupsList();
+                document.getElementById('subjectsArea').style.display = 'block';
+                fullUpdate();
+                document.getElementById('newGroupNameInput').value = '';
             }
         };
         
-        // Добавление предмета - одна кнопка
+        // Добавление предмета
         document.getElementById('addSubjectBtn').onclick = () => {
             let newSubj = document.getElementById('newSubjectName').value.trim();
             if (newSubj && currentCuratorActiveGroup && !groupSubjects[currentCuratorActiveGroup].includes(newSubj)) {
@@ -642,7 +672,7 @@
         
         // Навигация
         let mainDash = document.getElementById('mainDashboard'), dynCont = document.getElementById('dynamic-page-content'), navBtns = document.querySelectorAll('.nav-btn');
-        function getDetailedPage() { let st = getStudentById(selectedStudentId); if (!st) return '<div>Нет данных</div>'; let subjects = getSubjectsForGroup(st.group); let rows = subjects.map(s => { let grades = st.grades?.[s] || []; let avg = grades.length ? (grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1) : "—"; let last = grades[grades.length-1]; let lastVal = last ? (typeof last==='object'?last.value:last) : "—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td>${avg}</td><td><span class="grade-badge-sm">${lastVal}</span></td>`; }).join(''); return `<div class="detail-page" style="background:rgba(255,255,255,0.95); border-radius:48px; padding:28px;"><div class="card-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard" style="margin-top:30px; background:none; border:none; color:var(--primary); cursor:pointer;">← На главную</button></div>`; }
+        function getDetailedPage() { let st = getStudentById(selectedStudentId); if (!st) return '<div>Нет данных</div>'; let subjects = getSubjectsForGroup(st.group); let rows = subjects.map(s => { let grades = st.grades?.[s] || []; let avg = grades.length ? (grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1) : "—"; let last = grades[grades.length-1]; let lastVal = last ? (typeof last==='object'?last.value:last) : "—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td>${avg}</td><td><span class="grade-badge-sm">${lastVal}</span></td></tr>`; }).join(''); return `<div class="detail-page" style="background:rgba(255,255,255,0.95); border-radius:48px; padding:28px;"><div class="card-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard" style="margin-top:30px; background:none; border:none; color:var(--primary); cursor:pointer;">← На главную</button></div>`; }
         function getAttendancePage() { let st = getStudentById(selectedStudentId); let days = (st?.absences || []).slice().reverse().map(a => `<div style="padding:12px; background:#ffe0f0; border-radius:40px; margin:8px 0;">📅 ${a.date} — ${a.type}</div>`).join(''); return `<div class="detail-page" style="background:rgba(255,255,255,0.95); border-radius:48px; padding:28px;"><div class="card-title">📅 Посещаемость: ${st?.name}</div>${days || '<div style="padding:20px; text-align:center;">✨ Нет пропусков</div>'}<button class="back-link" data-back="dashboard" style="margin-top:30px; background:none; border:none; color:var(--primary); cursor:pointer;">← На главную</button></div>`; }
         function showDetail(pageId) { mainDash.style.display = 'none'; dynCont.innerHTML = pageId === 'detailed-progress' ? getDetailedPage() : getAttendancePage(); dynCont.style.display = 'block'; navBtns.forEach(btn => btn.classList.toggle('active-dashboard', btn.dataset.page === pageId)); document.querySelectorAll('.back-link').forEach(btn => btn.onclick = () => showMain()); }
         function showMain() { mainDash.style.display = 'grid'; dynCont.style.display = 'none'; navBtns.forEach(btn => btn.classList.toggle('active-dashboard', btn.dataset.page === 'dashboard')); fullUpdate(); }
@@ -692,8 +722,14 @@
             } else if (role === 'curator') {
                 let initGroup = document.getElementById('regCuratorGroup').value.trim();
                 if (!curatorGroups[email]) curatorGroups[email] = [];
-                if (initGroup && !curatorGroups[email].includes(initGroup)) curatorGroups[email].push(initGroup);
-                if (initGroup && !groupSubjects[initGroup]) groupSubjects[initGroup] = [...DEFAULT_SUBJECTS];
+                if (initGroup) {
+                    if (isGroupTakenByOther(initGroup, email)) {
+                        err.innerText = `Группа "${initGroup}" уже принадлежит другому куратору`;
+                        return;
+                    }
+                    if (!curatorGroups[email].includes(initGroup)) curatorGroups[email].push(initGroup);
+                    if (!groupSubjects[initGroup]) groupSubjects[initGroup] = [...DEFAULT_SUBJECTS];
+                }
             }
             users.push({ id: `u${Date.now()}`, name, email, password: pwd, role });
             saveAll();
