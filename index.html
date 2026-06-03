@@ -265,36 +265,12 @@
     </div>
 
     <script>
-        // Обновление даты
-        function updateDateBadge() {
-            const badge = document.getElementById('currentDateBadge');
-            if (badge) {
-                const now = new Date();
-                const formatted = now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
-                badge.innerHTML = `📅 ${formatted}`;
-            }
-        }
+        function updateDateBadge() { const badge = document.getElementById('currentDateBadge'); if(badge){ const now = new Date(); badge.innerHTML = `📅 ${now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}`; } }
+        function createFloatingElements() { const container = document.getElementById('floatingBg'); if(!container) return; container.innerHTML = ''; const hearts = ['❤️','💖','💗','💓','💕','💝','🌸','🌷','🌺']; for(let i=0;i<25;i++){ const d=document.createElement('div'); d.className='heart'; d.innerHTML=hearts[Math.floor(Math.random()*hearts.length)]; d.style.left=Math.random()*100+'%'; d.style.fontSize=(15+Math.random()*25)+'px'; d.style.animationDuration=(8+Math.random()*12)+'s'; d.style.animationDelay=(Math.random()*15)+'s'; container.appendChild(d); } const stars=['⭐','🌟','✨','💫','⭐']; for(let i=0;i<30;i++){ const s=document.createElement('div'); s.className='star-bg'; s.innerHTML=stars[Math.floor(Math.random()*stars.length)]; s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%'; s.style.fontSize=(10+Math.random()*20)+'px'; s.style.animationDuration=(2+Math.random()*4)+'s'; s.style.animationDelay=(Math.random()*5)+'s'; container.appendChild(s); } const flowers=['🌸','🌼','🌻','🌺','🌷','🌹','🌸']; for(let i=0;i<15;i++){ const f=document.createElement('div'); f.className='flower-bg'; f.innerHTML=flowers[Math.floor(Math.random()*flowers.length)]; f.style.left=Math.random()*100+'%'; f.style.top=Math.random()*100+'%'; f.style.fontSize=(25+Math.random()*40)+'px'; f.style.animationDuration=(15+Math.random()*20)+'s'; f.style.animationDelay=(Math.random()*10)+'s'; container.appendChild(f); } for(let i=0;i<20;i++){ const b=document.createElement('div'); b.className='bubble'; const size=20+Math.random()*60; b.style.width=size+'px'; b.style.height=size+'px'; b.style.left=Math.random()*100+'%'; b.style.animationDuration=(10+Math.random()*15)+'s'; b.style.animationDelay=(Math.random()*20)+'s'; container.appendChild(b); } for(let i=0;i<50;i++){ const g=document.createElement('div'); g.className='glitter'; g.style.left=Math.random()*100+'%'; g.style.top=Math.random()*100+'%'; g.style.animationDuration=(2+Math.random()*5)+'s'; g.style.animationDelay=(Math.random()*8)+'s'; container.appendChild(g); } }
+        createFloatingElements(); updateDateBadge(); setInterval(updateDateBadge, 60000);
         
-        // Генерация фона
-        function createFloatingElements() {
-            const container = document.getElementById('floatingBg');
-            if (!container) return;
-            container.innerHTML = '';
-            const hearts = ['❤️', '💖', '💗', '💓', '💕', '💝', '🌸', '🌷', '🌺'];
-            for (let i = 0; i < 25; i++) { const d = document.createElement('div'); d.className = 'heart'; d.innerHTML = hearts[Math.floor(Math.random() * hearts.length)]; d.style.left = Math.random() * 100 + '%'; d.style.fontSize = (15 + Math.random() * 25) + 'px'; d.style.animationDuration = (8 + Math.random() * 12) + 's'; d.style.animationDelay = (Math.random() * 15) + 's'; container.appendChild(d); }
-            const stars = ['⭐', '🌟', '✨', '💫', '⭐'];
-            for (let i = 0; i < 30; i++) { const s = document.createElement('div'); s.className = 'star-bg'; s.innerHTML = stars[Math.floor(Math.random() * stars.length)]; s.style.left = Math.random() * 100 + '%'; s.style.top = Math.random() * 100 + '%'; s.style.fontSize = (10 + Math.random() * 20) + 'px'; s.style.animationDuration = (2 + Math.random() * 4) + 's'; s.style.animationDelay = (Math.random() * 5) + 's'; container.appendChild(s); }
-            const flowers = ['🌸', '🌼', '🌻', '🌺', '🌷', '🌹', '🌸'];
-            for (let i = 0; i < 15; i++) { const f = document.createElement('div'); f.className = 'flower-bg'; f.innerHTML = flowers[Math.floor(Math.random() * flowers.length)]; f.style.left = Math.random() * 100 + '%'; f.style.top = Math.random() * 100 + '%'; f.style.fontSize = (25 + Math.random() * 40) + 'px'; f.style.animationDuration = (15 + Math.random() * 20) + 's'; f.style.animationDelay = (Math.random() * 10) + 's'; container.appendChild(f); }
-            for (let i = 0; i < 20; i++) { const b = document.createElement('div'); b.className = 'bubble'; const size = 20 + Math.random() * 60; b.style.width = size + 'px'; b.style.height = size + 'px'; b.style.left = Math.random() * 100 + '%'; b.style.animationDuration = (10 + Math.random() * 15) + 's'; b.style.animationDelay = (Math.random() * 20) + 's'; container.appendChild(b); }
-            for (let i = 0; i < 50; i++) { const g = document.createElement('div'); g.className = 'glitter'; g.style.left = Math.random() * 100 + '%'; g.style.top = Math.random() * 100 + '%'; g.style.animationDuration = (2 + Math.random() * 5) + 's'; g.style.animationDelay = (Math.random() * 8) + 's'; container.appendChild(g); }
-        }
-        createFloatingElements();
-        updateDateBadge();
-        setInterval(updateDateBadge, 60000);
-        
-        // Базовые предметы (без ИЗО, Музыки, Технологии, Физкультуры)
-        const DEFAULT_SUBJECTS = ["Математика", "Русский язык", "Литература", "Физика", "Химия", "Биология", "История", "Обществознание", "Английский язык", "Информатика", "География"];
+        // Базовые предметы (добавили Физическую культуру)
+        const DEFAULT_SUBJECTS = ["Математика", "Русский язык", "Литература", "Физика", "Химия", "Биология", "История", "Обществознание", "Английский язык", "Информатика", "География", "Физическая культура"];
         
         let students = JSON.parse(localStorage.getItem('students')) || [];
         let users = JSON.parse(localStorage.getItem('users')) || [];
@@ -316,6 +292,16 @@
             localStorage.setItem('curatorGroups', JSON.stringify(curatorGroups));
             localStorage.setItem('groupSubjects', JSON.stringify(groupSubjects));
             localStorage.setItem('userAvatars', JSON.stringify(userAvatars));
+        }
+        
+        // Функция проверки, занята ли группа другим куратором
+        function isGroupTakenByAnotherCurator(groupName, currentCuratorEmail) {
+            for (let curatorEmail in curatorGroups) {
+                if (curatorEmail !== currentCuratorEmail && curatorGroups[curatorEmail].includes(groupName)) {
+                    return true;
+                }
+            }
+            return false;
         }
         
         function getSubjectsForGroup(group) { 
@@ -555,6 +541,7 @@
                     let student = getStudentById(selectedGradeStudentId);
                     if (!student) { msgDiv.style.display = 'block'; msgDiv.innerHTML = '⚠️ Сначала выберите ученика'; setTimeout(() => msgDiv.style.display = 'none', 2000); return; }
                     let subj = document.getElementById('subjectSelect').value;
+                    if (!subj) { msgDiv.style.display = 'block'; msgDiv.innerHTML = '⚠️ Выберите предмет'; setTimeout(() => msgDiv.style.display = 'none', 2000); return; }
                     let gradeVal = parseInt(document.getElementById('gradeSelect').value);
                     let date = document.getElementById('gradeDate').value || new Date().toISOString().slice(0,10);
                     let comment = document.getElementById('gradeComment').value.trim();
@@ -585,17 +572,26 @@
             }
         }
         
-        // Добавление групп
+        // Добавление групп с проверкой на занятость
         document.getElementById('confirmAddGroupBtn').onclick = () => {
             let newGroup = document.getElementById('newGroupNameInput').value.trim();
-            if (newGroup && currentUser && !curatorGroups[currentUser.email].includes(newGroup)) {
-                curatorGroups[currentUser.email].push(newGroup);
-                if (!groupSubjects[newGroup]) groupSubjects[newGroup] = [...DEFAULT_SUBJECTS];
-                saveAll();
-                renderCuratorGroupsSelect();
-                currentCuratorActiveGroup = newGroup;
-                fullUpdate();
-                document.getElementById('newGroupNameInput').value = '';
+            if (newGroup && currentUser) {
+                if (isGroupTakenByAnotherCurator(newGroup, currentUser.email)) {
+                    document.getElementById('curatorSuccessMsg').style.display = 'block';
+                    document.getElementById('curatorSuccessMsg').innerHTML = '⚠️ Эта группа уже закреплена за другим куратором!';
+                    setTimeout(() => document.getElementById('curatorSuccessMsg').style.display = 'none', 3000);
+                    return;
+                }
+                if (!curatorGroups[currentUser.email]) curatorGroups[currentUser.email] = [];
+                if (!curatorGroups[currentUser.email].includes(newGroup)) {
+                    curatorGroups[currentUser.email].push(newGroup);
+                    if (!groupSubjects[newGroup]) groupSubjects[newGroup] = [...DEFAULT_SUBJECTS];
+                    saveAll();
+                    renderCuratorGroupsSelect();
+                    currentCuratorActiveGroup = newGroup;
+                    fullUpdate();
+                    document.getElementById('newGroupNameInput').value = '';
+                }
             }
         };
         
@@ -636,6 +632,10 @@
                 else { existing.parentEmail = email; existing.parentName = name; existing.group = groupNum; }
             } else if (role === 'curator') {
                 let curatorGroup = document.getElementById('regCuratorGroup').value.trim();
+                if (curatorGroup && isGroupTakenByAnotherCurator(curatorGroup, email)) {
+                    err.innerText = 'Эта группа уже закреплена за другим куратором!';
+                    return;
+                }
                 if (!curatorGroups[email]) curatorGroups[email] = [];
                 if (curatorGroup && !curatorGroups[email].includes(curatorGroup)) curatorGroups[email].push(curatorGroup);
                 if (curatorGroup && !groupSubjects[curatorGroup]) groupSubjects[curatorGroup] = [...DEFAULT_SUBJECTS];
