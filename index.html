@@ -29,8 +29,10 @@
             overflow-x: hidden;
         }
         .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
-        .heart { position: absolute; font-size: 20px; opacity: 0.15; animation: floatHeart linear infinite; pointer-events: none; }
-        @keyframes floatHeart { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.2; } 90% { opacity: 0.2; } 100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; } }
+        .heart { position: absolute; font-size: 18px; opacity: 0.1; animation: floatHeart linear infinite; pointer-events: none; }
+        @keyframes floatHeart { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.1; } 90% { opacity: 0.1; } 100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; } }
+        .star-bg { position: absolute; font-size: 14px; opacity: 0.08; animation: twinkle 4s infinite alternate; pointer-events: none; }
+        @keyframes twinkle { 0% { opacity: 0.03; transform: scale(0.8); } 100% { opacity: 0.12; transform: scale(1.2); } }
         
         .app-container {
             max-width: 1400px;
@@ -38,7 +40,7 @@
             background: rgba(255, 255, 255, 0.96);
             backdrop-filter: blur(2px);
             border-radius: 56px;
-            box-shadow: 0 30px 60px -20px rgba(232,127,176,0.3), inset 0 1px 0 rgba(255,255,255,0.8);
+            box-shadow: 0 30px 60px -20px rgba(232,127,176,0.2), inset 0 1px 0 rgba(255,255,255,0.8);
             overflow: hidden;
             padding: 32px 34px 44px;
             position: relative;
@@ -49,19 +51,21 @@
         
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 5px rgba(232,127,176,0.2); } 50% { box-shadow: 0 0 15px rgba(232,127,176,0.3); } }
         
         .auth-container { max-width: 520px; margin: 0 auto; animation: fadeInUp 0.5s ease; }
         .auth-tabs { display: flex; gap: 20px; background: rgba(255,245,249,0.9); backdrop-filter: blur(10px); padding: 8px; border-radius: 70px; margin-bottom: 28px; border: 1px solid rgba(255,255,255,0.5); }
         .auth-tab { flex: 1; background: transparent; border: none; font-size: 1.05rem; font-weight: 700; padding: 14px 24px; cursor: pointer; color: var(--text-muted); border-radius: 60px; transition: all 0.3s; }
-        .auth-tab.active { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; box-shadow: 0 8px 20px rgba(232,127,176,0.35); transform: scale(1.02); }
+        .auth-tab.active { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; box-shadow: 0 8px 20px rgba(232,127,176,0.3); transform: scale(1.02); }
         .auth-form { display: flex; flex-direction: column; gap: 20px; }
         .auth-form.hidden { display: none; }
         .auth-input, .auth-select { padding: 18px 24px; border: 2px solid rgba(255,208,228,0.6); border-radius: 60px; font-size: 1rem; background: rgba(255,255,255,0.95); width: 100%; transition: all 0.2s; }
-        .auth-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(232,127,176,0.15); transform: translateY(-2px); }
+        .auth-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(232,127,176,0.1); transform: translateY(-2px); }
         .auth-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; }
-        .auth-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); transition: left 0.5s; }
+        .auth-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.5s; }
         .auth-btn:hover::before { left: 100%; }
-        .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(232,127,176,0.4); }
+        .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(232,127,176,0.3); }
         .auth-error { color: var(--warning); font-size: 0.85rem; text-align: center; background: rgba(255,224,240,0.9); padding: 10px; border-radius: 50px; }
         
         .dashboard-content { display: none; }
@@ -73,8 +77,7 @@
         }
         .date-badge { background: linear-gradient(135deg, #ffe0f0, #ffd4e8); padding: 8px 20px; border-radius: 60px; font-size: 0.9rem; font-weight: 600; color: var(--primary-dark); }
         .user-info { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .user-avatar { width: 55px; height: 55px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: white; font-weight: bold; cursor: pointer; border: 3px solid white; box-shadow: 0 5px 15px rgba(232,127,176,0.4); transition: all 0.3s; animation: glowPulse 2s infinite; }
-        @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 5px rgba(232,127,176,0.3); } 50% { box-shadow: 0 0 20px rgba(232,127,176,0.5); } }
+        .user-avatar { width: 55px; height: 55px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: white; font-weight: bold; cursor: pointer; border: 3px solid white; box-shadow: 0 5px 15px rgba(232,127,176,0.3); transition: all 0.3s; animation: glowPulse 2s infinite; }
         .user-avatar:hover { transform: scale(1.05) rotate(5deg); }
         .logout-btn { background: rgba(255,224,240,0.8); border: none; padding: 8px 22px; border-radius: 60px; color: var(--primary-dark); font-weight: 600; cursor: pointer; transition: all 0.3s; }
         .logout-btn:hover { background: #ffd0e4; transform: scale(0.97); }
@@ -94,24 +97,27 @@
         .avatar-option.selected { border-color: var(--primary); box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary); }
         .save-profile-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 16px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 15px; }
         .delete-account-btn { background: linear-gradient(135deg, #e06b9e, #c45a8c); color: white; border: none; border-radius: 60px; padding: 16px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 15px; transition: all 0.3s; }
-        .delete-account-btn:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(192,57,103,0.4); }
+        .delete-account-btn:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(192,57,103,0.3); }
         
         .curator-group-info { background: rgba(255,240,248,0.9); backdrop-filter: blur(10px); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 2px solid #ffd9ec; }
         .group-selector { display: flex; gap: 15px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; }
         .curator-select, .curator-input { padding: 14px 20px; border: 2px solid #ffcce0; border-radius: 60px; background: white; flex: 1; min-width: 180px; font-family: inherit; }
         .curator-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 12px 24px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-        .curator-btn:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(232,127,176,0.4); }
+        .curator-btn:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(232,127,176,0.3); }
         .delete-group-btn { background: linear-gradient(135deg, #e06b9e, #c45a8c); }
         .delete-group-btn:hover { background: linear-gradient(135deg, #c45a8c, #a04070); }
+        .delete-user-btn { background: linear-gradient(135deg, #e06b9e, #c45a8c); margin-left: 10px; padding: 6px 12px; font-size: 0.7rem; border-radius: 40px; }
+        .delete-user-btn:hover { background: linear-gradient(135deg, #c45a8c, #a04070); }
         .subject-tag { background: #ffe0f0; padding: 6px 12px; border-radius: 40px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 8px; margin: 4px; }
         .delete-subject-btn { background: none; border: none; color: #e06b9e; cursor: pointer; font-size: 1rem; }
         
         .students-list, .chats-list, .users-list { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 1px solid var(--border); }
         .students-grid, .users-grid { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 18px; max-height: 220px; overflow-y: auto; }
-        .student-card, .user-card { background: rgba(255,245,249,0.7); border-radius: 70px; padding: 12px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; }
-        .student-card:hover, .user-card:hover { transform: translateY(-3px); background: rgba(255,240,248,0.95); box-shadow: 0 8px 20px rgba(232,127,176,0.2); }
+        .student-card, .user-card { background: rgba(255,245,249,0.7); border-radius: 70px; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; transition: all 0.3s; border: 2px solid transparent; width: 100%; }
+        .student-card:hover, .user-card:hover { transform: translateY(-3px); background: rgba(255,240,248,0.95); box-shadow: 0 8px 20px rgba(232,127,176,0.15); }
         .student-card.active, .user-card.active { border-color: var(--primary); background: linear-gradient(135deg, #ffe0f0, #ffd4e8); }
         .student-avatar, .user-avatar-small { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+        .user-info-text { display: flex; flex-direction: column; flex: 1; }
         
         .chats-grid { display: flex; flex-direction: column; gap: 12px; max-height: 320px; overflow-y: auto; }
         .chat-item { display: flex; align-items: center; gap: 15px; padding: 14px 20px; background: rgba(255,245,249,0.7); border-radius: 70px; cursor: pointer; transition: all 0.3s; border: 1px solid transparent; }
@@ -122,7 +128,7 @@
         .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 30px; }
         @media (max-width: 768px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
         .stat-card { background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); border-radius: 40px; padding: 25px; text-align: center; border: 1px solid rgba(255,255,255,0.5); transition: all 0.4s; cursor: default; }
-        .stat-card:hover { transform: translateY(-8px) scale(1.02); background: rgba(255,255,255,0.95); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+        .stat-card:hover { transform: translateY(-8px) scale(1.02); background: rgba(255,255,255,0.95); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
         .stat-icon { font-size: 2.8rem; margin-bottom: 15px; display: inline-block; }
         .stat-value { font-size: 2.4rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .stat-label { font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; font-weight: 500; }
@@ -140,7 +146,6 @@
         .grade-distribution-fill { height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 15px; color: #4a2c3a; font-weight: bold; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 40px; }
         .grade-item { margin-bottom: 20px; }
         
-        /* КОМПАКТНАЯ ОПЛАТА */
         .payments-section { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.5); }
         .payment-calendar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
         @media (max-width: 600px) { .payment-calendar { grid-template-columns: repeat(3, 1fr); } }
@@ -153,10 +158,9 @@
         
         .main-dashboard { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; margin-bottom: 40px; }
         @media (max-width: 768px) { .main-dashboard { grid-template-columns: 1fr; } }
-        .card { background: rgba(255,255,255,0.92); backdrop-filter: blur(10px); border-radius: 48px; padding: 28px 26px; box-shadow: 0 15px 35px rgba(232,127,176,0.1); border: 1px solid rgba(255,255,255,0.6); transition: all 0.4s; position: relative; overflow: hidden; }
+        .card { background: rgba(255,255,255,0.92); backdrop-filter: blur(10px); border-radius: 48px; padding: 28px 26px; box-shadow: 0 15px 35px rgba(232,127,176,0.08); border: 1px solid rgba(255,255,255,0.6); transition: all 0.4s; position: relative; overflow: hidden; }
         .card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--primary), var(--primary-light), #ffc0dc); background-size: 200% 100%; animation: shimmer 3s infinite linear; }
-        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-        .card:hover { transform: translateY(-8px); box-shadow: 0 25px 50px rgba(232,127,176,0.2); background: rgba(255,255,255,0.98); }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 25px 50px rgba(232,127,176,0.15); background: rgba(255,255,255,0.98); }
         .progress-bar-container { background: #f0dce8; border-radius: 40px; height: 12px; margin: 20px 0; overflow: hidden; }
         .progress-bar { background: linear-gradient(90deg, var(--primary), var(--primary-light)); border-radius: 40px; height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         
@@ -174,7 +178,7 @@
         .message-time-modern { font-size: 0.7rem; color: var(--text-muted); margin-top: 6px; }
         .chat-input-modern { padding: 18px 24px; background: white; border-top: 1px solid var(--border); display: flex; gap: 15px; align-items: center; }
         .chat-input-modern input { flex: 1; padding: 14px 22px; border: 1px solid var(--border); border-radius: 60px; font-family: inherit; }
-        .chat-input-modern input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(232,127,176,0.1); }
+        .chat-input-modern input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(232,127,176,0.08); }
         .chat-send-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 14px 32px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
         
         .curator-panel { background: rgba(255,240,248,0.95); backdrop-filter: blur(10px); border-radius: 48px; padding: 28px; margin-top: 25px; border: 2px solid #ffd9ec; }
@@ -198,14 +202,13 @@
         .no-students-message { background: rgba(255,240,248,0.9); border-radius: 56px; padding: 70px 20px; text-align: center; margin-bottom: 30px; border: 2px solid #ffd9ec; }
         .success-msg { color: var(--success); background: #e8f4e6; padding: 12px; border-radius: 60px; text-align: center; margin-top: 18px; display: none; font-weight: 500; }
         
-        .notification { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 12px 20px; border-radius: 60px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); z-index: 1000; animation: slideIn 0.3s ease; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
+        .notification { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 12px 20px; border-radius: 60px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); z-index: 1000; animation: slideIn 0.3s ease; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
         ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-track { background: rgba(255,224,240,0.5); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 10px; }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -213,13 +216,13 @@
     <div class="app-container" id="app">
         <div id="profileModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>👤 Мой профиль</h3><button class="close-modal" onclick="closeProfileModal()">×</button></div><div class="profile-field"><label>Имя и фамилия</label><input type="text" id="profileName" placeholder="Иван Иванов"></div><div class="profile-field"><label>Email</label><input type="email" id="profileEmail" readonly style="background:#f5f5f5;"></div><div class="profile-field"><label>🌸 Выберите аватар</label><div class="avatar-selector" id="avatarSelector"></div></div><button class="save-profile-btn" onclick="saveProfileChanges()">💾 Сохранить изменения</button><button class="delete-account-btn" onclick="deleteAccount()">🗑️ Удалить аккаунт</button></div></div>
 
-        <div id="authBlock"><div class="auth-container"><div class="auth-tabs"><button class="auth-tab active" data-tab="login">🌸 Вход</button><button class="auth-tab" data-tab="register">✨ Регистрация</button></div><div id="loginForm" class="auth-form"><input type="email" id="loginEmail" class="auth-input" placeholder="Email"><input type="password" id="loginPassword" class="auth-input" placeholder="Пароль"><button id="doLoginBtn" class="auth-btn">🌟 Войти</button><div id="loginError" class="auth-error"></div></div><div id="registerForm" class="auth-form hidden"><input type="text" id="regName" class="auth-input" placeholder="Имя и фамилия (русские буквы)"><input type="email" id="regEmail" class="auth-input" placeholder="Email"><select id="regRole" class="auth-select"><option value="parent">👨‍👩‍👧 Родитель</option><option value="curator">📚 Куратор</option></select><div id="parentFields"><input type="text" id="regChildName" class="auth-input" placeholder="ФИО студента (русские буквы)"><input type="text" id="regGroupNumber" class="auth-input" placeholder="Номер группы (например, П-201)"></div><div id="curatorFields" style="display: none;"><input type="text" id="regCuratorGroup" class="auth-input" placeholder="Номер вашей группы"></div><input type="password" id="regPassword" class="auth-input" placeholder="Пароль (мин. 6 символов)"><button id="doRegisterBtn" class="auth-btn">✨ Зарегистрироваться</button><div id="regError" class="auth-error"></div></div></div></div>
+        <div id="authBlock"><div class="auth-container"><div class="auth-tabs"><button class="auth-tab active" data-tab="login">🌸 Вход</button><button class="auth-tab" data-tab="register">✨ Регистрация</button></div><div id="loginForm" class="auth-form"><input type="email" id="loginEmail" class="auth-input" placeholder="Email"><input type="password" id="loginPassword" class="auth-input" placeholder="Пароль"><button id="doLoginBtn" class="auth-btn">🌟 Войти</button><div id="loginError" class="auth-error"></div></div><div id="registerForm" class="auth-form hidden"><input type="text" id="regName" class="auth-input" placeholder="Имя и фамилия"><input type="email" id="regEmail" class="auth-input" placeholder="Email"><select id="regRole" class="auth-select"><option value="parent">👨‍👩‍👧 Родитель</option><option value="curator">📚 Куратор</option></select><div id="parentFields"><input type="text" id="regChildName" class="auth-input" placeholder="ФИО студента"><input type="text" id="regGroupNumber" class="auth-input" placeholder="Номер группы"></div><div id="curatorFields" style="display: none;"><input type="text" id="regCuratorGroup" class="auth-input" placeholder="Номер вашей группы"></div><input type="password" id="regPassword" class="auth-input" placeholder="Пароль (мин. 6 символов)"><button id="doRegisterBtn" class="auth-btn">✨ Зарегистрироваться</button><div id="regError" class="auth-error"></div></div></div></div>
 
         <div id="dashboardBlock" class="dashboard-content">
             <div class="dashboard-header"><div class="date-badge" id="currentDateBadge">📅 Загрузка...</div><div class="user-info"><div class="user-avatar" id="userAvatar" onclick="openProfileModal()">🌸</div><span class="user-greeting">Привет, <span id="userNameSpan"></span>!</span><span id="userRoleBadge" class="user-role-badge"></span><button id="logoutBtnMain" class="logout-btn">🚪 Выйти</button></div></div>
 
-            <!-- КОМПАКТНАЯ ОПЛАТА -->
-            <div id="paymentsSection" class="payments-section">
+            <!-- ОПЛАТА ТОЛЬКО ДЛЯ РОДИТЕЛЕЙ - будет показываться только если роль parent -->
+            <div id="paymentsSection" class="payments-section" style="display: none;">
                 <div class="card-title">💰 Оплата колледжа</div>
                 <div id="paymentCalendar" class="payment-calendar"></div>
                 <div id="paymentMessage" style="margin-top: 12px; text-align: center; padding: 8px; border-radius: 40px; background: #e8f4e6; display: none; font-size: 0.85rem;"></div>
@@ -247,7 +250,7 @@
             </div>
 
             <div id="studentsListContainer" class="students-list" style="display: none;"><div class="card-title">👨‍🎓 Студенты группы</div><div id="studentsGrid" class="students-grid"></div></div>
-            <div id="chatsListContainer" class="chats-list" style="display: none;"><div class="card-title">💬 Чаты</div><div id="chatsGrid" class="chats-grid"></div></div>
+            <div id="chatsListContainer" class="chats-list" style="display: none;"><div class="card-title">💬 Чаты с родителями</div><div id="chatsGrid" class="chats-grid"></div></div>
 
             <div id="studentStatsBlock" style="display: none;">
                 <div id="currentStudentInfo" style="background: linear-gradient(135deg, rgba(255,240,248,0.9), rgba(255,232,244,0.9)); border-radius: 40px; padding: 16px 24px; margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;"><span>🎓 <strong id="currentStudentName">Загрузка...</strong></span><span id="studentGroupBadge" style="background: #ffe0f0; padding: 6px 16px; border-radius: 40px; font-size: 0.8rem; font-weight: 600;">Группа</span></div>
@@ -260,7 +263,7 @@
                 <main class="main-dashboard" id="mainDashboard">
                     <div class="card"><div class="card-title">📊 Успеваемость</div><div style="display: flex; justify-content: space-between;"><span>Средний балл:</span><span id="avgScoreDisplay" style="font-size: 2.2rem; font-weight: 800;">—</span></div><div class="progress-bar-container"><div class="progress-bar" id="avgProgress" style="width: 0%;"></div></div><button class="nav-btn" style="margin-top: 20px; width: 100%;" data-page="detailed-progress">📈 Подробнее →</button></div>
                     <div class="card"><div class="card-title">📆 Посещаемость</div><div style="display: flex; justify-content: space-between;"><span>Пропуски:</span><span id="absencesDisplay" style="font-size: 2.2rem; font-weight: 800; color: var(--warning);">—</span></div><div class="progress-bar-container"><div class="progress-bar" id="attendanceProgress" style="width: 100%;"></div></div><button class="nav-btn" style="margin-top: 20px; width: 100%;" data-page="attendance-detail">📅 Подробнее →</button></div>
-                    <div class="card" style="grid-column: 1 / -1;"><div class="card-title">💬 Чат</div><div class="chat-container-modern"><div class="chat-header"><div style="width:45px;height:45px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;">💬</div><div><h4 style="font-size:1.1rem;" id="chatHeaderName">Чат</h4></div></div><div id="chatMessagesModern" class="chat-messages-modern"></div><div class="chat-input-modern"><input type="text" id="modernChatInput" placeholder="Напишите сообщение..."><button id="modernSendBtn" class="chat-send-btn">📨 Отправить</button></div></div></div>
+                    <div class="card" style="grid-column: 1 / -1;"><div class="card-title">💬 Чат с родителем</div><div class="chat-container-modern"><div class="chat-header"><div style="width:45px;height:45px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;">💬</div><div><h4 style="font-size:1.1rem;" id="chatHeaderName">Чат</h4></div></div><div id="chatMessagesModern" class="chat-messages-modern"></div><div class="chat-input-modern"><input type="text" id="modernChatInput" placeholder="Напишите сообщение..."><button id="modernSendBtn" class="chat-send-btn">📨 Отправить</button></div></div></div>
                 </main>
             </div>
             
@@ -277,15 +280,14 @@
                 <div id="curatorSuccessMsg" class="success-msg"></div>
             </div>
 
-            <nav class="bottom-nav"><button class="nav-btn active-dashboard" data-page="dashboard">📋 Главная</button><button class="nav-btn" data-page="payments">💰 Оплата</button><button class="nav-btn" data-page="detailed-progress">📈 Успеваемость</button><button class="nav-btn" data-page="attendance-detail">📅 Посещаемость</button></nav>
+            <nav class="bottom-nav"><button class="nav-btn active-dashboard" data-page="dashboard">📋 Главная</button><button class="nav-btn" data-page="detailed-progress">📈 Успеваемость</button><button class="nav-btn" data-page="attendance-detail">📅 Посещаемость</button></nav>
             <div id="dynamic-page-content" class="dynamic-content"></div>
         </div>
     </div>
 
     <script>
-        // === СОЗДАЁМ АККАУНТЫ ЕСЛИ ИХ НЕТ (НЕ УДАЛЯЕМ СУЩЕСТВУЮЩИЕ) ===
+        // СОЗДАЁМ АККАУНТЫ ЕСЛИ ИХ НЕТ (НЕ УДАЛЯЕМ СУЩЕСТВУЮЩИЕ)
         if (!localStorage.getItem('users') || JSON.parse(localStorage.getItem('users')).length === 0) {
-            // Создаём аккаунты ТОЛЬКО если их нет
             const defaultUsers = [
                 { id: 'u1', name: 'ГЕННАДИЙ ДРАГОН', email: 'gennadij@dragons.ru', password: 'dragongennadij', role: 'curator' },
                 { id: 'u2', name: 'МАНИЙ ДАНИС', email: 'maniy@danis.ru', password: 'maniy123', role: 'parent' },
@@ -332,7 +334,6 @@
         let selectedChatStudentId = null;
         let selectedGradeStudentId = null;
         let currentCuratorActiveGroup = null;
-        let subjectGradesChart = null;
         let lastSelectedSubject = null;
         
         const AVATAR_OPTIONS = ["🌸", "🌺", "🌷", "🌹", "💐", "⭐", "🌟", "✨", "💫", "🐱", "🦋", "🌈", "🍎", "📚", "🎓", "💖"];
@@ -422,11 +423,11 @@
                     }
                 }
             }
-            const gi = [{ name: "Отлично", icon: "🌟", color: "var(--grade5)", dark: "var(--grade5-dark)" }, { name: "Хорошо", icon: "📘", color: "var(--grade4)", dark: "var(--grade4-dark)" }, { name: "Удовлетворительно", icon: "📙", color: "var(--grade3)", dark: "var(--grade3-dark)" }, { name: "Неудовлетворительно", icon: "⚠️", color: "var(--grade2)", dark: "var(--grade2-dark)" }];
+            const gi = [{ name: "Отлично", icon: "🌟", color: "#a8e6cf" }, { name: "Хорошо", icon: "📘", color: "#b8deff" }, { name: "Удовлетворительно", icon: "📙", color: "#ffd3b6" }, { name: "Неудовлетворительно", icon: "⚠️", color: "#ffb3ba" }];
             const container = document.getElementById('distributionContent');
             if (!container) return;
             if (totalWeight === 0) { container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">📊 Нет оценок для отображения</div>'; return; }
-            container.innerHTML = `<div style="margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, #fef0f8, #fff5f9); border-radius: 30px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;"><div><span style="font-weight: 800;">📊 Всего оценок (с учётом веса):</span> <span style="font-size: 1.3rem; font-weight: 800; color: var(--primary);">${totalWeight}</span></div><div><span style="font-weight: 800;">🎯 Средний балл:</span> <span style="font-size: 1.3rem; font-weight: 800; color: var(--primary);">${avgGradeWeighted(student)}</span></div></div>${gi.map((g, idx) => { let cnt = counts[idx]; let pct = totalWeight > 0 ? ((cnt / totalWeight) * 100).toFixed(1) : 0; return `<div class="grade-item"><div class="grade-label" style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;"><span class="grade-icon">${g.icon}</span><span class="grade-name" style="font-weight: 700;">${g.name} (${idx === 0 ? '5' : idx === 1 ? '4' : idx === 2 ? '3' : '2'})</span><span class="grade-count">${cnt} шт.</span><span class="grade-percent" style="font-weight: 800;">${pct}%</span></div><div class="grade-distribution-bar"><div class="grade-distribution-fill" style="width: ${pct}%; background: linear-gradient(90deg, ${g.color}, ${g.dark});">${pct > 15 ? pct + '%' : ''}</div></div></div>`; }).join('')}<div style="margin-top: 20px; padding: 12px; background: linear-gradient(135deg, #e8f8f5, #e8f5e9); border-radius: 20px; text-align: center;"><span style="font-weight: 600;">📈 Контрольные работы учитываются с двойным весом!</span></div>`;
+            container.innerHTML = `<div style="margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, #fef0f8, #fff5f9); border-radius: 30px; text-align: center;"><span style="font-weight: 800;">Всего оценок (с весом): ${totalWeight}</span> | <span style="font-weight: 800;">Средний балл: ${avgGradeWeighted(student)}</span></div>${gi.map((g, idx) => { let cnt = counts[idx]; let pct = totalWeight > 0 ? ((cnt / totalWeight) * 100).toFixed(1) : 0; return `<div class="grade-item"><div class="grade-label" style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;"><span class="grade-icon">${g.icon}</span><span class="grade-name" style="font-weight: 700;">${g.name} (${idx === 0 ? '5' : idx === 1 ? '4' : idx === 2 ? '3' : '2'})</span><span class="grade-count">${cnt} шт.</span><span class="grade-percent" style="font-weight: 800;">${pct}%</span></div><div class="grade-distribution-bar"><div class="grade-distribution-fill" style="width: ${pct}%; background: linear-gradient(90deg, ${g.color}, ${g.color});">${pct > 15 ? pct + '%' : ''}</div></div></div>`; }).join('')}`;
         }
         
         function updateFiltersAndSelects(groupName) {
@@ -443,7 +444,7 @@
             document.getElementById('subjectsCountStat').innerText = subjects.length;
         }
         
-        // === ОПЛАТА ===
+        // === ОПЛАТА (ТОЛЬКО ДЛЯ РОДИТЕЛЕЙ) ===
         function initPaymentsForStudent(studentId) {
             if (!payments[studentId]) {
                 payments[studentId] = {};
@@ -454,7 +455,7 @@
         }
         
         function showPaymentNotification() {
-            const student = currentUser?.role === 'parent' ? getStudentForParent(currentUser.email) : (selectedStudentId ? getStudentById(selectedStudentId) : null);
+            const student = getStudentForParent(currentUser.email);
             if (!student) return;
             initPaymentsForStudent(student.id);
             const monthNames = ['Сен', 'Окт', 'Ноя', 'Дек', 'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн'];
@@ -471,7 +472,7 @@
         }
         
         function renderPayments() {
-            const student = currentUser?.role === 'parent' ? getStudentForParent(currentUser.email) : (selectedStudentId ? getStudentById(selectedStudentId) : null);
+            const student = getStudentForParent(currentUser.email);
             if (!student) return;
             initPaymentsForStudent(student.id);
             const container = document.getElementById('paymentCalendar');
@@ -500,6 +501,28 @@
             }
         };
         
+        // === УДАЛЕНИЕ РОДИТЕЛЯ КУРАТОРОМ ===
+        window.deleteParentFromGroup = function(parentEmail, parentName) {
+            if (confirm(`Вы уверены, что хотите удалить родителя "${parentName}" из группы? Студент останется в системе, но связь с родителем будет разорвана.`)) {
+                let student = students.find(s => s.parentEmail === parentEmail && s.group === currentCuratorActiveGroup);
+                if (student) {
+                    student.parentEmail = null;
+                    student.parentName = null;
+                    saveAll();
+                    
+                    // Обновляем списки
+                    renderRegisteredUsers();
+                    renderStudentsList();
+                    renderChatsList();
+                    
+                    const msgDiv = document.getElementById('curatorSuccessMsg');
+                    msgDiv.style.display = 'block';
+                    msgDiv.innerHTML = `✅ Родитель "${parentName}" удалён из группы`;
+                    setTimeout(() => msgDiv.style.display = 'none', 2000);
+                }
+            }
+        };
+        
         function displayStudentStats(student) {
             if (!student) return;
             let avg = avgGradeWeighted(student);
@@ -517,8 +540,6 @@
             document.getElementById('currentStudentName').innerHTML = student.name;
             document.getElementById('studentGroupBadge').innerHTML = `Группа ${group}`;
             updateFiltersAndSelects(group);
-            renderPayments();
-            showPaymentNotification();
         }
         
         function renderStudentsList() {
@@ -526,7 +547,7 @@
             let groupStudents = students.filter(s => s.group === currentCuratorActiveGroup);
             let container = document.getElementById('studentsGrid');
             if (container) {
-                container.innerHTML = groupStudents.map(s => `<div class="student-card ${selectedStudentId === s.id ? 'active' : ''}" onclick="window.selectStudent('${s.id}')"><div class="student-avatar">${s.name.charAt(0)}</div><div><strong>${s.name}</strong><br><span style="font-size:0.7rem;">${s.group || "—"}</span></div></div>`).join('');
+                container.innerHTML = groupStudents.map(s => `<div class="student-card" onclick="window.selectStudent('${s.id}')"><div class="student-avatar">${s.name.charAt(0)}</div><div><strong>${s.name}</strong><br><span style="font-size:0.7rem;">${s.group || "—"}</span></div></div>`).join('');
                 document.getElementById('studentsListContainer').style.display = groupStudents.length ? 'block' : 'none';
             }
             let studentSelect = document.getElementById('studentForGradeSelect');
@@ -548,14 +569,12 @@
                 let parentName = pu ? pu.name : (st.parentName || "Родитель");
                 let last = chatMessages.filter(m => m.studentId === st.id).slice(-1)[0]; 
                 let preview = last ? last.text.substring(0, 40) + (last.text.length > 40 ? '...' : '') : 'Нет сообщений'; 
-                let time = last ? last.time : ''; 
                 return `<div class="chat-item ${selectedChatStudentId === st.id ? 'active' : ''}" onclick="window.selectChatStudent('${st.id}')">
                     <div class="chat-avatar">${parentName.charAt(0)}</div>
                     <div class="chat-info">
                         <div class="chat-name">💬 Чат с ${parentName}</div>
                         <div class="chat-preview">${preview}</div>
                     </div>
-                    <div class="chat-time">${time}</div>
                 </div>`; 
             }).join('');
         }
@@ -591,7 +610,15 @@
             if (!container) return;
             if (registeredParents.length === 0) { usersContainer.style.display = 'none'; return; }
             usersContainer.style.display = 'block';
-            container.innerHTML = registeredParents.map(p => `<div class="user-card"><div class="user-avatar-small">${userAvatars[p.email] || '👤'}</div><div><strong>${p.name}</strong><br><span style="font-size:0.7rem;">${p.email}</span></div></div>`).join('');
+            container.innerHTML = registeredParents.map(p => `
+                <div class="user-card" style="justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="user-avatar-small">${userAvatars[p.email] || '👤'}</div>
+                        <div class="user-info-text"><strong>${p.name}</strong><br><span style="font-size:0.7rem;">${p.email}</span></div>
+                    </div>
+                    <button class="curator-btn delete-user-btn" onclick="window.deleteParentFromGroup('${p.email}', '${p.name.replace(/'/g, "\\'")}')">🗑️ Удалить</button>
+                </div>
+            `).join('');
         }
         
         function fullUpdate() {
@@ -643,10 +670,10 @@
                 if (student) {
                     let parent = users.find(u => u.email === student.parentEmail);
                     let parentName = parent ? parent.name : (student.parentName || "Родитель");
-                    document.getElementById('chatHeaderName').innerHTML = `💬 Чат с ${parentName}`;
+                    document.getElementById('chatHeaderName').innerHTML = `Чат с ${parentName}`;
                 }
             } else {
-                document.getElementById('chatHeaderName').innerHTML = `💬 Чат с куратором`;
+                document.getElementById('chatHeaderName').innerHTML = `Чат с куратором`;
             }
             
             let filtered = chatMessages.filter(m => m.studentId === sid);
@@ -762,10 +789,9 @@
         };
         
         let mainDash = document.getElementById('mainDashboard'), dynCont = document.getElementById('dynamic-page-content'), navBtns = document.querySelectorAll('.nav-btn');
-        function getDetailedPage() { let st = getStudentById(selectedStudentId); if (!st) return '<div class="detail-page">Нет данных о студенте</div>'; let subjects = getSubjectsForGroup(st.group); let rows = subjects.map(s => { let grades = st.grades?.[s] || []; let avg = grades.length ? (grades.reduce((a, b) => a + (typeof b === 'object' ? b.value * (b.weight || 1) : b), 0) / grades.reduce((a, b) => a + (typeof b === 'object' ? (b.weight || 1) : 1), 0)).toFixed(1) : "—"; let last = grades[grades.length - 1]; let lastVal = last ? (typeof last === 'object' ? last.value : last) : "—"; let lastDate = last && typeof last === 'object' ? last.date : ""; let lastComment = last && typeof last === 'object' ? last.comment : ""; let lastWeight = last && typeof last === 'object' ? last.weight : 1; return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td><span class="grade-badge-sm">${lastVal}</span>${lastDate ? `<span style="font-size:0.7rem; margin-left:8px;"> от ${lastDate}</span>` : ''}${lastWeight === 2 ? `<span style="font-size:0.7rem; margin-left:8px;">📝×2</span>` : ''}${lastComment ? `<div style="font-size:0.7rem;">📝 ${lastComment}</div>` : ''}</td></tr>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Детальная успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
+        function getDetailedPage() { let st = getStudentById(selectedStudentId); if (!st) return '<div class="detail-page">Нет данных о студенте</div>'; let subjects = getSubjectsForGroup(st.group); let rows = subjects.map(s => { let grades = st.grades?.[s] || []; let avg = grades.length ? (grades.reduce((a, b) => a + (typeof b === 'object' ? b.value * (b.weight || 1) : b), 0) / grades.reduce((a, b) => a + (typeof b === 'object' ? (b.weight || 1) : 1), 0)).toFixed(1) : "—"; let last = grades[grades.length - 1]; let lastVal = last ? (typeof last === 'object' ? last.value : last) : "—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td style="text-align:center;"><span class="grade-badge-sm">${lastVal}</span></td></tr>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Детальная успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
         function getAttendancePage() { let st = getStudentById(selectedStudentId); if (!st) return '<div class="detail-page">Нет данных о студенте</div>'; let days = (st.absences || []).slice().reverse().map(a => `<div style="padding:12px; background:#ffe0f0; border-radius:40px; margin:8px 0;"><span>📅 ${a.date}</span> — <span>${a.type === 'болезнь' ? '❌ Болезнь' : a.type === 'уважительная' ? '📋 Уважительная' : '⚠️ Неуважительная'}</span></div>`).join(''); return `<div class="detail-page"><div class="detail-title">📅 Посещаемость: ${st.name}</div>${days || '<div style="padding:20px; text-align:center;">✨ Нет пропусков</div>'}<button class="back-link" data-back="dashboard">← На главную</button></div>`; }
-        function showPaymentsPage() { renderPayments(); showMain(); document.getElementById('paymentsSection').scrollIntoView({behavior:'smooth'}); }
-        function showDetail(pageId) { if (pageId === 'payments') { showPaymentsPage(); return; } if (mainDash) mainDash.style.display = 'none'; let content = pageId === 'detailed-progress' ? getDetailedPage() : getAttendancePage(); dynCont.innerHTML = content; dynCont.style.display = 'block'; navBtns.forEach(btn => btn.classList.toggle('active-dashboard', btn.dataset.page === pageId)); document.querySelectorAll('.back-link').forEach(btn => btn.onclick = () => showMain()); }
+        function showDetail(pageId) { if (mainDash) mainDash.style.display = 'none'; let content = pageId === 'detailed-progress' ? getDetailedPage() : getAttendancePage(); dynCont.innerHTML = content; dynCont.style.display = 'block'; navBtns.forEach(btn => btn.classList.toggle('active-dashboard', btn.dataset.page === pageId)); document.querySelectorAll('.back-link').forEach(btn => btn.onclick = () => showMain()); }
         function showMain() { if (mainDash) mainDash.style.display = 'grid'; dynCont.style.display = 'none'; dynCont.innerHTML = ''; navBtns.forEach(btn => btn.classList.toggle('active-dashboard', btn.dataset.page === 'dashboard')); fullUpdate(); }
         function initNav() { showMain(); navBtns.forEach(btn => { btn.onclick = () => { let page = btn.dataset.page; page === 'dashboard' ? showMain() : showDetail(page); }; }); }
         
@@ -818,12 +844,10 @@
             if (!name || !email || !pwd) { err.innerText = 'Заполните все поля'; return; }
             if (pwd.length < 6) { err.innerText = 'Пароль должен быть минимум 6 символов'; return; }
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.innerText = 'Введите корректный email'; return; }
-            if (!/^[А-Яа-я\s]+$/.test(name)) { err.innerText = 'Имя должно содержать только русские буквы'; return; }
             if (users.find(u => u.email === email)) { err.innerText = 'Пользователь с таким email уже существует'; return; }
             if (role === 'parent') {
                 let childName = document.getElementById('regChildName').value.trim(), groupNum = document.getElementById('regGroupNumber').value.trim();
                 if (!childName) { err.innerText = 'Укажите ФИО студента'; return; }
-                if (!/^[А-Яа-я\s]+$/.test(childName)) { err.innerText = 'ФИО студента должно содержать только русские буквы'; return; }
                 if (!groupNum) { err.innerText = 'Укажите номер группы студента'; return; }
                 let existing = students.find(s => s.name === childName);
                 if (!existing) students.push({ id: `s${Date.now()}`, name: childName, group: groupNum, parentEmail: email, parentName: name, grades: {}, absences: [] });
@@ -877,8 +901,19 @@
                 document.getElementById('userNameSpan').innerText = currentUser.name;
                 document.getElementById('userAvatar').innerHTML = userAvatars[currentUser.email] || "🌸";
                 const badge = document.getElementById('userRoleBadge');
-                if (currentUser.role === 'parent') { badge.innerText = 'Родитель'; badge.className = 'user-role-badge parent'; } 
-                else { badge.innerText = 'Куратор'; badge.className = 'user-role-badge curator'; }
+                if (currentUser.role === 'parent') { 
+                    badge.innerText = 'Родитель'; 
+                    badge.className = 'user-role-badge parent';
+                    // ПОКАЗЫВАЕМ ОПЛАТУ ТОЛЬКО ДЛЯ РОДИТЕЛЕЙ
+                    document.getElementById('paymentsSection').style.display = 'block';
+                    renderPayments();
+                    showPaymentNotification();
+                } else { 
+                    badge.innerText = 'Куратор'; 
+                    badge.className = 'user-role-badge curator';
+                    // СКРЫВАЕМ ОПЛАТУ ДЛЯ КУРАТОРА
+                    document.getElementById('paymentsSection').style.display = 'none';
+                }
                 
                 let today = new Date().toISOString().slice(0,10);
                 if (document.getElementById('gradeDate')) document.getElementById('gradeDate').value = today;
@@ -896,7 +931,7 @@
                         selectedGradeStudentId = st.id;
                         displayStudentStats(st);
                         renderGradeDistribution(st);
-                        document.getElementById('chatHeaderName').innerHTML = '💬 Чат с куратором';
+                        document.getElementById('chatHeaderName').innerHTML = 'Чат с куратором';
                         renderChatMessages();
                     } else {
                         document.getElementById('studentStatsBlock').style.display = 'none';
@@ -944,10 +979,10 @@
         window.saveProfileChanges = function() {
             let newName = document.getElementById('profileName').value.trim();
             let selectedAvatar = document.querySelector('.avatar-option.selected')?.dataset.avatar;
-            if (newName && /^[А-Яа-я\s]+$/.test(newName)) {
+            if (newName) {
                 let idx = users.findIndex(u => u.email === currentUser.email);
                 if (idx !== -1) { users[idx].name = newName; currentUser.name = newName; localStorage.setItem('currentUser', JSON.stringify(currentUser)); saveAll(); document.getElementById('userNameSpan').innerText = newName; }
-            } else if (newName) alert('Имя должно содержать только русские буквы');
+            }
             if (selectedAvatar) {
                 userAvatars[currentUser.email] = selectedAvatar;
                 saveAll();
@@ -962,7 +997,7 @@
         else showAuth();
         
         function updateDateBadge() { const badge = document.getElementById('currentDateBadge'); if(badge){ const now = new Date(); badge.innerHTML = `📅 ${now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}`; } }
-        function createFloatingElements() { const container = document.getElementById('floatingBg'); if(!container) return; container.innerHTML = ''; const hearts = ['❤️','💖','💗','💓','💕','💝','🌸','🌷','🌺']; for(let i=0;i<25;i++){ const d=document.createElement('div'); d.className='heart'; d.innerHTML=hearts[Math.floor(Math.random()*hearts.length)]; d.style.left=Math.random()*100+'%'; d.style.fontSize=(15+Math.random()*25)+'px'; d.style.animationDuration=(8+Math.random()*12)+'s'; d.style.animationDelay=(Math.random()*15)+'s'; container.appendChild(d); } const stars=['⭐','🌟','✨','💫','⭐']; for(let i=0;i<30;i++){ const s=document.createElement('div'); s.className='star-bg'; s.innerHTML=stars[Math.floor(Math.random()*stars.length)]; s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%'; s.style.fontSize=(10+Math.random()*20)+'px'; s.style.animationDuration=(2+Math.random()*4)+'s'; s.style.animationDelay=(Math.random()*5)+'s'; container.appendChild(s); } const flowers=['🌸','🌼','🌻','🌺','🌷','🌹','🌸']; for(let i=0;i<15;i++){ const f=document.createElement('div'); f.className='flower-bg'; f.innerHTML=flowers[Math.floor(Math.random()*flowers.length)]; f.style.left=Math.random()*100+'%'; f.style.top=Math.random()*100+'%'; f.style.fontSize=(25+Math.random()*40)+'px'; f.style.animationDuration=(15+Math.random()*20)+'s'; f.style.animationDelay=(Math.random()*10)+'s'; container.appendChild(f); } for(let i=0;i<20;i++){ const b=document.createElement('div'); b.className='bubble'; const size=20+Math.random()*60; b.style.width=size+'px'; b.style.height=size+'px'; b.style.left=Math.random()*100+'%'; b.style.animationDuration=(10+Math.random()*15)+'s'; b.style.animationDelay=(Math.random()*20)+'s'; container.appendChild(b); } for(let i=0;i<50;i++){ const g=document.createElement('div'); g.className='glitter'; g.style.left=Math.random()*100+'%'; g.style.top=Math.random()*100+'%'; g.style.animationDuration=(2+Math.random()*5)+'s'; g.style.animationDelay=(Math.random()*8)+'s'; container.appendChild(g); } }
+        function createFloatingElements() { const container = document.getElementById('floatingBg'); if(!container) return; container.innerHTML = ''; const hearts = ['❤️','💖','💗','💓','💕','💝']; for(let i=0;i<35;i++){ const d=document.createElement('div'); d.className='heart'; d.innerHTML=hearts[Math.floor(Math.random()*hearts.length)]; d.style.left=Math.random()*100+'%'; d.style.fontSize=(12+Math.random()*20)+'px'; d.style.animationDuration=(8+Math.random()*15)+'s'; d.style.animationDelay=(Math.random()*20)+'s'; container.appendChild(d); } const stars=['⭐','🌟','✨','💫']; for(let i=0;i<40;i++){ const s=document.createElement('div'); s.className='star-bg'; s.innerHTML=stars[Math.floor(Math.random()*stars.length)]; s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%'; s.style.fontSize=(8+Math.random()*15)+'px'; s.style.animationDuration=(3+Math.random()*5)+'s'; s.style.animationDelay=(Math.random()*8)+'s'; container.appendChild(s); } }
         createFloatingElements(); updateDateBadge(); setInterval(updateDateBadge, 60000);
     </script>
 </body>
