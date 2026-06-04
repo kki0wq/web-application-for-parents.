@@ -2,164 +2,226 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Колледж | Успеваемость</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Колледж | Успеваемость, посещаемость, оплата</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #e87fb0;
+            --primary-dark: #c45a8c;
+            --primary-light: #f0a0c5;
+            --text-dark: #4a2c3a;
+            --text-muted: #c27096;
+            --border: #ffe0f0;
+            --success: #2d6a4f;
+            --warning: #e06b9e;
+            --payment-paid: #a8e6cf;
+            --payment-unpaid: #ffb3ba;
+        }
         body {
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #fef0f7 0%, #ffe4f0 40%, #ffd9e8 100%);
+            color: var(--text-dark);
             padding: 20px;
             min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
         }
-        .container {
-            max-width: 1300px;
+        .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+        .heart { position: absolute; font-size: 18px; opacity: 0.12; animation: floatHeart linear infinite; pointer-events: none; }
+        @keyframes floatHeart { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.12; } 90% { opacity: 0.12; } 100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; } }
+        .star-bg { position: absolute; font-size: 14px; opacity: 0.08; animation: twinkle 4s infinite alternate; pointer-events: none; }
+        @keyframes twinkle { 0% { opacity: 0.04; transform: scale(0.8); } 100% { opacity: 0.12; transform: scale(1.2); } }
+        
+        .app-container {
+            max-width: 1400px;
             margin: 0 auto;
-            background: rgba(255,255,255,0.95);
-            border-radius: 48px;
-            padding: 28px 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(2px);
+            border-radius: 56px;
+            box-shadow: 0 30px 60px -20px rgba(232,127,176,0.2);
+            overflow: hidden;
+            padding: 32px 34px 44px;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255,255,255,0.5);
         }
-        @media (max-width: 700px) { .container { padding: 16px; } }
+        @media (max-width: 768px) { body { padding: 12px; } .app-container { padding: 20px 16px 28px; border-radius: 40px; } }
         
-        /* Анимации фона */
-        .bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
-        .heart { position: absolute; font-size: 16px; opacity: 0.1; animation: fly 12s linear infinite; }
-        .star { position: absolute; font-size: 12px; opacity: 0.08; animation: twinkle 4s infinite alternate; }
-        @keyframes fly { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 20% { opacity: 0.12; } 80% { opacity: 0.12; } 100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; } }
-        @keyframes twinkle { 0% { opacity: 0.03; transform: scale(0.8); } 100% { opacity: 0.12; transform: scale(1.2); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 5px rgba(232,127,176,0.2); } 50% { box-shadow: 0 0 15px rgba(232,127,176,0.3); } }
         
-        /* АВТОРИЗАЦИЯ */
-        .auth-box { max-width: 460px; margin: 0 auto; }
-        .tabs { display: flex; gap: 16px; background: #fff0f6; padding: 6px; border-radius: 60px; margin-bottom: 24px; }
-        .tab { flex: 1; text-align: center; padding: 14px; font-weight: 700; border-radius: 50px; cursor: pointer; color: #c27096; background: transparent; border: none; }
-        .tab.active { background: #e87fb0; color: white; box-shadow: 0 4px 12px rgba(232,127,176,0.3); }
-        .auth-form { display: flex; flex-direction: column; gap: 16px; }
-        .auth-form.hide { display: none; }
-        .auth-input { padding: 16px 20px; border: 2px solid #ffe0f0; border-radius: 50px; font-size: 1rem; background: white; width: 100%; }
-        .auth-input:focus { outline: none; border-color: #e87fb0; }
-        .auth-btn { background: linear-gradient(135deg, #e87fb0, #f0a0c5); color: white; border: none; border-radius: 50px; padding: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; }
-        .auth-btn:hover { transform: translateY(-2px); }
-        .error { color: #e06b9e; background: #ffe0f0; padding: 10px; border-radius: 50px; text-align: center; font-size: 0.85rem; }
+        .auth-container { max-width: 520px; margin: 0 auto; animation: fadeInUp 0.5s ease; }
+        .auth-tabs { display: flex; gap: 20px; background: rgba(255,245,249,0.9); backdrop-filter: blur(10px); padding: 8px; border-radius: 70px; margin-bottom: 28px; border: 1px solid rgba(255,255,255,0.5); }
+        .auth-tab { flex: 1; background: transparent; border: none; font-size: 1.05rem; font-weight: 700; padding: 14px 24px; cursor: pointer; color: var(--text-muted); border-radius: 60px; transition: all 0.3s; }
+        .auth-tab.active { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; box-shadow: 0 8px 20px rgba(232,127,176,0.3); }
+        .auth-form { display: flex; flex-direction: column; gap: 20px; }
+        .auth-form.hidden { display: none; }
+        .auth-input, .auth-select { padding: 18px 24px; border: 2px solid rgba(255,208,228,0.6); border-radius: 60px; font-size: 1rem; background: rgba(255,255,255,0.95); width: 100%; }
+        .auth-input:focus { outline: none; border-color: var(--primary); }
+        .auth-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; }
+        .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(232,127,176,0.3); }
+        .auth-error { color: var(--warning); font-size: 0.85rem; text-align: center; background: rgba(255,224,240,0.9); padding: 10px; border-radius: 50px; }
         
-        /* ДАШБОРД */
-        .dashboard { display: none; }
-        .dashboard.show { display: block; }
-        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; background: #fff5f9; padding: 12px 20px; border-radius: 60px; margin-bottom: 24px; }
-        .date { background: #ffe0f0; padding: 6px 18px; border-radius: 40px; font-size: 0.85rem; }
-        .user { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-        .avatar { width: 48px; height: 48px; background: linear-gradient(135deg, #e87fb0, #f0a0c5); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; border: 2px solid white; }
-        .logout { background: #ffe0f0; border: none; padding: 8px 20px; border-radius: 40px; cursor: pointer; font-weight: 600; }
+        .dashboard-content { display: none; }
+        .dashboard-content.active { display: block; animation: fadeIn 0.6s ease; }
+        .dashboard-header {
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+            margin-bottom: 30px; background: rgba(255,245,249,0.8); backdrop-filter: blur(10px);
+            padding: 14px 24px; border-radius: 70px; border: 1px solid rgba(255,255,255,0.5);
+        }
+        .date-badge { background: linear-gradient(135deg, #ffe0f0, #ffd4e8); padding: 8px 20px; border-radius: 60px; font-size: 0.9rem; font-weight: 600; color: var(--primary-dark); }
+        .user-info { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .user-avatar { width: 55px; height: 55px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: white; font-weight: bold; cursor: pointer; border: 3px solid white; box-shadow: 0 5px 15px rgba(232,127,176,0.3); transition: all 0.3s; animation: glowPulse 2s infinite; }
+        .user-avatar:hover { transform: scale(1.05) rotate(5deg); }
+        .logout-btn { background: rgba(255,224,240,0.8); border: none; padding: 8px 22px; border-radius: 60px; color: var(--primary-dark); font-weight: 600; cursor: pointer; }
+        .logout-btn:hover { background: #ffd0e4; }
         
-        /* КАРТОЧКИ */
-        .card { background: rgba(255,255,255,0.92); border-radius: 32px; padding: 20px; margin-bottom: 24px; }
-        .card-title { font-weight: 800; font-size: 1.2rem; color: #c45a8c; margin-bottom: 16px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 56px; max-width: 520px; width: 90%; padding: 35px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .close-modal { background: none; border: none; font-size: 2rem; cursor: pointer; }
+        .profile-field { margin-bottom: 25px; }
+        .profile-field input { width: 100%; padding: 15px 22px; border: 2px solid var(--border); border-radius: 60px; font-size: 1rem; }
+        .avatar-selector { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+        .avatar-option { width: 55px; height: 55px; background: #ffe0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; cursor: pointer; border: 2px solid transparent; }
+        .avatar-option.selected { border-color: var(--primary); }
+        .save-profile-btn, .delete-account-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 16px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 15px; }
+        .delete-account-btn { background: #e06b9e; }
         
-        .flex-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-        .select-sm { padding: 10px 16px; border: 2px solid #ffe0f0; border-radius: 40px; background: white; }
-        .btn { background: linear-gradient(135deg, #e87fb0, #f0a0c5); color: white; border: none; border-radius: 40px; padding: 10px 20px; font-weight: 700; cursor: pointer; }
-        .btn-red { background: #e06b9e; }
+        .curator-group-info, .students-list, .chats-list, .users-list, .payments-section { background: rgba(255,255,255,0.92); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 1px solid var(--border); }
+        .students-grid, .users-grid { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 18px; max-height: 220px; overflow-y: auto; }
+        .student-card, .user-card { background: rgba(255,245,249,0.7); border-radius: 70px; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; flex: 1; }
+        .student-card:hover, .user-card:hover { transform: translateY(-3px); background: rgba(255,240,248,0.95); }
+        .student-card.active { border-color: var(--primary); background: #ffe0f0; }
+        .student-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+        .delete-user-btn { background: #e06b9e; color: white; border: none; border-radius: 40px; padding: 6px 14px; font-size: 0.7rem; cursor: pointer; }
         
-        .student-item, .chat-item, .parent-item { background: #fff5f9; border-radius: 60px; padding: 12px 20px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; }
-        .student-item.active, .chat-item.active { background: #ffe0f0; border: 1px solid #e87fb0; }
-        .student-item:hover, .chat-item:hover { transform: translateX(4px); background: #ffe0f0; }
-        .student-avatar { width: 40px; height: 40px; background: #e87fb0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+        .chats-grid { display: flex; flex-direction: column; gap: 12px; max-height: 320px; overflow-y: auto; }
+        .chat-item { display: flex; align-items: center; gap: 15px; padding: 14px 20px; background: rgba(255,245,249,0.7); border-radius: 70px; cursor: pointer; transition: all 0.3s; border: 1px solid transparent; }
+        .chat-item:hover { transform: translateX(8px); background: rgba(255,240,248,0.95); }
+        .chat-item.active { border-color: var(--primary); background: #ffe0f0; }
+        .chat-avatar { width: 50px; height: 50px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem; }
         
-        .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-bottom: 24px; }
-        .stat { background: rgba(255,255,255,0.9); border-radius: 28px; padding: 20px; text-align: center; }
-        .stat-value { font-size: 2rem; font-weight: 800; color: #e87fb0; }
+        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 30px; }
+        @media (max-width: 768px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+        .stat-card { background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); border-radius: 40px; padding: 25px; text-align: center; border: 1px solid rgba(255,255,255,0.5); transition: all 0.4s; }
+        .stat-card:hover { transform: translateY(-8px); background: rgba(255,255,255,0.95); }
+        .stat-icon { font-size: 2.8rem; margin-bottom: 15px; }
+        .stat-value { font-size: 2.4rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); -webkit-background-clip: text; background-clip: text; color: transparent; }
         
+        .card-title { font-weight: 800; font-size: 1.25rem; margin-bottom: 20px; color: var(--primary-dark); display: flex; align-items: center; gap: 12px; }
+        .filter-bar { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+        .filter-select, .filter-input { padding: 10px 18px; border: 2px solid #ffcce0; border-radius: 60px; background: white; }
         .grades-table { width: 100%; border-collapse: collapse; }
-        .grades-table th, .grades-table td { padding: 12px 8px; border-bottom: 1px solid #ffe0f0; text-align: left; }
-        .grade-badge { background: #ffe0f0; padding: 4px 12px; border-radius: 30px; font-weight: 700; }
+        .grades-table th, .grades-table td { text-align: left; padding: 14px 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        .grade-badge-sm { background: #ffe0f0; padding: 5px 14px; border-radius: 40px; font-weight: 700; display: inline-block; }
         
-        .progress-bar { background: #f0dce8; border-radius: 30px; height: 12px; margin: 16px 0; overflow: hidden; }
-        .progress-fill { background: #e87fb0; width: 0%; height: 100%; border-radius: 30px; transition: width 0.4s; }
+        .payment-calendar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 16px; }
+        @media (max-width: 600px) { .payment-calendar { grid-template-columns: repeat(3, 1fr); } }
+        .payment-month-card { background: white; border-radius: 20px; padding: 12px; text-align: center; cursor: pointer; border: 2px solid var(--border); transition: 0.2s; }
+        .payment-month-card.paid { background: var(--payment-paid); border-color: var(--success); }
+        .payment-month-card.unpaid { background: var(--payment-unpaid); border-color: var(--warning); }
+        .payment-month-card:hover { transform: translateY(-3px); }
         
-        .main-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; margin-bottom: 24px; }
-        .main-card { background: rgba(255,255,255,0.94); border-radius: 32px; padding: 24px; }
+        .curator-panel { background: rgba(255,240,248,0.95); border-radius: 48px; padding: 28px; margin-top: 25px; border: 2px solid #ffd9ec; }
+        .control-group { display: flex; gap: 18px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+        .control-group label { font-weight: 700; color: var(--text-muted); min-width: 100px; }
+        .curator-select, .curator-input { padding: 12px 18px; border: 2px solid #ffcce0; border-radius: 60px; background: white; }
+        .curator-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 12px 24px; font-weight: 700; cursor: pointer; }
+        .grade-type-group { display: flex; gap: 15px; align-items: center; }
+        .success-msg { color: var(--success); background: #e8f4e6; padding: 12px; border-radius: 60px; text-align: center; margin-top: 18px; display: none; }
         
-        .chat-container { background: white; border-radius: 28px; overflow: hidden; }
-        .chat-msgs { max-height: 340px; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; background: #fefafc; }
-        .message { display: flex; gap: 12px; max-width: 80%; }
-        .message.parent { align-self: flex-end; flex-direction: row-reverse; }
-        .msg-avatar { width: 36px; height: 36px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; }
-        .message.parent .msg-avatar { background: #e87fb0; color: white; }
-        .msg-bubble { padding: 10px 16px; border-radius: 24px; background: white; border: 1px solid #ffe0f0; }
-        .message.parent .msg-bubble { background: #e87fb0; color: white; border: none; }
-        .chat-input { padding: 16px 20px; background: white; border-top: 1px solid #ffe0f0; display: flex; gap: 12px; }
-        .chat-input input { flex: 1; padding: 12px 18px; border: 2px solid #ffe0f0; border-radius: 40px; }
+        .bottom-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; margin: 30px 0 20px; padding-top: 25px; border-top: 2px dashed rgba(255,224,240,0.8); }
+        .nav-btn { background: rgba(255,255,255,0.9); border: 2px solid #ffd0e4; padding: 14px 32px; border-radius: 70px; font-weight: 700; color: var(--primary-dark); cursor: pointer; transition: all 0.3s; }
+        .nav-btn:hover { background: #fff0f8; transform: translateY(-3px); }
+        .nav-btn.active-dashboard { background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-color: var(--primary); color: white; }
         
-        .payment-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; margin-top: 16px; }
-        .payment-card { background: white; border-radius: 20px; padding: 12px; text-align: center; cursor: pointer; border: 2px solid #ffe0f0; transition: 0.2s; }
-        .payment-card.paid { background: #a8e6cf; border-color: #2d6a4f; }
-        .payment-card.unpaid { background: #ffb3ba; border-color: #e06b9e; }
+        .main-dashboard { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; margin-bottom: 40px; }
+        .card { background: rgba(255,255,255,0.92); border-radius: 48px; padding: 28px 26px; border: 1px solid rgba(255,255,255,0.6); transition: all 0.4s; position: relative; overflow: hidden; }
+        .card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--primary), var(--primary-light), #ffc0dc); background-size: 200% 100%; animation: shimmer 3s infinite linear; }
+        .card:hover { transform: translateY(-8px); background: rgba(255,255,255,0.98); }
+        .progress-bar-container { background: #f0dce8; border-radius: 40px; height: 12px; margin: 20px 0; overflow: hidden; }
+        .progress-bar { background: linear-gradient(90deg, var(--primary), var(--primary-light)); border-radius: 40px; height: 100%; width: 0%; transition: width 0.6s; }
         
-        .bottom-nav { display: flex; justify-content: center; gap: 20px; margin-top: 30px; padding-top: 20px; border-top: 2px dashed #ffe0f0; }
-        .nav-btn { background: white; border: 2px solid #ffe0f0; padding: 12px 28px; border-radius: 50px; font-weight: 700; cursor: pointer; }
-        .nav-btn.active { background: #e87fb0; border-color: #e87fb0; color: white; }
+        .chat-container-modern { background: rgba(254,248,252,0.95); border-radius: 40px; overflow: hidden; }
+        .chat-header { padding: 18px 24px; background: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 15px; }
+        .chat-messages-modern { max-height: 380px; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 18px; background: rgba(254,250,253,0.8); }
+        .message-modern { display: flex; gap: 14px; max-width: 85%; }
+        .message-modern.parent { align-self: flex-end; flex-direction: row-reverse; }
+        .message-modern.curator { align-self: flex-start; }
+        .message-avatar { width: 42px; height: 42px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; }
+        .message-modern.parent .message-avatar { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; }
+        .message-bubble-modern { padding: 12px 20px; border-radius: 28px; font-size: 0.95rem; }
+        .message-modern.parent .message-bubble-modern { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border-bottom-right-radius: 8px; }
+        .message-modern.curator .message-bubble-modern { background: white; border: 1px solid var(--border); border-bottom-left-radius: 8px; }
+        .chat-input-modern { padding: 18px 24px; background: white; border-top: 1px solid var(--border); display: flex; gap: 15px; }
+        .chat-input-modern input { flex: 1; padding: 14px 22px; border: 1px solid var(--border); border-radius: 60px; }
+        .chat-send-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 14px 32px; font-weight: 700; cursor: pointer; }
         
-        .detail-page { background: rgba(255,255,255,0.95); border-radius: 32px; padding: 28px; }
-        .detail-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 24px; color: #c45a8c; border-left: 5px solid #e87fb0; padding-left: 20px; }
-        .back-link { background: none; border: none; color: #e87fb0; font-weight: 700; margin-top: 20px; cursor: pointer; padding: 10px 20px; }
-        .empty { text-align: center; padding: 60px; background: rgba(255,240,248,0.9); border-radius: 32px; }
+        .notification { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 12px 20px; border-radius: 60px; z-index: 1000; animation: slideIn 0.3s; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(6px); z-index: 1000; justify-content: center; align-items: center; }
-        .modal.show { display: flex; }
-        .modal-content { background: white; border-radius: 48px; max-width: 500px; width: 90%; padding: 30px; }
-        .modal-header { display: flex; justify-content: space-between; margin-bottom: 24px; }
-        .close { background: none; border: none; font-size: 1.8rem; cursor: pointer; }
-        .avatar-opt { width: 50px; height: 50px; background: #ffe0f0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 1.6rem; cursor: pointer; border: 2px solid transparent; margin: 5px; }
-        .avatar-opt.selected { border-color: #e87fb0; }
-        
+        .detail-page { background: rgba(255,255,255,0.95); border-radius: 56px; padding: 28px 32px 36px; }
+        .detail-title { font-size: 2rem; font-weight: 800; margin-bottom: 30px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); -webkit-background-clip: text; background-clip: text; color: transparent; border-left: 7px solid var(--primary); padding-left: 25px; }
+        .back-link { background: transparent; border: none; color: var(--primary); font-weight: 700; margin-top: 30px; cursor: pointer; padding: 12px 24px; border-radius: 60px; }
+        .no-students-message { text-align: center; padding: 70px; background: rgba(255,240,248,0.9); border-radius: 56px; }
+        .group-selector { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
         .subject-tag { background: #ffe0f0; padding: 6px 12px; border-radius: 40px; display: inline-flex; align-items: center; gap: 8px; margin: 4px; }
-        .delete-subj { background: none; border: none; color: #e06b9e; cursor: pointer; font-size: 1rem; }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="bg" id="bgAnim"></div>
-<div class="container" id="app">
+<div class="floating-bg" id="floatingBg"></div>
+<div class="app-container" id="app">
 
-<div id="profileModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>👤 Профиль</h3><button class="close" onclick="closeModal()">×</button></div><div class="profile-field" style="margin-bottom:20px"><label>Имя</label><input type="text" id="profileName" style="width:100%;padding:14px;border:2px solid #ffe0f0;border-radius:50px;margin-top:8px;"></div><div class="profile-field" style="margin-bottom:20px"><label>Email</label><input type="email" id="profileEmail" readonly style="width:100%;padding:14px;border:2px solid #ffe0f0;border-radius:50px;background:#f5f5f5;margin-top:8px;"></div><div><label>Аватар</label><div id="avatarSelector" style="margin-top:12px;"></div></div><button class="btn" style="width:100%;margin-top:20px" onclick="saveProfile()">💾 Сохранить</button><button class="btn btn-red" style="width:100%;margin-top:12px" onclick="deleteAccount()">🗑️ Удалить аккаунт</button></div></div>
+<div id="profileModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>👤 Мой профиль</h3><button class="close-modal" onclick="closeProfileModal()">×</button></div><div class="profile-field"><label>Имя</label><input type="text" id="profileName"></div><div class="profile-field"><label>Email</label><input type="email" id="profileEmail" readonly style="background:#f5f5f5;"></div><div class="profile-field"><label>Аватар</label><div class="avatar-selector" id="avatarSelector"></div></div><button class="save-profile-btn" onclick="saveProfileChanges()">💾 Сохранить</button><button class="delete-account-btn" onclick="deleteAccount()">🗑️ Удалить аккаунт</button></div></div>
 
-<!-- АВТОРИЗАЦИЯ -->
-<div id="authBlock"><div class="auth-box"><div class="tabs"><button class="tab active" data-tab="login">🌸 Вход</button><button class="tab" data-tab="register">✨ Регистрация</button></div><div id="loginForm" class="auth-form"><input type="email" id="loginEmail" class="auth-input" placeholder="Email"><input type="password" id="loginPassword" class="auth-input" placeholder="Пароль"><button id="doLogin" class="auth-btn">🌟 Войти</button><div id="loginError" class="error" style="display:none"></div></div><div id="registerForm" class="auth-form hide"><input type="text" id="regName" class="auth-input" placeholder="Имя"><input type="email" id="regEmail" class="auth-input" placeholder="Email"><select id="regRole" class="auth-input"><option value="parent">Родитель</option><option value="curator">Куратор</option></select><div id="parentFields"><input type="text" id="regChildName" class="auth-input" placeholder="ФИО студента"><input type="text" id="regGroupNumber" class="auth-input" placeholder="Группа"></div><div id="curatorFields" style="display:none"><input type="text" id="regCuratorGroup" class="auth-input" placeholder="Ваша группа"></div><input type="password" id="regPassword" class="auth-input" placeholder="Пароль (мин.6)"><button id="doRegister" class="auth-btn">✨ Зарегистрироваться</button><div id="regError" class="error" style="display:none"></div></div></div></div>
+<div id="authBlock"><div class="auth-container"><div class="auth-tabs"><button class="auth-tab active" data-tab="login">🌸 Вход</button><button class="auth-tab" data-tab="register">✨ Регистрация</button></div><div id="loginForm" class="auth-form"><input type="email" id="loginEmail" class="auth-input" placeholder="Email"><input type="password" id="loginPassword" class="auth-input" placeholder="Пароль"><button id="doLoginBtn" class="auth-btn">🌟 Войти</button><div id="loginError" class="auth-error"></div></div><div id="registerForm" class="auth-form hidden"><input type="text" id="regName" class="auth-input" placeholder="Имя"><input type="email" id="regEmail" class="auth-input" placeholder="Email"><select id="regRole" class="auth-select"><option value="parent">Родитель</option><option value="curator">Куратор</option></select><div id="parentFields"><input type="text" id="regChildName" class="auth-input" placeholder="ФИО студента"><input type="text" id="regGroupNumber" class="auth-input" placeholder="Группа"></div><div id="curatorFields" style="display:none"><input type="text" id="regCuratorGroup" class="auth-input" placeholder="Ваша группа"></div><input type="password" id="regPassword" class="auth-input" placeholder="Пароль (мин.6)"><button id="doRegisterBtn" class="auth-btn">✨ Зарегистрироваться</button><div id="regError" class="auth-error"></div></div></div></div>
 
-<!-- ДАШБОРД -->
-<div id="dashboardBlock" class="dashboard">
-    <div class="header"><div class="date" id="dateBadge"></div><div class="user"><div class="avatar" id="userAvatar" onclick="openModal()">🌸</div><span>Привет, <span id="userName"></span>!</span><span id="roleBadge"></span><button id="logoutBtn" class="logout">🚪 Выйти</button></div></div>
+<div id="dashboardBlock" class="dashboard-content">
+    <div class="dashboard-header"><div class="date-badge" id="currentDateBadge"></div><div class="user-info"><div class="user-avatar" id="userAvatar" onclick="openProfileModal()">🌸</div><span>Привет, <span id="userNameSpan"></span>!</span><span id="userRoleBadge"></span><button id="logoutBtnMain" class="logout-btn">🚪 Выйти</button></div></div>
 
     <!-- ОПЛАТА (только для родителей) -->
-    <div id="paymentsBlock" class="card" style="display:none"><div class="card-title">💰 Оплата колледжа</div><div id="paymentGrid" class="payment-grid"></div><div id="paymentMsg" style="margin-top:12px;text-align:center;padding:8px;background:#e8f4e6;border-radius:40px;display:none;"></div></div>
+    <div id="paymentsSection" class="payments-section" style="display:none"><div class="card-title">💰 Оплата колледжа</div><div id="paymentCalendar" class="payment-calendar"></div><div id="paymentMessage" style="margin-top:12px;text-align:center;padding:8px;background:#e8f4e6;border-radius:40px;display:none;"></div></div>
 
-    <!-- КУРАТОРСКАЯ ЗОНА -->
-    <div id="curatorZone" style="display:none">
-        <div class="card"><div class="flex-row" style="margin-bottom:16px"><strong>📚 Мои группы:</strong><select id="groupSelect" class="select-sm"></select><button id="delGroupBtn" class="btn btn-red">🗑️ Удалить</button><input type="text" id="newGroupInput" placeholder="Новая группа" class="select-sm"><button id="addGroupBtn" class="btn">➕ Добавить</button></div><div><strong>📖 Предметы:</strong><div id="subjectsList" style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;"></div><input type="text" id="newSubjectInput" placeholder="Новый предмет" class="select-sm"><button id="addSubjectBtn" class="btn">➕ Добавить</button></div></div>
-        <div id="parentsBlock" class="card" style="display:none"><div class="card-title">👥 Родители группы</div><div id="parentsList"></div></div>
-        <div id="studentsBlock" class="card" style="display:none"><div class="card-title">👨‍🎓 Студенты</div><div id="studentsList"></div></div>
-        <div id="chatsBlock" class="card" style="display:none"><div class="card-title">💬 Чаты с родителями</div><div id="chatsList"></div></div>
+    <!-- КУРАТОРСКАЯ ОБЛАСТЬ -->
+    <div id="curatorArea" style="display:none">
+        <div class="curator-group-info">
+            <div class="group-selector"><strong>📚 Мои группы:</strong><select id="curatorGroupSelect" class="curator-select"></select><button id="deleteGroupBtn" class="curator-btn">🗑️ Удалить группу</button><input type="text" id="newGroupNameInput" placeholder="Новая группа" style="padding:8px 16px;border-radius:40px;border:2px solid #ffe0f0;"><button id="confirmAddGroupBtn" class="curator-btn">➕ Добавить</button></div>
+            <div><strong>📖 Предметы группы:</strong><div id="groupSubjectsList" style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;"></div><input type="text" id="newSubjectName" placeholder="Новый предмет" style="padding:8px 16px;border-radius:40px;border:2px solid #ffe0f0;"><button id="addSubjectToGroupBtn" class="curator-btn">➕ Добавить предмет</button></div>
+        </div>
+        <div id="registeredUsersContainer" class="users-list" style="display:none"><div class="card-title">👥 Родители группы</div><div id="usersGrid" class="users-grid"></div></div>
+        <div id="studentsListContainer" class="students-list" style="display:none"><div class="card-title">👨‍🎓 Студенты группы</div><div id="studentsGrid" class="students-grid"></div></div>
+        <div id="chatsListContainer" class="chats-list" style="display:none"><div class="card-title">💬 Чаты с родителями</div><div id="chatsGrid" class="chats-grid"></div></div>
     </div>
 
-    <!-- СТАТИСТИКА СТУДЕНТА -->
-    <div id="statsBlock" style="display:none">
-        <div class="card" style="background:linear-gradient(135deg,#fff0f8,#ffe4f0);padding:14px 20px"><div style="display:flex;justify-content:space-between"><span>🎓 <strong id="currentStudent"></strong></span><span id="groupBadge" style="background:#ffe0f0;padding:4px 14px;border-radius:40px"></span></div></div>
-        <div class="stats-grid"><div class="stat"><div class="stat-value" id="avgStat">—</div><div>Средний балл</div></div><div class="stat"><div class="stat-value" id="absStat">—</div><div>Пропуски</div></div><div class="stat"><div class="stat-value" id="subjStat">—</div><div>Предметов</div></div></div>
-        <div class="card"><div class="card-title">📋 Оценки</div><div class="flex-row" style="margin-bottom:16px"><select id="subjectFilter" class="select-sm"><option value="">Все предметы</option></select><button id="clearFilter" class="btn">Очистить</button></div><div id="gradesTable" style="max-height:300px;overflow-y:auto"></div></div>
-        <div class="card"><div class="card-title">📊 Распределение</div><div id="distribution"></div></div>
-        <div class="main-grid"><div class="main-card"><div class="card-title">📊 Успеваемость</div><div><span>Средний балл:</span><span id="avgDisplay" style="font-size:1.8rem;font-weight:800;margin-left:10px">—</span></div><div class="progress-bar"><div class="progress-fill" id="avgBar"></div></div><button class="btn" style="width:100%;margin-top:16px" data-page="progress">📈 Подробнее →</button></div><div class="main-card"><div class="card-title">📆 Посещаемость</div><div><span>Пропуски:</span><span id="absDisplay" style="font-size:1.8rem;font-weight:800;margin-left:10px">—</span></div><div class="progress-bar"><div class="progress-fill" id="attBar"></div></div><button class="btn" style="width:100%;margin-top:16px" data-page="attendance">📅 Подробнее →</button></div><div class="main-card" style="grid-column:1/-1"><div class="card-title">💬 Чат</div><div class="chat-container"><div class="chat-msgs" id="chatMessages"></div><div class="chat-input"><input type="text" id="chatInput" placeholder="Сообщение..."><button id="sendBtn" class="btn">Отправить</button></div></div></div></div>
+    <div id="studentStatsBlock" style="display:none">
+        <div id="currentStudentInfo" style="background:linear-gradient(135deg,rgba(255,240,248,0.9),rgba(255,232,244,0.9));border-radius:40px;padding:16px 24px;margin-bottom:22px;display:flex;justify-content:space-between;"><span>🎓 <strong id="currentStudentName"></strong></span><span id="studentGroupBadge" style="background:#ffe0f0;padding:6px 16px;border-radius:40px;"></span></div>
+        <div class="stats-row"><div class="stat-card"><div class="stat-icon">📚</div><div class="stat-value" id="avgScoreStat">—</div><div class="stat-label">Средний балл</div></div><div class="stat-card"><div class="stat-icon">📅</div><div class="stat-value" id="absencesStat">—</div><div class="stat-label">Пропуски</div></div><div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-value" id="subjectsCountStat">—</div><div class="stat-label">Предметов</div></div></div>
+        <div class="all-grades-section" style="background:rgba(255,255,255,0.9);border-radius:48px;padding:24px;margin-bottom:28px;"><div class="card-title">📋 История оценок</div><div class="filter-bar"><select id="filterSubject"><option value="">Все предметы</option></select><button id="clearFiltersBtn" class="curator-btn">Очистить</button></div><div id="gradesTableContainer" style="max-height:400px;overflow-y:auto;"></div></div>
+        <div class="distribution-container" style="background:rgba(255,255,255,0.9);border-radius:48px;padding:24px;margin-bottom:28px;"><div class="card-title">📊 Распределение оценок</div><div id="distributionContent"></div></div>
+        <main class="main-dashboard" id="mainDashboard">
+            <div class="card"><div class="card-title">📊 Успеваемость</div><div><span>Средний балл:</span><span id="avgScoreDisplay" style="font-size:2rem;font-weight:800;">—</span></div><div class="progress-bar-container"><div class="progress-bar" id="avgProgress"></div></div><button class="nav-btn" style="margin-top:20px;width:100%;" data-page="detailed-progress">📈 Подробнее →</button></div>
+            <div class="card"><div class="card-title">📆 Посещаемость</div><div><span>Пропуски:</span><span id="absencesDisplay" style="font-size:2rem;font-weight:800;">—</span></div><div class="progress-bar-container"><div class="progress-bar" id="attendanceProgress"></div></div><button class="nav-btn" style="margin-top:20px;width:100%;" data-page="attendance-detail">📅 Подробнее →</button></div>
+            <div class="card" style="grid-column:1/-1"><div class="card-title">💬 Чат</div><div class="chat-container-modern"><div class="chat-header"><div style="width:45px;height:45px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:50%;display:flex;align-items:center;justify-content:center;">💬</div><div><h4 id="chatHeaderName">Чат</h4></div></div><div id="chatMessagesModern" class="chat-messages-modern"></div><div class="chat-input-modern"><input type="text" id="modernChatInput" placeholder="Сообщение..."><button id="modernSendBtn" class="chat-send-btn">Отправить</button></div></div></div>
+        </main>
     </div>
-    <div id="emptyMessage" class="empty" style="display:none"><h3>Нет студентов</h3></div>
-
-    <!-- ПАНЕЛЬ КУРАТОРА (ОЦЕНКИ/ПРОПУСКИ) -->
-    <div id="curatorPanel" class="card" style="display:none;background:#fff0f8"><h4 style="margin-bottom:16px">🔧 Панель куратора</h4><div class="flex-row" style="margin-bottom:16px"><label style="min-width:90px">Ученик:</label><select id="gradeStudentSelect" class="select-sm"></select></div><div class="flex-row" style="margin-bottom:16px"><label style="min-width:90px">Оценка:</label><select id="gradeSubject" class="select-sm"></select><select id="gradeValue" class="select-sm"><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option></select><div style="display:flex;gap:12px;margin-left:10px"><label><input type="radio" name="gradeType" value="normal" checked> Обычная</label><label><input type="radio" name="gradeType" value="control"> Контрольная (×2)</label></div><input type="date" id="gradeDateInput" class="select-sm"><input type="text" id="gradeCommentInput" placeholder="Комментарий" class="select-sm"><button id="addGradeBtn" class="btn">Поставить</button></div><div class="flex-row" style="margin-bottom:16px"><label style="min-width:90px">Пропуск:</label><input type="date" id="absenceDateInput" class="select-sm"><select id="absenceTypeSelect" class="select-sm"><option value="болезнь">Болезнь</option><option value="уважительная">Уважительная</option><option value="неуважительная">Неуважительная</option></select><button id="addAbsenceBtn" class="btn">Добавить</button></div><div id="curatorMsg" style="display:none;background:#e8f4e6;padding:10px;border-radius:40px;margin-top:12px;text-align:center"></div></div>
-
-    <div class="bottom-nav"><button class="nav-btn active" data-page="main">📋 Главная</button><button class="nav-btn" data-page="progress">📈 Успеваемость</button><button class="nav-btn" data-page="attendance">📅 Посещаемость</button></div>
-    <div id="dynamicPage"></div>
+    
+    <div id="noStudentsMessage" class="no-students-message" style="display:none"><h3>Нет студентов</h3></div>
+    
+    <div id="curatorPanel" class="curator-panel" style="display:none"><h4>🔧 Панель куратора</h4><div class="control-group"><label>Ученик:</label><select id="studentForGradeSelect" class="curator-select"></select></div><div class="control-group"><label>Оценка:</label><select id="subjectSelect" class="curator-select"></select><select id="gradeSelect" class="curator-select"><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option></select><div class="grade-type-group"><label><input type="radio" name="gradeType" value="normal" checked> Обычная</label><label><input type="radio" name="gradeType" value="control"> Контрольная (×2)</label></div><input type="date" id="gradeDate"><input type="text" id="gradeComment" placeholder="Комментарий"><button id="addGradeBtn" class="curator-btn">Поставить</button></div><div class="control-group"><label>Пропуск:</label><input type="date" id="absenceDate"><select id="absenceType"><option value="болезнь">Болезнь</option><option value="уважительная">Уважительная</option><option value="неуважительная">Неуважительная</option></select><button id="addAbsenceBtn" class="curator-btn">Добавить</button></div><div id="curatorSuccessMsg" class="success-msg"></div></div>
+    
+    <nav class="bottom-nav"><button class="nav-btn active-dashboard" data-page="dashboard">📋 Главная</button><button class="nav-btn" data-page="detailed-progress">📈 Успеваемость</button><button class="nav-btn" data-page="attendance-detail">📅 Посещаемость</button></nav>
+    <div id="dynamic-page-content" class="dynamic-content"></div>
 </div>
 </div>
 
 <script>
-// ДАННЫЕ ПО УМОЛЧАНИЮ
+// ДАННЫЕ ПО УМОЛЧАНИЮ (если нет аккаунтов)
 if (!localStorage.getItem('users') || JSON.parse(localStorage.getItem('users')).length === 0) {
     localStorage.setItem('users', JSON.stringify([
         { id: 'u1', name: 'ГЕННАДИЙ ДРАГОН', email: 'gennadij@dragons.ru', password: 'dragongennadij', role: 'curator' },
@@ -171,7 +233,7 @@ if (!localStorage.getItem('users') || JSON.parse(localStorage.getItem('users')).
         { id: 's1', name: 'Студент Маний', group: 'П-201', parentEmail: 'maniy@danis.ru', parentName: 'МАНИЙ ДАНИС', grades: {}, absences: [] },
         { id: 's2', name: 'Студент Султанов', group: 'П-202', parentEmail: 'sultanov@danis.ru', parentName: 'СУЛТАНОВ ДАНИС', grades: {}, absences: [] }
     ]));
-    localStorage.setItem('curatorGroups', JSON.stringify({ 'gennadij@dragons.ru': ['П-201','П-202'], 'chief@kif.ru': ['П-203'] }));
+    localStorage.setItem('curatorGroups', JSON.stringify({ 'gennadij@dragons.ru': ['П-201', 'П-202'], 'chief@kif.ru': ['П-203'] }));
     localStorage.setItem('groupSubjects', JSON.stringify({ 'П-201': ['Математика','Русский язык','Физика','Информатика','Физкультура'], 'П-202': ['Математика','Литература','Химия','Биология','Физкультура'], 'П-203': ['Математика','Английский','История','Обществознание','Физкультура'] }));
     localStorage.setItem('chatMessages', JSON.stringify([]));
     localStorage.setItem('userAvatars', JSON.stringify({}));
@@ -180,250 +242,260 @@ if (!localStorage.getItem('users') || JSON.parse(localStorage.getItem('users')).
 
 let students = JSON.parse(localStorage.getItem('students'));
 let users = JSON.parse(localStorage.getItem('users'));
-let chats = JSON.parse(localStorage.getItem('chatMessages'));
+let chatMessages = JSON.parse(localStorage.getItem('chatMessages'));
 let curatorGroups = JSON.parse(localStorage.getItem('curatorGroups'));
 let groupSubjects = JSON.parse(localStorage.getItem('groupSubjects'));
-let avatars = JSON.parse(localStorage.getItem('userAvatars'));
+let userAvatars = JSON.parse(localStorage.getItem('userAvatars'));
 let payments = JSON.parse(localStorage.getItem('payments'));
 let currentUser = null;
-let selectedStudent = null, selectedChat = null, selectedGrade = null, activeGroup = null, lastSubject = null;
+let selectedStudentId = null, selectedChatStudentId = null, selectedGradeStudentId = null, currentCuratorActiveGroup = null, lastSelectedSubject = null;
+const AVATARS = ["🌸","🌺","🌷","🌹","⭐","🌟","✨","💫","🐱","🦋","🌈","🍎","📚","🎓"];
 
-function save() {
+function saveAll() {
     localStorage.setItem('students', JSON.stringify(students));
     localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('chatMessages', JSON.stringify(chats));
+    localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
     localStorage.setItem('curatorGroups', JSON.stringify(curatorGroups));
     localStorage.setItem('groupSubjects', JSON.stringify(groupSubjects));
-    localStorage.setItem('userAvatars', JSON.stringify(avatars));
+    localStorage.setItem('userAvatars', JSON.stringify(userAvatars));
     localStorage.setItem('payments', JSON.stringify(payments));
 }
 
-function getStudent(id) { return students.find(s=>s.id===id); }
-function getParentStudent(email) { return students.find(s=>s.parentEmail===email); }
-function getSubjects(group) { if (!groupSubjects[group]) groupSubjects[group] = ['Математика','Русский язык','Физика','Информатика','Физкультура']; return groupSubjects[group]; }
-function avgGrade(st) { if(!st?.grades) return "—"; let t=0,s=0; for(let sub in st.grades) for(let g of st.grades[sub]){ let v=typeof g==='object'?g.value:g, w=(typeof g==='object'&&g.weight)?g.weight:1; s+=v*w; t+=w; } return t===0?"—":(s/t).toFixed(2); }
+function getStudentById(id) { return students.find(s=>s.id===id); }
+function getStudentForParent(email) { return students.find(s=>s.parentEmail===email); }
+function getSubjectsForGroup(g) { if (!groupSubjects[g]) groupSubjects[g] = ["Математика","Русский язык","Физика","Информатика","Физкультура"]; return groupSubjects[g]; }
+function avgGrade(st) { if(!st?.grades) return "—"; let t=0,s=0; for(let subj in st.grades) for(let g of st.grades[subj]){ let v=typeof g==='object'?g.value:g, w=(typeof g==='object'&&g.weight)?g.weight:1; s+=v*w; t+=w; } return t===0?"—":(s/t).toFixed(2); }
 
 // ОПЛАТА
-function initPayments(sid){ if(!payments[sid]){ payments[sid]={}; ['Сен','Окт','Ноя','Дек','Янв','Фев','Мар','Апр','Май','Июн'].forEach(m=>payments[sid][m]={paid:false}); save(); } }
-function renderPayments(){ let st=getParentStudent(currentUser?.email); if(!st) return; initPayments(st.id); let html=Object.keys(payments[st.id]).map(m=>`<div class="payment-card ${payments[st.id][m].paid?'paid':'unpaid'}" onclick="togglePay('${st.id}','${m}')"><div>${payments[st.id][m].paid?'✅':'❌'}</div><div>${m}</div></div>`).join(''); document.getElementById('paymentGrid').innerHTML=html; }
-window.togglePay=function(sid,m){ payments[sid][m].paid=!payments[sid][m].paid; save(); renderPayments(); let msg=document.getElementById('paymentMsg'); msg.style.display='block'; msg.innerHTML=payments[sid][m].paid?`✅ ${m} оплачен!`:`❌ Оплата отменена`; setTimeout(()=>msg.style.display='none',2000); };
+function initPayments(sid){ if(!payments[sid]){ payments[sid]={}; ['Сен','Окт','Ноя','Дек','Янв','Фев','Мар','Апр','Май','Июн'].forEach(m=>payments[sid][m]={paid:false}); saveAll(); } }
+function renderPayments(){ let st=getStudentForParent(currentUser?.email); if(!st) return; initPayments(st.id); document.getElementById('paymentCalendar').innerHTML=Object.keys(payments[st.id]).map(m=>`<div class="payment-month-card ${payments[st.id][m].paid?'paid':'unpaid'}" onclick="togglePayment('${st.id}','${m}')"><div>${payments[st.id][m].paid?'✅':'❌'}</div><div>${m}</div></div>`).join(''); }
+window.togglePayment=function(sid,m){ payments[sid][m].paid=!payments[sid][m].paid; saveAll(); renderPayments(); let msg=document.getElementById('paymentMessage'); msg.style.display='block'; msg.innerHTML=payments[sid][m].paid?`✅ ${m} оплачен!`:`❌ Оплата отменена`; setTimeout(()=>msg.style.display='none',2000); };
 
-// УДАЛЕНИЕ РОДИТЕЛЯ
-window.deleteParent=function(email,name){
+// УДАЛЕНИЕ РОДИТЕЛЯ КУРАТОРОМ
+window.deleteParent = function(email, name){
     if(confirm(`Удалить родителя "${name}" из группы? Связь с учеником будет разорвана.`)){
-        let st=students.find(s=>s.parentEmail===email && s.group===activeGroup);
-        if(st){ st.parentEmail=null; st.parentName=null; save(); renderParents(); renderStudents(); renderChats(); let msg=document.getElementById('curatorMsg'); msg.style.display='block'; msg.innerHTML=`✅ Родитель "${name}" удалён`; setTimeout(()=>msg.style.display='none',2000); }
+        let student = students.find(s=>s.parentEmail===email && s.group===currentCuratorActiveGroup);
+        if(student){ student.parentEmail=null; student.parentName=null; saveAll(); renderRegisteredUsers(); renderStudentsList(); renderChatsList(); document.getElementById('curatorSuccessMsg').innerHTML=`✅ Родитель "${name}" удалён`; document.getElementById('curatorSuccessMsg').style.display='block'; setTimeout(()=>document.getElementById('curatorSuccessMsg').style.display='none',2000); }
     }
 };
 
-function renderParents(){
-    if(!activeGroup || currentUser?.role!=='curator') return;
-    let parents=users.filter(u=>students.some(s=>s.group===activeGroup && s.parentEmail===u.email));
-    let div=document.getElementById('parentsList'), block=document.getElementById('parentsBlock');
-    if(parents.length===0){ block.style.display='none'; return; }
-    block.style.display='block';
-    div.innerHTML=parents.map(p=>`<div class="parent-item"><div><strong>${p.name}</strong><br><small>${p.email}</small></div><button class="btn btn-red" style="padding:6px 14px;font-size:0.75rem" onclick="window.deleteParent('${p.email}','${p.name.replace(/'/g,"\\'")}')">🗑️ Удалить</button></div>`).join('');
+function renderRegisteredUsers(){
+    if(!currentCuratorActiveGroup || currentUser?.role!=='curator') return;
+    let parents=users.filter(u=>students.some(s=>s.group===currentCuratorActiveGroup && s.parentEmail===u.email));
+    let container=document.getElementById('usersGrid'), usersDiv=document.getElementById('registeredUsersContainer');
+    if(!container) return;
+    if(parents.length===0){ usersDiv.style.display='none'; return; }
+    usersDiv.style.display='block';
+    container.innerHTML=parents.map(p=>`<div class="user-card"><div><strong>${p.name}</strong><br><small>${p.email}</small></div><button class="delete-user-btn" onclick="window.deleteParent('${p.email}','${p.name.replace(/'/g,"\\'")}')">🗑️ Удалить</button></div>`).join('');
 }
 
-function renderGrades(){
-    let st=getStudent(selectedStudent);
+function renderAllGradesTable(){
+    let st=getStudentById(selectedStudentId);
     if(!st) return;
     let grades=[];
     for(let s in st.grades) for(let g of st.grades[s]) grades.push({subject:s,value:typeof g==='object'?g.value:g,date:typeof g==='object'?g.date:"",comment:typeof g==='object'?g.comment:"",weight:typeof g==='object'?g.weight:1});
     grades.sort((a,b)=>(b.date||"").localeCompare(a.date||""));
-    let filter=document.getElementById('subjectFilter')?.value;
-    if(filter) grades=grades.filter(g=>g.subject===filter);
-    let cont=document.getElementById('gradesTable');
-    if(grades.length===0){ cont.innerHTML='<div style="text-align:center;padding:40px">📭 Нет оценок</div>'; return; }
-    cont.innerHTML=`<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g=>`<tr><td>${g.date||"—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge">${g.value}</span></td><td>${g.weight===2?'Контрольная ×2':'Обычная'}</td><td>${g.comment||"—"}</td></tr>`).join('')}</tbody></table>`;
+    let fs=document.getElementById('filterSubject')?.value;
+    if(fs) grades=grades.filter(g=>g.subject===fs);
+    let cont=document.getElementById('gradesTableContainer');
+    if(!cont) return;
+    if(grades.length===0){ cont.innerHTML='<div style="text-align:center;padding:40px;">📭 Нет оценок</div>'; return; }
+    cont.innerHTML=`<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g=>`<tr><td>${g.date||"—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight===2?'Контрольная ×2':'Обычная'}</td><td>${g.comment||"—"}</td>`).join('')}</tbody></table>`;
 }
 
-function renderDist(st){
+function renderGradeDistribution(st){
     if(!st) return;
     let cnt=[0,0,0,0],tot=0;
     for(let s in st.grades) for(let g of st.grades[s]){ let v=typeof g==='object'?g.value:g, w=(typeof g==='object'&&g.weight)?g.weight:1; if(v===5)cnt[0]+=w; else if(v===4)cnt[1]+=w; else if(v===3)cnt[2]+=w; else if(v===2)cnt[3]+=w; tot+=w; }
-    let names=["Отлично","Хорошо","Удовлетворительно","Неудовлетворительно"], cols=["#a8e6cf","#b8deff","#ffd3b6","#ffb3ba"];
-    let div=document.getElementById('distribution');
-    if(tot===0){ div.innerHTML='<div style="text-align:center;padding:40px">📊 Нет оценок</div>'; return; }
-    div.innerHTML=names.map((n,i)=>{ let p=tot>0?(cnt[i]/tot*100).toFixed(1):0; return `<div style="margin-bottom:15px"><div style="display:flex;justify-content:space-between"><span>${n}</span><span>${cnt[i]} шт (${p}%)</span></div><div style="background:#eee;border-radius:30px;height:30px"><div style="width:${p}%;background:${cols[i]};border-radius:30px;height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:10px">${p>15?p+'%':''}</div></div></div>`; }).join('');
+    let names=["Отлично","Хорошо","Удовлетворительно","Неудовлетворительно"], colors=["#a8e6cf","#b8deff","#ffd3b6","#ffb3ba"];
+    let cont=document.getElementById('distributionContent');
+    if(!cont) return;
+    if(tot===0){ cont.innerHTML='<div style="text-align:center;padding:40px;">📊 Нет оценок</div>'; return; }
+    cont.innerHTML=names.map((n,i)=>{ let pct=tot>0?(cnt[i]/tot*100).toFixed(1):0; return `<div style="margin-bottom:15px;"><div style="display:flex;justify-content:space-between;"><span>${n}</span><span>${cnt[i]} шт (${pct}%)</span></div><div style="background:#eee;border-radius:30px;height:30px;"><div style="width:${pct}%;background:${colors[i]};border-radius:30px;height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;">${pct>15?pct+'%':''}</div></div></div>`; }).join('');
 }
 
-function updateFilters(subs){
-    let fs=document.getElementById('subjectFilter');
-    if(fs) fs.innerHTML='<option value="">Все предметы</option>'+subs.map(s=>`<option value="${s}">${s}</option>`).join('');
-    let gs=document.getElementById('gradeSubject');
-    if(gs){ gs.innerHTML=subs.map(s=>`<option value="${s}">📚 ${s}</option>`).join(''); if(lastSubject && subs.includes(lastSubject)) gs.value=lastSubject; }
-    document.getElementById('subjStat').innerText=subs.length;
+function updateFilters(subjects){
+    let fs=document.getElementById('filterSubject');
+    if(fs) fs.innerHTML='<option value="">Все предметы</option>'+subjects.map(s=>`<option value="${s}">${s}</option>`).join('');
+    let ss=document.getElementById('subjectSelect');
+    if(ss){ ss.innerHTML=subjects.map(s=>`<option value="${s}">📚 ${s}</option>`).join(''); if(lastSelectedSubject && subjects.includes(lastSelectedSubject)) ss.value=lastSelectedSubject; }
+    document.getElementById('subjectsCountStat').innerText=subjects.length;
 }
 
-function displayStats(st){
+function displayStudentStats(st){
     if(!st) return;
-    let avg=avgGrade(st), abs=st.absences?.length||0, subs=getSubjects(st.group), avgP=avg!=="—"?parseFloat(avg)/5*100:0;
-    document.getElementById('avgDisplay').innerText=avg;
-    document.getElementById('avgStat').innerText=avg;
-    document.getElementById('absDisplay').innerText=abs;
-    document.getElementById('absStat').innerText=abs;
-    document.getElementById('subjStat').innerText=subs.length;
-    document.getElementById('avgBar').style.width=avgP+"%";
-    document.getElementById('attBar').style.width=Math.min(100,100-(abs/50*100))+"%";
-    document.getElementById('currentStudent').innerHTML=st.name;
-    document.getElementById('groupBadge').innerHTML=`Группа ${st.group}`;
-    updateFilters(subs);
+    let avg=avgGrade(st), abs=st.absences?.length||0, subjects=getSubjectsForGroup(st.group), avgP=avg!=="—"?parseFloat(avg)/5*100:0;
+    document.getElementById('avgScoreDisplay').innerText=avg;
+    document.getElementById('avgScoreStat').innerText=avg;
+    document.getElementById('absencesDisplay').innerText=abs;
+    document.getElementById('absencesStat').innerText=abs;
+    document.getElementById('subjectsCountStat').innerText=subjects.length;
+    document.getElementById('avgProgress').style.width=avgP+"%";
+    document.getElementById('attendanceProgress').style.width=Math.min(100,100-(abs/50*100))+"%";
+    document.getElementById('currentStudentName').innerHTML=st.name;
+    document.getElementById('studentGroupBadge').innerHTML=`Группа ${st.group}`;
+    updateFilters(subjects);
 }
 
-function renderStudents(){
-    if(!activeGroup) return;
-    let group=students.filter(s=>s.group===activeGroup);
-    let div=document.getElementById('studentsList'), block=document.getElementById('studentsBlock');
-    if(group.length===0){ block.style.display='none'; return; }
-    block.style.display='block';
-    div.innerHTML=group.map(s=>`<div class="student-item ${selectedStudent===s.id?'active':''}" onclick="selectStudent('${s.id}')"><div class="student-avatar">${s.name.charAt(0)}</div><div><strong>${s.name}</strong><br><small>${s.group}</small></div></div>`).join('');
-    let sel=document.getElementById('gradeStudentSelect');
-    if(sel){ sel.innerHTML='<option value="">-- Выберите ученика --</option>'+group.map(s=>`<option value="${s.id}" ${selectedGrade===s.id?'selected':''}>${s.name}</option>`).join(''); sel.onchange=function(){ if(this.value){ selectedGrade=this.value; selectedStudent=this.value; selectedChat=this.value; fullUpdate(); renderChat(); } }; }
+function renderStudentsList(){
+    if(!currentCuratorActiveGroup) return;
+    let group=students.filter(s=>s.group===currentCuratorActiveGroup);
+    let cont=document.getElementById('studentsGrid');
+    if(cont){ cont.innerHTML=group.map(s=>`<div class="student-card ${selectedStudentId===s.id?'active':''}" onclick="window.selectStudent('${s.id}')"><div class="student-avatar">${s.name.charAt(0)}</div><div><strong>${s.name}</strong><br><span style="font-size:0.7rem;">${s.group}</span></div></div>`).join(''); document.getElementById('studentsListContainer').style.display=group.length?'block':'none'; }
+    let sel=document.getElementById('studentForGradeSelect');
+    if(sel){ sel.innerHTML='<option value="">-- Выберите ученика --</option>'+group.map(s=>`<option value="${s.id}" ${selectedGradeStudentId===s.id?'selected':''}>${s.name}</option>`).join(''); sel.onchange=function(){ if(this.value){ selectedGradeStudentId=this.value; selectedStudentId=this.value; selectedChatStudentId=this.value; fullUpdate(); renderChatMessages(); } }; }
 }
 
-function renderChats(){
-    if(!activeGroup) return;
-    let group=students.filter(s=>s.group===activeGroup);
-    let div=document.getElementById('chatsList'), block=document.getElementById('chatsBlock');
-    if(group.length===0){ block.style.display='none'; return; }
-    block.style.display='block';
-    div.innerHTML=group.map(st=>{ let parent=users.find(u=>u.email===st.parentEmail); let pn=parent?parent.name:(st.parentName||"Родитель"); let last=chats.filter(m=>m.studentId===st.id).slice(-1)[0]; return `<div class="chat-item ${selectedChat===st.id?'active':''}" onclick="selectChat('${st.id}')"><div style="width:40px;height:40px;background:#e87fb0;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white">${pn.charAt(0)}</div><div><div><strong>💬 Чат с ${pn}</strong></div><div style="font-size:0.8rem">${last?last.text.substring(0,40):'Нет сообщений'}</div></div></div>`; }).join('');
+function renderChatsList(){
+    if(!currentCuratorActiveGroup) return;
+    let group=students.filter(s=>s.group===currentCuratorActiveGroup);
+    let grid=document.getElementById('chatsGrid');
+    if(!grid) return;
+    if(group.length===0){ document.getElementById('chatsListContainer').style.display='none'; return; }
+    document.getElementById('chatsListContainer').style.display='block';
+    grid.innerHTML=group.map(st=>{ let parent=users.find(u=>u.email===st.parentEmail); let pn=parent?parent.name:(st.parentName||"Родитель"); let last=chatMessages.filter(m=>m.studentId===st.id).slice(-1)[0]; return `<div class="chat-item ${selectedChatStudentId===st.id?'active':''}" onclick="window.selectChatStudent('${st.id}')"><div class="chat-avatar">${pn.charAt(0)}</div><div><div class="chat-name">💬 Чат с ${pn}</div><div class="chat-preview" style="font-size:0.8rem;">${last?last.text.substring(0,40):'Нет сообщений'}</div></div></div>`; }).join('');
 }
 
-function renderSubjects(){
-    if(!activeGroup) return;
-    let subs=getSubjects(activeGroup);
-    let div=document.getElementById('subjectsList');
-    div.innerHTML=subs.map(s=>`<span class="subject-tag">📘 ${s} <button class="delete-subj" data-subj="${s}">✖</button></span>`).join('');
-    document.querySelectorAll('.delete-subj').forEach(btn=>{ btn.onclick=()=>{ let sub=btn.dataset.subj; groupSubjects[activeGroup]=groupSubjects[activeGroup].filter(x=>x!==sub); save(); renderSubjects(); updateFilters(getSubjects(activeGroup)); fullUpdate(); }; });
+function renderGroupSubjectsUI(){
+    if(!currentCuratorActiveGroup) return;
+    let subs=getSubjectsForGroup(currentCuratorActiveGroup);
+    document.getElementById('groupSubjectsList').innerHTML=subs.map(s=>`<span class="subject-tag">📘 ${s} <button class="delete-subject-btn" data-subj="${s}" style="background:none;border:none;color:#e06b9e;cursor:pointer;">✖</button></span>`).join('');
+    document.querySelectorAll('.delete-subject-btn').forEach(btn=>{ btn.onclick=()=>{ let subj=btn.dataset.subj; groupSubjects[currentCuratorActiveGroup]=groupSubjects[currentCuratorActiveGroup].filter(x=>x!==subj); saveAll(); renderGroupSubjectsUI(); updateFilters(getSubjectsForGroup(currentCuratorActiveGroup)); fullUpdate(); }; });
+    let addBtn=document.getElementById('addSubjectToGroupBtn'); if(addBtn){ let nb=addBtn.cloneNode(true); addBtn.parentNode.replaceChild(nb,addBtn); nb.onclick=()=>{ let ns=document.getElementById('newSubjectName').value.trim(); if(ns && currentCuratorActiveGroup && !groupSubjects[currentCuratorActiveGroup].includes(ns)){ groupSubjects[currentCuratorActiveGroup].push(ns); saveAll(); renderGroupSubjectsUI(); updateFilters(getSubjectsForGroup(currentCuratorActiveGroup)); fullUpdate(); document.getElementById('newSubjectName').value=''; } }; }
 }
 
-function renderGroups(){
+function renderCuratorGroupsSelect(){
     let groups=curatorGroups[currentUser?.email]||[];
-    let sel=document.getElementById('groupSelect');
-    sel.innerHTML=groups.map(g=>`<option value="${g}" ${activeGroup===g?'selected':''}>📁 ${g}</option>`).join('');
-    sel.onchange=()=>{ activeGroup=sel.value; localStorage.setItem('activeGroup',activeGroup); fullUpdate(); };
-    if(groups.length && !activeGroup) activeGroup=groups[0];
+    let sel=document.getElementById('curatorGroupSelect');
+    sel.innerHTML=groups.map(g=>`<option value="${g}" ${currentCuratorActiveGroup===g?'selected':''}>📁 ${g}</option>`).join('');
+    sel.onchange=()=>{ currentCuratorActiveGroup=sel.value; localStorage.setItem('curatorActiveGroup',currentCuratorActiveGroup); fullUpdate(); };
+    if(groups.length && !currentCuratorActiveGroup) currentCuratorActiveGroup=groups[0];
 }
 
 function fullUpdate(){
     if(currentUser?.role==='curator'){
-        if(!activeGroup) return;
-        renderStudents(); renderChats(); renderSubjects(); renderParents();
-        let group=students.filter(s=>s.group===activeGroup);
-        if(group.length && (!selectedStudent || !group.find(s=>s.id===selectedStudent))){ selectedStudent=group[0].id; selectedChat=selectedStudent; selectedGrade=selectedStudent; }
-        if(selectedStudent){ let st=getStudent(selectedStudent); if(st){ displayStats(st); renderDist(st); } }
-        renderGrades();
+        if(!currentCuratorActiveGroup) return;
+        renderStudentsList(); renderChatsList(); renderGroupSubjectsUI(); renderRegisteredUsers();
+        let group=students.filter(s=>s.group===currentCuratorActiveGroup);
+        if(group.length && (!selectedStudentId || !group.find(s=>s.id===selectedStudentId))){ selectedStudentId=group[0].id; selectedChatStudentId=selectedStudentId; selectedGradeStudentId=selectedStudentId; }
+        if(selectedStudentId){ let st=getStudentById(selectedStudentId); if(st){ displayStudentStats(st); renderGradeDistribution(st); } }
+        renderAllGradesTable();
     } else if(currentUser?.role==='parent'){
-        let st=getParentStudent(currentUser.email);
-        if(st){ selectedStudent=st.id; selectedChat=st.id; displayStats(st); renderDist(st); renderGrades(); renderChat(); }
+        let st=getStudentForParent(currentUser.email);
+        if(st){ selectedStudentId=st.id; selectedChatStudentId=st.id; displayStudentStats(st); renderGradeDistribution(st); renderAllGradesTable(); renderChatMessages(); }
     }
 }
 
-function selectStudent(id){ selectedStudent=id; selectedChat=id; selectedGrade=id; fullUpdate(); renderChat(); }
-function selectChat(id){ selectedChat=id; selectedStudent=id; selectedGrade=id; fullUpdate(); renderChat(); }
+window.selectStudent=function(id){ selectedStudentId=id; selectedChatStudentId=id; selectedGradeStudentId=id; fullUpdate(); renderChatMessages(); };
+window.selectChatStudent=function(id){ selectedChatStudentId=id; selectedStudentId=id; selectedGradeStudentId=id; fullUpdate(); renderChatMessages(); };
 
-function renderChat(){
-    let sid=currentUser?.role==='curator'?selectedChat:getParentStudent(currentUser?.email)?.id;
+function renderChatMessages(){
+    let sid=currentUser?.role==='curator'?selectedChatStudentId:getStudentForParent(currentUser?.email)?.id;
     if(!sid) return;
-    if(currentUser?.role==='curator'){ let st=getStudent(sid); if(st){ let parent=users.find(u=>u.email===st.parentEmail); document.getElementById('chatTitle')? null : null; } }
-    let msgs=chats.filter(m=>m.studentId===sid);
-    document.getElementById('chatMessages').innerHTML=msgs.map(msg=>`<div class="message ${msg.sender==='parent'?'parent':'curator'}"><div class="msg-avatar">${msg.sender==='parent'?'👨‍👩‍👧':'📚'}</div><div class="msg-bubble">${msg.text}</div></div>`).join('');
-    let cont=document.getElementById('chatMessages'); if(cont) cont.scrollTop=cont.scrollHeight;
+    if(currentUser?.role==='curator'){ let st=getStudentById(sid); if(st){ let parent=users.find(u=>u.email===st.parentEmail); document.getElementById('chatHeaderName').innerHTML=`Чат с ${parent?parent.name:(st.parentName||"Родитель")}`; } }
+    else { document.getElementById('chatHeaderName').innerHTML=`Чат с куратором`; }
+    let msgs=chatMessages.filter(m=>m.studentId===sid);
+    document.getElementById('chatMessagesModern').innerHTML=msgs.map(msg=>`<div class="message-modern ${msg.sender==='parent'?'parent':'curator'}"><div class="message-avatar">${msg.sender==='parent'?'👨‍👩‍👧':'📚'}</div><div class="message-bubble-modern">${msg.text}</div><div class="message-time-modern" style="font-size:0.7rem;">${msg.time||''}</div></div>`).join('');
+    let cont=document.getElementById('chatMessagesModern'); if(cont) cont.scrollTop=cont.scrollHeight;
 }
 
-function sendMsg(text,sender){
-    let sid=currentUser?.role==='curator'?selectedChat:getParentStudent(currentUser?.email)?.id;
+function addChatMessage(text,sender){
+    let sid=currentUser?.role==='curator'?selectedChatStudentId:getStudentForParent(currentUser?.email)?.id;
     if(!sid) return;
-    chats.push({text,sender,time:new Date().toLocaleTimeString(),studentId:sid});
-    save(); renderChat(); if(currentUser?.role==='curator') renderChats();
+    chatMessages.push({text,sender,time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),studentId:sid});
+    saveAll(); renderChatMessages(); if(currentUser?.role==='curator') renderChatsList();
 }
 
 function initChat(){
-    let btn=document.getElementById('sendBtn'), inp=document.getElementById('chatInput');
-    if(btn){ let nb=btn.cloneNode(true); btn.parentNode.replaceChild(nb,btn); nb.onclick=()=>{ let msg=inp?.value.trim(); if(msg && currentUser){ sendMsg(msg,currentUser.role==='parent'?'parent':'curator'); inp.value=''; } }; }
-    if(inp) inp.onkeypress=e=>{ if(e.key==='Enter'){ let msg=inp.value.trim(); if(msg && currentUser){ sendMsg(msg,currentUser.role==='parent'?'parent':'curator'); inp.value=''; } } };
+    let btn=document.getElementById('modernSendBtn'), inp=document.getElementById('modernChatInput');
+    if(btn){ let nb=btn.cloneNode(true); btn.parentNode.replaceChild(nb,btn); nb.onclick=()=>{ let msg=inp?.value.trim(); if(msg && currentUser){ addChatMessage(msg,currentUser.role==='parent'?'parent':'curator'); inp.value=''; } }; }
+    if(inp) inp.onkeypress=e=>{ if(e.key==='Enter'){ let msg=inp.value.trim(); if(msg && currentUser){ addChatMessage(msg,currentUser.role==='parent'?'parent':'curator'); inp.value=''; } } };
 }
 
-function initButtons(){
-    let addGrade=document.getElementById('addGradeBtn'), addAbsence=document.getElementById('addAbsenceBtn'), msgDiv=document.getElementById('curatorMsg');
-    if(addGrade){ let nb=addGrade.cloneNode(true); addGrade.parentNode.replaceChild(nb,addGrade); nb.onclick=()=>{ let st=getStudent(selectedGrade); if(!st){ msgDiv.style.display='block'; msgDiv.innerHTML='⚠️ Выберите ученика'; setTimeout(()=>msgDiv.style.display='none',2000); return; } let subj=document.getElementById('gradeSubject').value; if(!subj){ msgDiv.style.display='block'; msgDiv.innerHTML='⚠️ Выберите предмет'; setTimeout(()=>msgDiv.style.display='none',2000); return; } lastSubject=subj; let val=parseInt(document.getElementById('gradeValue').value); let date=document.getElementById('gradeDateInput').value||new Date().toISOString().slice(0,10); let comm=document.getElementById('gradeCommentInput').value.trim(); let isCtrl=document.querySelector('input[name="gradeType"]:checked').value==='control'; let w=isCtrl?2:1; if(!st.grades) st.grades={}; if(!st.grades[subj]) st.grades[subj]=[]; st.grades[subj].push({value:val,date:date,comment:comm||"Без комментария",weight:w}); save(); fullUpdate(); setTimeout(()=>{ let gs=document.getElementById('gradeSubject'); if(gs && lastSubject && [...gs.options].some(o=>o.value===lastSubject)) gs.value=lastSubject; },50); msgDiv.style.display='block'; msgDiv.innerHTML=`✅ Оценка ${val} по ${subj}${isCtrl?' (×2)':''}`; setTimeout(()=>msgDiv.style.display='none',2000); }; }
-    if(addAbsence){ let nb=addAbsence.cloneNode(true); addAbsence.parentNode.replaceChild(nb,addAbsence); nb.onclick=()=>{ let st=getStudent(selectedStudent); if(st){ let date=document.getElementById('absenceDateInput').value||new Date().toISOString().slice(0,10); let type=document.getElementById('absenceTypeSelect').value; if(!st.absences) st.absences=[]; if(!st.absences.find(a=>a.date===date)){ st.absences.push({date,type}); save(); fullUpdate(); msgDiv.style.display='block'; msgDiv.innerHTML=`📅 Пропуск добавлен`; setTimeout(()=>msgDiv.style.display='none',2000); } else { msgDiv.style.display='block'; msgDiv.innerHTML='⚠️ Пропуск уже есть'; setTimeout(()=>msgDiv.style.display='none',2000); } } }; }
+function initCuratorControls(){
+    let addGrade=document.getElementById('addGradeBtn'), addAbsence=document.getElementById('addAbsenceBtn'), msgDiv=document.getElementById('curatorSuccessMsg');
+    if(addGrade){ let nb=addGrade.cloneNode(true); addGrade.parentNode.replaceChild(nb,addGrade); nb.onclick=()=>{ let st=getStudentById(selectedGradeStudentId); if(!st){ msgDiv.style.display='block'; msgDiv.innerHTML='⚠️ Выберите ученика'; setTimeout(()=>msgDiv.style.display='none',2000); return; } let subj=document.getElementById('subjectSelect').value; if(!subj){ msgDiv.style.display='block'; msgDiv.innerHTML='⚠️ Выберите предмет'; setTimeout(()=>msgDiv.style.display='none',2000); return; } lastSelectedSubject=subj; let val=parseInt(document.getElementById('gradeSelect').value); let date=document.getElementById('gradeDate').value||new Date().toISOString().slice(0,10); let comment=document.getElementById('gradeComment').value.trim(); let isControl=document.querySelector('input[name="gradeType"]:checked').value==='control'; let weight=isControl?2:1; if(!st.grades) st.grades={}; if(!st.grades[subj]) st.grades[subj]=[]; st.grades[subj].push({value:val,date:date,comment:comment||"Без комментария",weight:weight}); saveAll(); fullUpdate(); setTimeout(()=>{ let ss=document.getElementById('subjectSelect'); if(ss && lastSelectedSubject && [...ss.options].some(o=>o.value===lastSelectedSubject)) ss.value=lastSelectedSubject; },50); msgDiv.style.display='block'; msgDiv.innerHTML=`✅ Оценка ${val} по ${subj}${isControl?' (×2)':''}`; setTimeout(()=>msgDiv.style.display='none',2000); }; }
+    if(addAbsence){ let nb=addAbsence.cloneNode(true); addAbsence.parentNode.replaceChild(nb,addAbsence); nb.onclick=()=>{ let st=getStudentById(selectedStudentId); if(st){ let date=document.getElementById('absenceDate').value||new Date().toISOString().slice(0,10); let type=document.getElementById('absenceType').value; if(!st.absences) st.absences=[]; if(!st.absences.find(a=>a.date===date)){ st.absences.push({date,type}); saveAll(); fullUpdate(); msgDiv.style.display='block'; msgDiv.innerHTML=`📅 Пропуск добавлен`; setTimeout(()=>msgDiv.style.display='none',2000); } else { msgDiv.style.display='block'; msgDiv.innerHTML='⚠️ Пропуск уже есть'; setTimeout(()=>msgDiv.style.display='none',2000); } } }; }
 }
 
 // НАВИГАЦИЯ
-let mainGrid=document.getElementById('mainGrid'), dynPage=document.getElementById('dynamicPage'), navBtns=document.querySelectorAll('.nav-btn');
-function getProgress(){ let st=getStudent(selectedStudent); if(!st) return '<div class="detail-page">Нет данных</div>'; let subs=getSubjects(st.group); let rows=subs.map(s=>{ let grades=st.grades?.[s]||[]; let avg=grades.length?(grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1):"—"; let last=grades[grades.length-1]; let lastVal=last?(typeof last==='object'?last.value:last):"—"; return `<tr><td style="font-weight:500">📚 ${s}</td><td style="text-align:center">${avg}</td><td style="text-align:center"><span class="grade-badge">${lastVal}</span></td>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="main">← На главную</button></div>`; }
-function getAttendance(){ let st=getStudent(selectedStudent); if(!st) return '<div class="detail-page">Нет данных</div>'; let days=(st.absences||[]).slice().reverse().map(a=>`<div style="padding:12px;background:#ffe0f0;border-radius:40px;margin:8px 0">📅 ${a.date} — ${a.type}</div>`).join(''); return `<div class="detail-page"><div class="detail-title">📅 Посещаемость: ${st.name}</div>${days||'<div style="padding:20px;text-align:center">✨ Нет пропусков</div>'}<button class="back-link" data-back="main">← На главную</button></div>`; }
-function showDetail(page){ if(mainGrid) mainGrid.style.display='none'; let content=page==='progress'?getProgress():getAttendance(); dynPage.innerHTML=content; dynPage.style.display='block'; navBtns.forEach(btn=>btn.classList.toggle('active',btn.dataset.page===page)); document.querySelectorAll('.back-link').forEach(btn=>btn.onclick=()=>showMain()); }
-function showMain(){ if(mainGrid) mainGrid.style.display='grid'; dynPage.style.display='none'; dynPage.innerHTML=''; navBtns.forEach(btn=>btn.classList.toggle('active',btn.dataset.page==='main')); fullUpdate(); }
-function initNav(){ showMain(); navBtns.forEach(btn=>{ btn.onclick=()=>{ let p=btn.dataset.page; p==='main'?showMain():showDetail(p); }; }); }
+let mainDash=document.getElementById('mainDashboard'), dynCont=document.getElementById('dynamic-page-content'), navBtns=document.querySelectorAll('.nav-btn');
+function getDetailedPage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let subs=getSubjectsForGroup(st.group); let rows=subs.map(s=>{ let grades=st.grades?.[s]||[]; let avg=grades.length?(grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1):"—"; let last=grades[grades.length-1]; let lastVal=last?(typeof last==='object'?last.value:last):"—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td style="text-align:center;"><span class="grade-badge-sm">${lastVal}</span></td>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
+function getAttendancePage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let days=(st.absences||[]).slice().reverse().map(a=>`<div style="padding:12px;background:#ffe0f0;border-radius:40px;margin:8px 0;">📅 ${a.date} — ${a.type}</div>`).join(''); return `<div class="detail-page"><div class="detail-title">📅 Посещаемость: ${st.name}</div>${days||'<div style="padding:20px;text-align:center;">✨ Нет пропусков</div>'}<button class="back-link" data-back="dashboard">← На главную</button></div>`; }
+function showDetail(pageId){ if(mainDash) mainDash.style.display='none'; let content=pageId==='detailed-progress'?getDetailedPage():getAttendancePage(); dynCont.innerHTML=content; dynCont.style.display='block'; navBtns.forEach(btn=>btn.classList.toggle('active-dashboard',btn.dataset.page===pageId)); document.querySelectorAll('.back-link').forEach(btn=>btn.onclick=()=>showMain()); }
+function showMain(){ if(mainDash) mainDash.style.display='grid'; dynCont.style.display='none'; dynCont.innerHTML=''; navBtns.forEach(btn=>btn.classList.toggle('active-dashboard',btn.dataset.page==='dashboard')); fullUpdate(); }
+function initNav(){ showMain(); navBtns.forEach(btn=>{ btn.onclick=()=>{ let page=btn.dataset.page; page==='dashboard'?showMain():showDetail(page); }; }); }
 
-document.getElementById('clearFilter')?.addEventListener('click',()=>{ if(document.getElementById('subjectFilter')) document.getElementById('subjectFilter').value=""; renderGrades(); });
-document.getElementById('subjectFilter')?.addEventListener('change',()=>renderGrades());
-document.getElementById('delGroupBtn')?.addEventListener('click',()=>{ if(activeGroup && confirm(`Удалить группу "${activeGroup}"?`)){ let groups=curatorGroups[currentUser.email]; let idx=groups.indexOf(activeGroup); if(idx!==-1) groups.splice(idx,1); curatorGroups[currentUser.email]=groups; save(); if(groups.length>0){ activeGroup=groups[0]; localStorage.setItem('activeGroup',activeGroup); } else { activeGroup=null; document.getElementById('statsBlock').style.display='none'; document.getElementById('emptyMessage').style.display='block'; } renderGroups(); fullUpdate(); } });
-document.getElementById('addGroupBtn')?.addEventListener('click',()=>{ let ng=document.getElementById('newGroupInput').value.trim(); if(ng && currentUser){ let taken=false; for(let ce in curatorGroups) if(ce!==currentUser.email && curatorGroups[ce]?.includes(ng)) taken=true; if(taken){ let msg=document.getElementById('curatorMsg'); msg.style.display='block'; msg.innerHTML='⚠️ Группа уже закреплена'; setTimeout(()=>msg.style.display='none',2000); return; } if(!curatorGroups[currentUser.email]) curatorGroups[currentUser.email]=[]; if(!curatorGroups[currentUser.email].includes(ng)){ curatorGroups[currentUser.email].push(ng); if(!groupSubjects[ng]) groupSubjects[ng]=['Математика','Русский язык','Физика','Информатика','Физкультура']; save(); renderGroups(); activeGroup=ng; fullUpdate(); document.getElementById('newGroupInput').value=''; } } });
-document.getElementById('addSubjectBtn')?.addEventListener('click',()=>{ let ns=document.getElementById('newSubjectInput').value.trim(); if(ns && activeGroup && !groupSubjects[activeGroup].includes(ns)){ groupSubjects[activeGroup].push(ns); save(); renderSubjects(); updateFilters(getSubjects(activeGroup)); fullUpdate(); document.getElementById('newSubjectInput').value=''; } });
+document.getElementById('clearFiltersBtn')?.addEventListener('click',()=>{ if(document.getElementById('filterSubject')) document.getElementById('filterSubject').value=""; renderAllGradesTable(); });
+document.getElementById('filterSubject')?.addEventListener('change',()=>renderAllGradesTable());
+document.getElementById('deleteGroupBtn')?.addEventListener('click',()=>{ if(currentCuratorActiveGroup && confirm(`Удалить группу "${currentCuratorActiveGroup}"?`)){ let groups=curatorGroups[currentUser.email]; let idx=groups.indexOf(currentCuratorActiveGroup); if(idx!==-1) groups.splice(idx,1); curatorGroups[currentUser.email]=groups; saveAll(); if(groups.length>0){ currentCuratorActiveGroup=groups[0]; localStorage.setItem('curatorActiveGroup',currentCuratorActiveGroup); } else { currentCuratorActiveGroup=null; document.getElementById('studentStatsBlock').style.display='none'; document.getElementById('noStudentsMessage').style.display='block'; } renderCuratorGroupsSelect(); fullUpdate(); } });
+document.getElementById('confirmAddGroupBtn')?.addEventListener('click',()=>{ let ng=document.getElementById('newGroupNameInput').value.trim(); if(ng && currentUser){ let taken=false; for(let ce in curatorGroups) if(ce!==currentUser.email && curatorGroups[ce]?.includes(ng)) taken=true; if(taken){ document.getElementById('curatorSuccessMsg').innerHTML='⚠️ Группа уже закреплена'; document.getElementById('curatorSuccessMsg').style.display='block'; setTimeout(()=>document.getElementById('curatorSuccessMsg').style.display='none',2000); return; } if(!curatorGroups[currentUser.email]) curatorGroups[currentUser.email]=[]; if(!curatorGroups[currentUser.email].includes(ng)){ curatorGroups[currentUser.email].push(ng); if(!groupSubjects[ng]) groupSubjects[ng]=["Математика","Русский язык","Физика","Информатика","Физкультура"]; saveAll(); renderCuratorGroupsSelect(); currentCuratorActiveGroup=ng; fullUpdate(); document.getElementById('newGroupNameInput').value=''; } } });
 
 // АВТОРИЗАЦИЯ
-document.getElementById('regRole').onchange=function(){ let isP=this.value==='parent'; document.getElementById('parentFields').style.display=isP?'block':'none'; document.getElementById('curatorFields').style.display=isP?'none':'block'; };
+document.getElementById('regRole').onchange=function(){ let isParent=this.value==='parent'; document.getElementById('parentFields').style.display=isParent?'block':'none'; document.getElementById('curatorFields').style.display=isParent?'none':'block'; };
 document.getElementById('regRole').dispatchEvent(new Event('change'));
-document.querySelectorAll('.tab').forEach(tab=>{ tab.onclick=()=>{ let t=tab.dataset.tab; document.querySelectorAll('.tab').forEach(tt=>tt.classList.remove('active')); tab.classList.add('active'); document.getElementById('loginForm').classList.toggle('hide',t!=='login'); document.getElementById('registerForm').classList.toggle('hide',t!=='register'); }; });
-document.getElementById('doRegister').onclick=()=>{ let name=document.getElementById('regName').value.trim(), email=document.getElementById('regEmail').value.trim(), role=document.getElementById('regRole').value, pwd=document.getElementById('regPassword').value, err=document.getElementById('regError'); if(!name||!email||!pwd){ err.innerText='Заполните все поля'; err.style.display='block'; return; } if(pwd.length<6){ err.innerText='Пароль минимум 6 символов'; err.style.display='block'; return; } if(users.find(u=>u.email===email)){ err.innerText='Email уже существует'; err.style.display='block'; return; } if(role==='parent'){ let child=document.getElementById('regChildName').value.trim(), grp=document.getElementById('regGroupNumber').value.trim(); if(!child||!grp){ err.innerText='Заполните данные студента'; err.style.display='block'; return; } let ex=students.find(s=>s.name===child); if(!ex) students.push({id:`s${Date.now()}`,name:child,group:grp,parentEmail:email,parentName:name,grades:{},absences:[]}); else if(ex.parentEmail && ex.parentEmail!==email){ err.innerText='Студент уже привязан'; err.style.display='block'; return; } else { ex.parentEmail=email; ex.parentName=name; ex.group=grp; } } else { let cg=document.getElementById('regCuratorGroup').value.trim(); if(!curatorGroups[email]) curatorGroups[email]=[]; if(cg && !curatorGroups[email].includes(cg)) curatorGroups[email].push(cg); if(cg && !groupSubjects[cg]) groupSubjects[cg]=['Математика','Русский язык','Физика','Информатика','Физкультура']; } users.push({id:`u${Date.now()}`,name,email,password:pwd,role}); save(); alert('Регистрация успешна!'); document.querySelector('.tab[data-tab="login"]').click(); };
-document.getElementById('doLogin').onclick=()=>{ let email=document.getElementById('loginEmail').value.trim(), pwd=document.getElementById('loginPassword').value; let user=users.find(u=>u.email===email && u.password===pwd); if(!user){ document.getElementById('loginError').innerText='Неверный email или пароль'; document.getElementById('loginError').style.display='block'; return; } currentUser=user; localStorage.setItem('currentUser',JSON.stringify(user)); if(user.role==='parent'){ let st=getParentStudent(user.email); if(st){ selectedStudent=st.id; selectedChat=st.id; selectedGrade=st.id; } } if(user.role==='curator'){ if(!curatorGroups[user.email]) curatorGroups[user.email]=[]; let saved=localStorage.getItem('activeGroup'); if(saved && curatorGroups[user.email].includes(saved)) activeGroup=saved; else if(curatorGroups[user.email].length) activeGroup=curatorGroups[user.email][0]; } showDashboard(); };
-document.getElementById('logoutBtn').onclick=()=>{ localStorage.removeItem('currentUser'); currentUser=null; showAuth(); };
+document.querySelectorAll('.auth-tab').forEach(tab=>{ tab.onclick=()=>{ let t=tab.dataset.tab; document.querySelectorAll('.auth-tab').forEach(tt=>tt.classList.remove('active')); tab.classList.add('active'); document.getElementById('loginForm').classList.toggle('hidden',t!=='login'); document.getElementById('registerForm').classList.toggle('hidden',t!=='register'); }; });
+document.getElementById('doRegisterBtn').onclick=()=>{ let name=document.getElementById('regName').value.trim(), email=document.getElementById('regEmail').value.trim(), role=document.getElementById('regRole').value, pwd=document.getElementById('regPassword').value, err=document.getElementById('regError'); if(!name||!email||!pwd){ err.innerText='Заполните все поля'; return; } if(pwd.length<6){ err.innerText='Пароль минимум 6 символов'; return; } if(users.find(u=>u.email===email)){ err.innerText='Email уже существует'; return; } if(role==='parent'){ let child=document.getElementById('regChildName').value.trim(), group=document.getElementById('regGroupNumber').value.trim(); if(!child||!group){ err.innerText='Заполните данные студента'; return; } let ex=students.find(s=>s.name===child); if(!ex) students.push({id:`s${Date.now()}`,name:child,group:group,parentEmail:email,parentName:name,grades:{},absences:[]}); else if(ex.parentEmail && ex.parentEmail!==email){ err.innerText='Студент уже привязан'; return; } else { ex.parentEmail=email; ex.parentName=name; ex.group=group; } } else { let cg=document.getElementById('regCuratorGroup').value.trim(); if(!curatorGroups[email]) curatorGroups[email]=[]; if(cg && !curatorGroups[email].includes(cg)) curatorGroups[email].push(cg); if(cg && !groupSubjects[cg]) groupSubjects[cg]=["Математика","Русский язык","Физика","Информатика","Физкультура"]; } users.push({id:`u${Date.now()}`,name,email,password:pwd,role}); saveAll(); alert('Регистрация успешна!'); document.querySelector('.auth-tab[data-tab="login"]').click(); };
+document.getElementById('doLoginBtn').onclick=()=>{ let email=document.getElementById('loginEmail').value.trim(), pwd=document.getElementById('loginPassword').value; let user=users.find(u=>u.email===email && u.password===pwd); if(!user){ document.getElementById('loginError').innerText='Неверный email или пароль'; return; } currentUser=user; localStorage.setItem('currentUser',JSON.stringify(user)); if(user.role==='parent'){ let st=getStudentForParent(user.email); if(st){ selectedStudentId=st.id; selectedChatStudentId=st.id; selectedGradeStudentId=st.id; } } if(user.role==='curator'){ if(!curatorGroups[user.email]) curatorGroups[user.email]=[]; let saved=localStorage.getItem('curatorActiveGroup'); if(saved && curatorGroups[user.email].includes(saved)) currentCuratorActiveGroup=saved; else if(curatorGroups[user.email].length) currentCuratorActiveGroup=curatorGroups[user.email][0]; } showDashboard(); };
+document.getElementById('logoutBtnMain').onclick=()=>{ localStorage.removeItem('currentUser'); currentUser=null; showAuth(); };
 
-function renderAvatarSelect(){ let cont=document.getElementById('avatarSelector'); if(!cont) return; let cur=avatars[currentUser?.email]||"🌸"; let list=["🌸","🌺","🌷","🌹","⭐","🌟","✨","💫","🐱","🦋","🌈","🍎","📚","🎓"]; cont.innerHTML=list.map(av=>`<div class="avatar-opt ${cur===av?'selected':''}" data-av="${av}">${av}</div>`).join(''); document.querySelectorAll('.avatar-opt').forEach(opt=>{ opt.onclick=()=>{ document.querySelectorAll('.avatar-opt').forEach(o=>o.classList.remove('selected')); opt.classList.add('selected'); }; }); }
-window.deleteAccount=function(){ if(confirm('Удалить аккаунт?')){ let email=currentUser.email; users=users.filter(u=>u.email!==email); save(); localStorage.removeItem('currentUser'); currentUser=null; showAuth(); closeModal(); alert('Аккаунт удалён'); } };
-window.openModal=function(){ if(!currentUser) return; document.getElementById('profileName').value=currentUser.name; document.getElementById('profileEmail').value=currentUser.email; renderAvatarSelect(); document.getElementById('profileModal').classList.add('show'); };
-window.closeModal=function(){ document.getElementById('profileModal').classList.remove('show'); };
-window.saveProfile=function(){ let newName=document.getElementById('profileName').value.trim(); let selAv=document.querySelector('.avatar-opt.selected')?.dataset.av; if(newName){ let idx=users.findIndex(u=>u.email===currentUser.email); if(idx!==-1){ users[idx].name=newName; currentUser.name=newName; localStorage.setItem('currentUser',JSON.stringify(currentUser)); save(); document.getElementById('userName').innerText=newName; } } if(selAv){ avatars[currentUser.email]=selAv; save(); document.getElementById('userAvatar').innerHTML=selAv; } closeModal(); alert('Профиль обновлён'); };
+function renderAvatarSelector(){ let cont=document.getElementById('avatarSelector'); if(!cont) return; let cur=userAvatars[currentUser?.email]||"🌸"; cont.innerHTML=AVATARS.map(av=>`<div class="avatar-option ${cur===av?'selected':''}" data-avatar="${av}">${av}</div>`).join(''); document.querySelectorAll('.avatar-option').forEach(opt=>{ opt.onclick=()=>{ document.querySelectorAll('.avatar-option').forEach(o=>o.classList.remove('selected')); opt.classList.add('selected'); }; }); }
+window.deleteAccount=function(){ if(confirm('Удалить аккаунт?')){ let email=currentUser.email; users=users.filter(u=>u.email!==email); saveAll(); localStorage.removeItem('currentUser'); currentUser=null; showAuth(); closeProfileModal(); alert('Аккаунт удалён'); } };
+window.openProfileModal=function(){ if(!currentUser) return; document.getElementById('profileName').value=currentUser.name; document.getElementById('profileEmail').value=currentUser.email; renderAvatarSelector(); document.getElementById('profileModal').classList.add('active'); };
+window.closeProfileModal=function(){ document.getElementById('profileModal').classList.remove('active'); };
+window.saveProfileChanges=function(){ let newName=document.getElementById('profileName').value.trim(); let selAv=document.querySelector('.avatar-option.selected')?.dataset.avatar; if(newName){ let idx=users.findIndex(u=>u.email===currentUser.email); if(idx!==-1){ users[idx].name=newName; currentUser.name=newName; localStorage.setItem('currentUser',JSON.stringify(currentUser)); saveAll(); document.getElementById('userNameSpan').innerText=newName; } } if(selAv){ userAvatars[currentUser.email]=selAv; saveAll(); document.getElementById('userAvatar').innerHTML=selAv; } closeProfileModal(); alert('Профиль обновлён'); };
 
 function showDashboard(){
     if(currentUser){
         document.getElementById('authBlock').style.display='none';
-        document.getElementById('dashboardBlock').classList.add('show');
-        document.getElementById('userName').innerText=currentUser.name;
-        document.getElementById('userAvatar').innerHTML=avatars[currentUser.email]||"🌸";
-        let badge=document.getElementById('roleBadge');
+        document.getElementById('dashboardBlock').classList.add('active');
+        document.getElementById('dashboardBlock').style.display='block';
+        document.getElementById('userNameSpan').innerText=currentUser.name;
+        document.getElementById('userAvatar').innerHTML=userAvatars[currentUser.email]||"🌸";
+        let badge=document.getElementById('userRoleBadge');
+        
         if(currentUser.role==='parent'){
             badge.innerText='Родитель';
-            document.getElementById('curatorZone').style.display='none';
+            document.getElementById('curatorArea').style.display='none';
             document.getElementById('curatorPanel').style.display='none';
-            document.getElementById('paymentsBlock').style.display='block';
+            document.getElementById('paymentsSection').style.display='block';
             renderPayments();
-            let st=getParentStudent(currentUser.email);
-            if(st){ document.getElementById('statsBlock').style.display='block'; document.getElementById('emptyMessage').style.display='none'; displayStats(st); renderDist(st); renderChat(); }
-            else { document.getElementById('statsBlock').style.display='none'; document.getElementById('emptyMessage').style.display='block'; }
+            let st=getStudentForParent(currentUser.email);
+            if(st){
+                document.getElementById('studentStatsBlock').style.display='block';
+                document.getElementById('noStudentsMessage').style.display='none';
+                selectedStudentId=st.id; selectedChatStudentId=st.id; selectedGradeStudentId=st.id;
+                displayStudentStats(st); renderGradeDistribution(st);
+                renderChatMessages();
+            } else { document.getElementById('studentStatsBlock').style.display='none'; document.getElementById('noStudentsMessage').style.display='block'; }
         } else {
             badge.innerText='Куратор';
-            document.getElementById('curatorZone').style.display='block';
+            document.getElementById('curatorArea').style.display='block';
             document.getElementById('curatorPanel').style.display='block';
-            document.getElementById('paymentsBlock').style.display='none';
+            document.getElementById('paymentsSection').style.display='none';
             if(!curatorGroups[currentUser.email]) curatorGroups[currentUser.email]=[];
-            renderGroups();
-            if(activeGroup) fullUpdate();
-            else if(curatorGroups[currentUser.email].length){ activeGroup=curatorGroups[currentUser.email][0]; fullUpdate(); }
-            else { document.getElementById('statsBlock').style.display='none'; document.getElementById('emptyMessage').style.display='block'; }
+            renderCuratorGroupsSelect();
+            if(currentCuratorActiveGroup) fullUpdate();
+            else if(curatorGroups[currentUser.email].length){ currentCuratorActiveGroup=curatorGroups[currentUser.email][0]; fullUpdate(); }
+            else { document.getElementById('studentStatsBlock').style.display='none'; document.getElementById('noStudentsMessage').style.display='block'; }
         }
         let today=new Date().toISOString().slice(0,10);
-        if(document.getElementById('gradeDateInput')) document.getElementById('gradeDateInput').value=today;
-        if(document.getElementById('absenceDateInput')) document.getElementById('absenceDateInput').value=today;
-        initChat(); initButtons(); initNav(); renderGrades();
+        if(document.getElementById('gradeDate')) document.getElementById('gradeDate').value=today;
+        if(document.getElementById('absenceDate')) document.getElementById('absenceDate').value=today;
+        initChat(); initCuratorControls(); initNav(); renderAllGradesTable();
     } else showAuth();
 }
-function showAuth(){ document.getElementById('authBlock').style.display='block'; document.getElementById('dashboardBlock').classList.remove('show'); }
+function showAuth(){ document.getElementById('authBlock').style.display='block'; document.getElementById('dashboardBlock').classList.remove('active'); document.getElementById('dashboardBlock').style.display='none'; }
 
-function createBg(){
-    let cont=document.getElementById('bgAnim'); if(!cont) return; cont.innerHTML='';
-    for(let i=0;i<40;i++){ let d=document.createElement('div'); d.className='heart'; d.innerHTML='❤️'; d.style.left=Math.random()*100+'%'; d.style.fontSize=(10+Math.random()*16)+'px'; d.style.animationDuration=(8+Math.random()*15)+'s'; d.style.animationDelay=(Math.random()*20)+'s'; cont.appendChild(d); }
-    for(let i=0;i<50;i++){ let s=document.createElement('div'); s.className='star'; s.innerHTML='⭐'; s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%'; s.style.fontSize=(8+Math.random()*12)+'px'; s.style.animationDuration=(3+Math.random()*6)+'s'; s.style.animationDelay=(Math.random()*10)+'s'; cont.appendChild(s); }
+function createFloatingElements(){
+    let cont=document.getElementById('floatingBg'); if(!cont) return; cont.innerHTML='';
+    for(let i=0;i<40;i++){ let d=document.createElement('div'); d.className='heart'; d.innerHTML='❤️'; d.style.left=Math.random()*100+'%'; d.style.fontSize=(12+Math.random()*18)+'px'; d.style.animationDuration=(8+Math.random()*15)+'s'; d.style.animationDelay=(Math.random()*20)+'s'; cont.appendChild(d); }
+    for(let i=0;i<50;i++){ let s=document.createElement('div'); s.className='star-bg'; s.innerHTML='⭐'; s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%'; s.style.fontSize=(8+Math.random()*14)+'px'; s.style.animationDuration=(3+Math.random()*6)+'s'; s.style.animationDelay=(Math.random()*10)+'s'; cont.appendChild(s); }
 }
-function updateDate(){ let b=document.getElementById('dateBadge'); if(b) b.innerHTML=`📅 ${new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})}`; }
+function updateDateBadge(){ let b=document.getElementById('currentDateBadge'); if(b) b.innerHTML=`📅 ${new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})}`; }
 
-createBg(); updateDate(); setInterval(updateDate,60000);
-save();
+createFloatingElements(); updateDateBadge(); setInterval(updateDateBadge,60000);
+saveAll();
 if(localStorage.getItem('currentUser')){ currentUser=JSON.parse(localStorage.getItem('currentUser')); showDashboard(); } else showAuth();
 </script>
 </body>
