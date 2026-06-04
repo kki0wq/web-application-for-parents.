@@ -121,12 +121,12 @@
         .subject-tag { background: #ffe0f0; padding: 6px 12px; border-radius: 40px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 8px; margin: 4px; }
         .delete-subject-btn { background: none; border: none; color: #e06b9e; cursor: pointer; font-size: 1rem; }
         
-        .students-list, .chats-list { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 1px solid var(--border); }
-        .students-grid { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 18px; max-height: 220px; overflow-y: auto; }
-        .student-card { background: rgba(255,245,249,0.7); border-radius: 70px; padding: 12px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; }
-        .student-card:hover { transform: translateY(-3px); background: rgba(255,240,248,0.95); box-shadow: 0 8px 20px rgba(232,127,176,0.2); }
-        .student-card.active { border-color: var(--primary); background: linear-gradient(135deg, #ffe0f0, #ffd4e8); }
-        .student-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+        .students-list, .chats-list, .users-list { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 1px solid var(--border); }
+        .students-grid, .users-grid { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 18px; max-height: 220px; overflow-y: auto; }
+        .student-card, .user-card { background: rgba(255,245,249,0.7); border-radius: 70px; padding: 12px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; }
+        .student-card:hover, .user-card:hover { transform: translateY(-3px); background: rgba(255,240,248,0.95); box-shadow: 0 8px 20px rgba(232,127,176,0.2); }
+        .student-card.active, .user-card.active { border-color: var(--primary); background: linear-gradient(135deg, #ffe0f0, #ffd4e8); }
+        .student-avatar, .user-avatar-small { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
         
         .chats-grid { display: flex; flex-direction: column; gap: 12px; max-height: 320px; overflow-y: auto; }
         .chat-item { display: flex; align-items: center; gap: 15px; padding: 14px 20px; background: rgba(255,245,249,0.7); border-radius: 70px; cursor: pointer; transition: all 0.3s; border: 1px solid transparent; }
@@ -213,7 +213,7 @@
     <div class="app-container" id="app">
         <div id="profileModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>👤 Мой профиль</h3><button class="close-modal" onclick="closeProfileModal()">×</button></div><div class="profile-field"><label>Имя и фамилия</label><input type="text" id="profileName" placeholder="Иван Иванов"></div><div class="profile-field"><label>Email</label><input type="email" id="profileEmail" readonly style="background:#f5f5f5;"></div><div class="profile-field"><label>🌸 Выберите аватар</label><div class="avatar-selector" id="avatarSelector"></div></div><button class="save-profile-btn" onclick="saveProfileChanges()">💾 Сохранить изменения</button><button class="delete-account-btn" onclick="deleteAccount()">🗑️ Удалить аккаунт</button></div></div>
 
-        <div id="authBlock"><div class="auth-container"><div class="auth-tabs"><button class="auth-tab active" data-tab="login">🌸 Вход</button><button class="auth-tab" data-tab="register">✨ Регистрация</button></div><div id="loginForm" class="auth-form"><input type="email" id="loginEmail" class="auth-input" placeholder="Email"><input type="password" id="loginPassword" class="auth-input" placeholder="Пароль"><button id="doLoginBtn" class="auth-btn">🌟 Войти</button><div id="loginError" class="auth-error"></div></div><div id="registerForm" class="auth-form hidden"><input type="text" id="regName" class="auth-input" placeholder="Имя и фамилия (русские буквы)"><input type="email" id="regEmail" class="auth-input" placeholder="Email"><select id="regRole" class="auth-select"><option value="parent">👨‍👩‍👧 Родитель</option><option value="curator">📚 Куратор</option></select><div id="parentFields"><input type="text" id="regChildName" class="auth-input" placeholder="ФИО студента (русские буквы)"><input type="text" id="regGroupNumber" class="auth-input" placeholder="Номер группы (например, П-201)"></div><div id="curatorFields" style="display: none;"><input type="text" id="regCuratorGroup" class="auth-input" placeholder="Номер вашей группы"></div><input type="password" id="regPassword" class="auth-input" placeholder="Пароль (мин. 6 символов)"><button id="doRegisterBtn" class="auth-btn">✨ Зарегистрироваться</button><div id="regError" class="auth-error"></div></div></div></div>
+        <div id="authBlock"><div class="auth-container"><div class="auth-tabs"><button class="auth-tab active" data-tab="login">🌸 Вход</button><button class="auth-tab" data-tab="register">✨ Регистрация</button></div><div id="loginForm" class="auth-form"><input type="email" id="loginEmail" class="auth-input" placeholder="Email"><input type="password" id="loginPassword" class="auth-input" placeholder="Пароль"><button id="doLoginBtn" class="auth-btn">🌟 Войти</button><div id="loginError" class="auth-error"></div></div><div id="registerForm" class="auth-form hidden"><input type="text" id="regName" class="auth-input" placeholder="Имя и фамилия"><input type="email" id="regEmail" class="auth-input" placeholder="Email"><select id="regRole" class="auth-select"><option value="parent">👨‍👩‍👧 Родитель</option><option value="curator">📚 Куратор</option></select><div id="parentFields"><input type="text" id="regChildName" class="auth-input" placeholder="ФИО студента"><input type="text" id="regGroupNumber" class="auth-input" placeholder="Номер группы (например, П-201)"></div><div id="curatorFields" style="display: none;"><input type="text" id="regCuratorGroup" class="auth-input" placeholder="Номер вашей группы"></div><input type="password" id="regPassword" class="auth-input" placeholder="Пароль (мин. 6 символов)"><button id="doRegisterBtn" class="auth-btn">✨ Зарегистрироваться</button><div id="regError" class="auth-error"></div></div></div></div>
 
         <div id="dashboardBlock" class="dashboard-content">
             <div class="dashboard-header"><div class="date-badge" id="currentDateBadge">📅 Загрузка...</div><div class="user-info"><div class="user-avatar" id="userAvatar" onclick="openProfileModal()">🌸</div><span class="user-greeting">Привет, <span id="userNameSpan"></span>!</span><span id="userRoleBadge" class="user-role-badge"></span><button id="logoutBtnMain" class="logout-btn">🚪 Выйти</button></div></div>
@@ -232,6 +232,12 @@
                         <div style="display: flex; gap: 10px;"><input type="text" id="newSubjectName" class="curator-input" placeholder="Новый предмет"><button id="addSubjectToGroupBtn" class="curator-btn">➕ Добавить предмет</button></div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Блок для отображения зарегистрированных пользователей группы -->
+            <div id="registeredUsersContainer" class="users-list" style="display: none;">
+                <div class="card-title">👥 Зарегистрированные родители группы</div>
+                <div id="usersGrid" class="users-grid"></div>
             </div>
 
             <div id="studentsListContainer" class="students-list" style="display: none;"><div class="card-title">👨‍🎓 Студенты группы</div><div id="studentsGrid" class="students-grid"></div></div>
@@ -273,11 +279,12 @@
     </div>
 
     <script>
-        function updateDateBadge() { const badge = document.getElementById('currentDateBadge'); if(badge){ const now = new Date(); badge.innerHTML = `📅 ${now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}`; } }
-        function createFloatingElements() { const container = document.getElementById('floatingBg'); if(!container) return; container.innerHTML = ''; const hearts = ['❤️','💖','💗','💓','💕','💝','🌸','🌷','🌺']; for(let i=0;i<25;i++){ const d=document.createElement('div'); d.className='heart'; d.innerHTML=hearts[Math.floor(Math.random()*hearts.length)]; d.style.left=Math.random()*100+'%'; d.style.fontSize=(15+Math.random()*25)+'px'; d.style.animationDuration=(8+Math.random()*12)+'s'; d.style.animationDelay=(Math.random()*15)+'s'; container.appendChild(d); } const stars=['⭐','🌟','✨','💫','⭐']; for(let i=0;i<30;i++){ const s=document.createElement('div'); s.className='star-bg'; s.innerHTML=stars[Math.floor(Math.random()*stars.length)]; s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%'; s.style.fontSize=(10+Math.random()*20)+'px'; s.style.animationDuration=(2+Math.random()*4)+'s'; s.style.animationDelay=(Math.random()*5)+'s'; container.appendChild(s); } const flowers=['🌸','🌼','🌻','🌺','🌷','🌹','🌸']; for(let i=0;i<15;i++){ const f=document.createElement('div'); f.className='flower-bg'; f.innerHTML=flowers[Math.floor(Math.random()*flowers.length)]; f.style.left=Math.random()*100+'%'; f.style.top=Math.random()*100+'%'; f.style.fontSize=(25+Math.random()*40)+'px'; f.style.animationDuration=(15+Math.random()*20)+'s'; f.style.animationDelay=(Math.random()*10)+'s'; container.appendChild(f); } for(let i=0;i<20;i++){ const b=document.createElement('div'); b.className='bubble'; const size=20+Math.random()*60; b.style.width=size+'px'; b.style.height=size+'px'; b.style.left=Math.random()*100+'%'; b.style.animationDuration=(10+Math.random()*15)+'s'; b.style.animationDelay=(Math.random()*20)+'s'; container.appendChild(b); } for(let i=0;i<50;i++){ const g=document.createElement('div'); g.className='glitter'; g.style.left=Math.random()*100+'%'; g.style.top=Math.random()*100+'%'; g.style.animationDuration=(2+Math.random()*5)+'s'; g.style.animationDelay=(Math.random()*8)+'s'; container.appendChild(g); } }
-        createFloatingElements(); updateDateBadge(); setInterval(updateDateBadge, 60000);
-        
-        // Базовые предметы с Физической культурой
+        // Очистка всех ранее сохраненных данных при первом запуске (удаляем все аккаунты)
+        if (!localStorage.getItem('initialized')) {
+            localStorage.clear();
+            localStorage.setItem('initialized', 'true');
+        }
+
         const DEFAULT_SUBJECTS = ["Математика", "Русский язык", "Литература", "Физика", "Химия", "Биология", "История", "Обществознание", "Английский язык", "Информатика", "География", "Физическая культура"];
         
         let students = JSON.parse(localStorage.getItem('students')) || [];
@@ -414,6 +421,25 @@
             document.getElementById('subjectsCountStat').innerText = subjects.length;
         }
         
+        function renderRegisteredUsers() {
+            if (!currentCuratorActiveGroup || currentUser?.role !== 'curator') return;
+            // Находим всех родителей, у которых студент учится в этой группе
+            let groupStudents = students.filter(s => s.group === currentCuratorActiveGroup);
+            let parentEmails = groupStudents.map(s => s.parentEmail).filter(email => email);
+            let registeredParents = users.filter(u => parentEmails.includes(u.email) && u.role === 'parent');
+            
+            let container = document.getElementById('usersGrid');
+            let usersContainer = document.getElementById('registeredUsersContainer');
+            if (!container) return;
+            
+            if (registeredParents.length === 0) {
+                usersContainer.style.display = 'none';
+                return;
+            }
+            usersContainer.style.display = 'block';
+            container.innerHTML = registeredParents.map(p => `<div class="user-card"><div class="user-avatar-small">${userAvatars[p.email] || '👤'}</div><div><strong>${p.name}</strong><br><span style="font-size:0.7rem;">${p.email}</span></div></div>`).join('');
+        }
+        
         function displayStudentStats(student) {
             if (!student) return;
             let avg = avgGradeWeighted(student);
@@ -498,6 +524,7 @@
             renderStudentsList();
             renderChatsList();
             renderGroupSubjectsUI();
+            renderRegisteredUsers();
             let groupStudents = students.filter(s => s.group === currentCuratorActiveGroup);
             if (groupStudents.length > 0 && (!selectedStudentId || !groupStudents.find(s => s.id === selectedStudentId))) { 
                 selectedStudentId = groupStudents[0].id; 
@@ -535,6 +562,7 @@
             let container = document.getElementById('chatMessagesModern');
             if (!container) return;
             let sid = currentUser?.role === 'curator' ? selectedChatStudentId : (currentUser?.role === 'parent' ? getStudentForParent(currentUser.email)?.id : null);
+            if (!sid) return;
             let filtered = chatMessages.filter(m => m.studentId === sid);
             container.innerHTML = filtered.map(msg => `<div class="message-modern ${msg.sender === 'parent' ? 'parent' : 'curator'}"><div class="message-avatar">${msg.sender === 'parent' ? '👨‍👩‍👧' : '📚'}</div><div class="message-content"><div class="message-bubble-modern">${msg.text}</div><div class="message-time-modern">${msg.time}</div></div></div>`).join('');
             container.scrollTop = container.scrollHeight;
@@ -595,7 +623,6 @@
             }
         }
         
-        // Удаление группы
         document.getElementById('deleteGroupBtn').onclick = () => {
             if (!currentCuratorActiveGroup) return;
             if (confirm(`Удалить группу "${currentCuratorActiveGroup}"? Все студенты группы останутся в системе, но вы больше не будете её курировать.`)) {
@@ -618,7 +645,6 @@
             }
         };
         
-        // Добавление группы (одна кнопка)
         document.getElementById('confirmAddGroupBtn').onclick = () => {
             let newGroup = document.getElementById('newGroupNameInput').value.trim();
             if (newGroup && currentUser) {
@@ -671,7 +697,6 @@
             if (confirm('⚠️ ВНИМАНИЕ: Вы уверены, что хотите удалить аккаунт? Все ваши данные будут безвозвратно удалены.')) {
                 let userEmail = currentUser.email;
                 let userRole = currentUser.role;
-                
                 if (userRole === 'parent') {
                     let student = getStudentForParent(userEmail);
                     if (student) {
@@ -681,9 +706,7 @@
                 } else if (userRole === 'curator') {
                     delete curatorGroups[userEmail];
                 }
-                
                 users = users.filter(u => u.email !== userEmail);
-                
                 saveAll();
                 localStorage.removeItem('currentUser');
                 localStorage.removeItem('curatorActiveGroup');
@@ -703,12 +726,10 @@
             if (!name || !email || !pwd) { err.innerText = 'Заполните все поля'; return; }
             if (pwd.length < 6) { err.innerText = 'Пароль должен быть минимум 6 символов'; return; }
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.innerText = 'Введите корректный email'; return; }
-            if (!/^[А-Яа-я\s]+$/.test(name)) { err.innerText = 'Имя должно содержать только русские буквы'; return; }
             if (users.find(u => u.email === email)) { err.innerText = 'Пользователь с таким email уже существует'; return; }
             if (role === 'parent') {
                 let childName = document.getElementById('regChildName').value.trim(), groupNum = document.getElementById('regGroupNumber').value.trim();
                 if (!childName) { err.innerText = 'Укажите ФИО студента'; return; }
-                if (!/^[А-Яа-я\s]+$/.test(childName)) { err.innerText = 'ФИО студента должно содержать только русские буквы'; return; }
                 if (!groupNum) { err.innerText = 'Укажите номер группы студента'; return; }
                 let existing = students.find(s => s.name === childName);
                 if (!existing) students.push({ id: `s${Date.now()}`, name: childName, group: groupNum, parentEmail: email, parentName: name, grades: {}, absences: [] });
@@ -802,6 +823,7 @@
                     } else {
                         document.getElementById('studentStatsBlock').style.display = 'none';
                         document.getElementById('noStudentsMessage').style.display = 'block';
+                        document.getElementById('registeredUsersContainer').style.display = 'none';
                     }
                 }
                 
@@ -830,10 +852,10 @@
         window.saveProfileChanges = function() {
             let newName = document.getElementById('profileName').value.trim();
             let selectedAvatar = document.querySelector('.avatar-option.selected')?.dataset.avatar;
-            if (newName && /^[А-Яа-я\s]+$/.test(newName)) {
+            if (newName) {
                 let idx = users.findIndex(u => u.email === currentUser.email);
                 if (idx !== -1) { users[idx].name = newName; currentUser.name = newName; localStorage.setItem('currentUser', JSON.stringify(currentUser)); saveAll(); document.getElementById('userNameSpan').innerText = newName; }
-            } else if (newName) alert('Имя должно содержать только русские буквы');
+            }
             if (selectedAvatar) {
                 userAvatars[currentUser.email] = selectedAvatar;
                 saveAll();
@@ -846,6 +868,10 @@
         saveAll();
         if (localStorage.getItem('currentUser')) { currentUser = JSON.parse(localStorage.getItem('currentUser')); showDashboard(); }
         else showAuth();
+        
+        function updateDateBadge() { const badge = document.getElementById('currentDateBadge'); if(badge){ const now = new Date(); badge.innerHTML = `📅 ${now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}`; } }
+        function createFloatingElements() { const container = document.getElementById('floatingBg'); if(!container) return; container.innerHTML = ''; const hearts = ['❤️','💖','💗','💓','💕','💝','🌸','🌷','🌺']; for(let i=0;i<25;i++){ const d=document.createElement('div'); d.className='heart'; d.innerHTML=hearts[Math.floor(Math.random()*hearts.length)]; d.style.left=Math.random()*100+'%'; d.style.fontSize=(15+Math.random()*25)+'px'; d.style.animationDuration=(8+Math.random()*12)+'s'; d.style.animationDelay=(Math.random()*15)+'s'; container.appendChild(d); } const stars=['⭐','🌟','✨','💫','⭐']; for(let i=0;i<30;i++){ const s=document.createElement('div'); s.className='star-bg'; s.innerHTML=stars[Math.floor(Math.random()*stars.length)]; s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%'; s.style.fontSize=(10+Math.random()*20)+'px'; s.style.animationDuration=(2+Math.random()*4)+'s'; s.style.animationDelay=(Math.random()*5)+'s'; container.appendChild(s); } const flowers=['🌸','🌼','🌻','🌺','🌷','🌹','🌸']; for(let i=0;i<15;i++){ const f=document.createElement('div'); f.className='flower-bg'; f.innerHTML=flowers[Math.floor(Math.random()*flowers.length)]; f.style.left=Math.random()*100+'%'; f.style.top=Math.random()*100+'%'; f.style.fontSize=(25+Math.random()*40)+'px'; f.style.animationDuration=(15+Math.random()*20)+'s'; f.style.animationDelay=(Math.random()*10)+'s'; container.appendChild(f); } for(let i=0;i<20;i++){ const b=document.createElement('div'); b.className='bubble'; const size=20+Math.random()*60; b.style.width=size+'px'; b.style.height=size+'px'; b.style.left=Math.random()*100+'%'; b.style.animationDuration=(10+Math.random()*15)+'s'; b.style.animationDelay=(Math.random()*20)+'s'; container.appendChild(b); } for(let i=0;i<50;i++){ const g=document.createElement('div'); g.className='glitter'; g.style.left=Math.random()*100+'%'; g.style.top=Math.random()*100+'%'; g.style.animationDuration=(2+Math.random()*5)+'s'; g.style.animationDelay=(Math.random()*8)+'s'; container.appendChild(g); } }
+        createFloatingElements(); updateDateBadge(); setInterval(updateDateBadge, 60000);
     </script>
 </body>
 </html>
