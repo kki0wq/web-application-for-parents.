@@ -24,13 +24,11 @@
             color: var(--text-dark);
             padding: 20px;
             min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
         }
         .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
-        .heart { position: absolute; font-size: 18px; opacity: 0.1; animation: floatHeart linear infinite; pointer-events: none; }
+        .heart { position: absolute; font-size: 18px; opacity: 0.1; animation: floatHeart linear infinite; }
         @keyframes floatHeart { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.1; } 90% { opacity: 0.1; } 100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; } }
-        .star-bg { position: absolute; font-size: 14px; opacity: 0.08; animation: twinkle 4s infinite alternate; pointer-events: none; }
+        .star-bg { position: absolute; font-size: 14px; opacity: 0.08; animation: twinkle 4s infinite alternate; }
         @keyframes twinkle { 0% { opacity: 0.03; transform: scale(0.8); } 100% { opacity: 0.1; transform: scale(1.2); } }
         
         .app-container {
@@ -309,7 +307,7 @@ function renderPaymentsReport(){
         }
     }
     if(report.length===0){ document.getElementById('paymentsReportContent').innerHTML='<div style="text-align:center;padding:40px;">Нет привязанных родителей</div>'; return; }
-    let html = `<table class="payment-report-table"><thead><tr><th>Родитель</th><th>Студент</th>${MONTHS.map(m=>`<th>${m}</th>`).join('')}</tr></thead><tbody>`;
+    let html = `<table class="payment-report-table"><thead><tr><th>Родитель</th><th>Студент</th>${MONTHS.map(m=>`<th>${m}</th>`).join('')} </thead><tbody>`;
     for(let r of report){
         html += `<tr><td><strong>${r.parentName}</strong></td><td>${r.studentName}</td>`;
         for(let m of MONTHS){
@@ -492,7 +490,7 @@ function initCuratorControls(){
 
 // НАВИГАЦИЯ
 let mainDash=document.getElementById('mainDashboard'), dynCont=document.getElementById('dynamic-page-content'), navBtns=document.querySelectorAll('.nav-btn');
-function getDetailedPage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let subs=getSubjectsForGroup(st.group); let rows=subs.map(s=>{ let grades=st.grades?.[s]||[]; let avg=grades.length?(grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1):"—"; let last=grades[grades.length-1]; let lastVal=last?(typeof last==='object'?last.value:last):"—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td style="text-align:center;"><span class="grade-badge-sm">${lastVal}</span></td></tr>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
+function getDetailedPage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let subs=getSubjectsForGroup(st.group); let rows=subs.map(s=>{ let grades=st.grades?.[s]||[]; let avg=grades.length?(grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1):"—"; let last=grades[grades.length-1]; let lastVal=last?(typeof last==='object'?last.value:last):"—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td style="text-align:center;"><span class="grade-badge-sm">${lastVal}</span></td>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
 function getAttendancePage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let days=(st.absences||[]).slice().reverse().map(a=>`<div style="padding:12px;background:#ffe0f0;border-radius:40px;margin:8px 0;">📅 ${a.date} — ${a.type}</div>`).join(''); return `<div class="detail-page"><div class="detail-title">📅 Посещаемость: ${st.name}</div>${days||'<div style="padding:20px;text-align:center;">✨ Нет пропусков</div>'}<button class="back-link" data-back="dashboard">← На главную</button></div>`; }
 function showDetail(pageId){ if(mainDash) mainDash.style.display='none'; let content=pageId==='detailed-progress'?getDetailedPage():getAttendancePage(); dynCont.innerHTML=content; dynCont.style.display='block'; navBtns.forEach(btn=>btn.classList.toggle('active-dashboard',btn.dataset.page===pageId)); document.querySelectorAll('.back-link').forEach(btn=>btn.onclick=()=>showMain()); }
 function showMain(){ if(mainDash) mainDash.style.display='grid'; dynCont.style.display='none'; dynCont.innerHTML=''; navBtns.forEach(btn=>btn.classList.toggle('active-dashboard',btn.dataset.page==='dashboard')); fullUpdate(); }
