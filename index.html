@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Колледж | Успеваемость, посещаемость, оплата</title>
+    <title>Колледж | Успеваемость, посещаемость</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -34,27 +34,17 @@
         }
         @media (max-width: 768px) { .app-container { padding: 16px; } }
         
-        /* АНИМАЦИИ */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes floatHeart {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            20% { opacity: 0.15; }
-            80% { opacity: 0.15; }
-            100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
-        }
-        @keyframes twinkle {
-            0% { opacity: 0.05; transform: scale(0.8); }
-            100% { opacity: 0.15; transform: scale(1.2); }
-        }
+        @keyframes floatHeart { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 20% { opacity: 0.12; } 80% { opacity: 0.12; } 100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; } }
+        @keyframes twinkle { 0% { opacity: 0.03; transform: scale(0.8); } 100% { opacity: 0.12; transform: scale(1.2); } }
         .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
-        .heart { position: absolute; font-size: 18px; opacity: 0; animation: floatHeart linear infinite; }
-        .star-bg { position: absolute; font-size: 14px; opacity: 0; animation: twinkle infinite alternate; }
+        .heart { position: absolute; font-size: 16px; opacity: 0; animation: floatHeart linear infinite; }
+        .star-bg { position: absolute; font-size: 12px; opacity: 0; animation: twinkle infinite alternate; }
         
-        /* АВТОРИЗАЦИЯ */
         .auth-container { max-width: 480px; margin: 0 auto; }
         .auth-tabs { display: flex; gap: 16px; background: #fff0f6; padding: 6px; border-radius: 60px; margin-bottom: 24px; }
         .auth-tab { flex: 1; background: transparent; border: none; padding: 14px; font-weight: 700; cursor: pointer; border-radius: 50px; color: #c27096; }
-        .auth-tab.active { background: #e87fb0; color: white; box-shadow: 0 4px 12px rgba(232,127,176,0.3); }
+        .auth-tab.active { background: #e87fb0; color: white; }
         .auth-form { display: flex; flex-direction: column; gap: 16px; }
         .auth-form.hidden { display: none; }
         .auth-input, .auth-select { padding: 16px 20px; border: 2px solid #ffe0f0; border-radius: 50px; font-size: 1rem; background: white; }
@@ -62,16 +52,14 @@
         .auth-btn { background: linear-gradient(135deg, #e87fb0, #f0a0c5); color: white; border: none; border-radius: 50px; padding: 16px; font-weight: 800; cursor: pointer; }
         .auth-error { color: #e06b9e; text-align: center; background: #ffe0f0; padding: 10px; border-radius: 50px; font-size: 0.85rem; }
         
-        /* ДАШБОРД */
         .dashboard-content { display: none; }
         .dashboard-content.active { display: block; animation: fadeIn 0.4s ease; }
         .dashboard-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; background: #fff5f9; padding: 12px 20px; border-radius: 60px; margin-bottom: 24px; }
         .date-badge { background: #ffe0f0; padding: 6px 18px; border-radius: 40px; font-size: 0.85rem; }
-        .user-info { display: flex; align-items: center; gap: 16px; }
+        .user-info { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
         .user-avatar { width: 48px; height: 48px; background: linear-gradient(135deg, #e87fb0, #f0a0c5); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; border: 2px solid white; }
         .logout-btn { background: #ffe0f0; border: none; padding: 8px 20px; border-radius: 40px; cursor: pointer; }
         
-        /* МОДАЛКА */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(6px); z-index: 1000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
         .modal-content { background: white; border-radius: 48px; max-width: 500px; width: 90%; padding: 30px; }
@@ -85,7 +73,6 @@
         .save-profile-btn, .delete-account-btn { background: linear-gradient(135deg, #e87fb0, #f0a0c5); color: white; border: none; border-radius: 50px; padding: 14px; width: 100%; margin-top: 12px; cursor: pointer; }
         .delete-account-btn { background: #e06b9e; }
         
-        /* КАРТОЧКИ */
         .curator-group-info, .students-list, .chats-list, .users-list, .payments-section { background: rgba(255,255,255,0.92); border-radius: 40px; padding: 20px; margin-bottom: 24px; border: 1px solid #ffe0f0; }
         .card-title { font-weight: 800; font-size: 1.2rem; color: #c45a8c; margin-bottom: 16px; }
         .students-grid, .users-grid { display: flex; flex-direction: column; gap: 12px; max-height: 280px; overflow-y: auto; }
@@ -148,39 +135,41 @@
         
         .notification { position: fixed; bottom: 20px; right: 20px; background: #e87fb0; color: white; padding: 12px 20px; border-radius: 50px; z-index: 1000; animation: slideIn 0.3s; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .hidden-panel { display: none !important; }
     </style>
 </head>
 <body>
 <div class="floating-bg" id="floatingBg"></div>
 <div class="app-container" id="app">
 
-    <!-- МОДАЛКА ПРОФИЛЯ -->
     <div id="profileModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>👤 Профиль</h3><button class="close-modal" onclick="closeProfileModal()">×</button></div><div class="profile-field"><label>Имя</label><input type="text" id="profileName"></div><div class="profile-field"><label>Email</label><input type="email" id="profileEmail" readonly style="background:#f5f5f5;"></div><div class="profile-field"><label>Аватар</label><div class="avatar-selector" id="avatarSelector"></div></div><button class="save-profile-btn" onclick="saveProfileChanges()">💾 Сохранить</button><button class="delete-account-btn" onclick="deleteAccount()">🗑️ Удалить аккаунт</button></div></div>
 
-    <!-- АВТОРИЗАЦИЯ -->
     <div id="authBlock"><div class="auth-container"><div class="auth-tabs"><button class="auth-tab active" data-tab="login">🌸 Вход</button><button class="auth-tab" data-tab="register">✨ Регистрация</button></div><div id="loginForm" class="auth-form"><input type="email" id="loginEmail" class="auth-input" placeholder="Email"><input type="password" id="loginPassword" class="auth-input" placeholder="Пароль"><button id="doLoginBtn" class="auth-btn">🌟 Войти</button><div id="loginError" class="auth-error"></div></div><div id="registerForm" class="auth-form hidden"><input type="text" id="regName" class="auth-input" placeholder="Имя"><input type="email" id="regEmail" class="auth-input" placeholder="Email"><select id="regRole" class="auth-select"><option value="parent">Родитель</option><option value="curator">Куратор</option></select><div id="parentFields"><input type="text" id="regChildName" class="auth-input" placeholder="ФИО студента"><input type="text" id="regGroupNumber" class="auth-input" placeholder="Группа"></div><div id="curatorFields" style="display:none"><input type="text" id="regCuratorGroup" class="auth-input" placeholder="Ваша группа"></div><input type="password" id="regPassword" class="auth-input" placeholder="Пароль (мин.6)"><button id="doRegisterBtn" class="auth-btn">✨ Зарегистрироваться</button><div id="regError" class="auth-error"></div></div></div></div>
 
-    <!-- ДАШБОРД -->
     <div id="dashboardBlock" class="dashboard-content">
         <div class="dashboard-header"><div class="date-badge" id="currentDateBadge"></div><div class="user-info"><div class="user-avatar" id="userAvatar" onclick="openProfileModal()">🌸</div><span>Привет, <span id="userNameSpan"></span>!</span><span id="userRoleBadge"></span><button id="logoutBtnMain" class="logout-btn">🚪 Выйти</button></div></div>
 
-        <!-- ОПЛАТА (ТОЛЬКО ДЛЯ РОДИТЕЛЕЙ) -->
+        <!-- ОПЛАТА (только для родителей) -->
         <div id="paymentsSection" class="payments-section" style="display:none"><div class="card-title">💰 Оплата колледжа</div><div id="paymentCalendar" class="payment-calendar"></div><div id="paymentMessage" style="margin-top:12px;text-align:center;padding:8px;background:#e8f4e6;border-radius:40px;display:none;"></div></div>
 
-        <!-- ПАНЕЛЬ КУРАТОРА -->
-        <div id="curatorGroupPanel" style="display:none"><div class="curator-group-info"><div class="group-selector" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;"><strong>Мои группы:</strong><select id="curatorGroupSelect" class="curator-select"></select><button id="deleteGroupBtn" class="curator-btn">🗑️ Удалить группу</button><input type="text" id="newGroupNameInput" placeholder="Новая группа" style="padding:8px 16px;border-radius:40px;border:2px solid #ffe0f0;"><button id="confirmAddGroupBtn" class="curator-btn">➕ Добавить</button></div><div><strong>Предметы группы:</strong><div id="groupSubjectsList" style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;"></div><input type="text" id="newSubjectName" placeholder="Новый предмет" style="padding:8px 16px;border-radius:40px;border:2px solid #ffe0f0;"><button id="addSubjectToGroupBtn" class="curator-btn">➕ Добавить предмет</button></div></div></div>
+        <!-- ПАНЕЛЬ КУРАТОРА (только для кураторов) -->
+        <div id="curatorOnlyArea" style="display:none">
+            <div class="curator-group-info"><div class="group-selector" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;"><strong>📚 Мои группы:</strong><select id="curatorGroupSelect" class="curator-select"></select><button id="deleteGroupBtn" class="curator-btn">🗑️ Удалить группу</button><input type="text" id="newGroupNameInput" placeholder="Новая группа" style="padding:8px 16px;border-radius:40px;border:2px solid #ffe0f0;"><button id="confirmAddGroupBtn" class="curator-btn">➕ Добавить</button></div><div><strong>📖 Предметы группы:</strong><div id="groupSubjectsList" style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;"></div><input type="text" id="newSubjectName" placeholder="Новый предмет" style="padding:8px 16px;border-radius:40px;border:2px solid #ffe0f0;"><button id="addSubjectToGroupBtn" class="curator-btn">➕ Добавить предмет</button></div></div>
+            <div id="registeredUsersContainer" class="users-list" style="display:none"><div class="card-title">👥 Родители группы</div><div id="usersGrid" class="users-grid"></div></div>
+            <div id="studentsListContainer" class="students-list" style="display:none"><div class="card-title">👨‍🎓 Студенты</div><div id="studentsGrid" class="students-grid"></div></div>
+            <div id="chatsListContainer" class="chats-list" style="display:none"><div class="card-title">💬 Чаты с родителями</div><div id="chatsGrid" class="chats-grid"></div></div>
+        </div>
 
-        <!-- ЗАРЕГИСТРИРОВАННЫЕ РОДИТЕЛИ (С КНОПКОЙ УДАЛЕНИЯ) -->
-        <div id="registeredUsersContainer" class="users-list" style="display:none"><div class="card-title">👥 Родители группы</div><div id="usersGrid" class="users-grid"></div></div>
-
-        <div id="studentsListContainer" class="students-list" style="display:none"><div class="card-title">👨‍🎓 Студенты</div><div id="studentsGrid" class="students-grid"></div></div>
-        <div id="chatsListContainer" class="chats-list" style="display:none"><div class="card-title">💬 Чаты</div><div id="chatsGrid" class="chats-grid"></div></div>
+        <!-- РОДИТЕЛЬСКАЯ ОБЛАСТЬ (только родительский чат) -->
+        <div id="parentOnlyArea" style="display:none">
+            <div id="parentChatContainer" class="chats-list" style="display:none"><div class="card-title">💬 Чат с куратором</div><div id="parentChatGrid" class="chats-grid"></div></div>
+        </div>
 
         <div id="studentStatsBlock" style="display:none">
             <div id="currentStudentInfo" style="background:linear-gradient(135deg,#fff0f8,#ffe4f0);border-radius:40px;padding:14px 20px;margin-bottom:20px;display:flex;justify-content:space-between;"><span>🎓 <strong id="currentStudentName"></strong></span><span id="studentGroupBadge" style="background:#ffe0f0;padding:4px 14px;border-radius:40px;"></span></div>
             <div class="stats-row"><div class="stat-card"><div class="stat-icon">📚</div><div class="stat-value" id="avgScoreStat">—</div><div class="stat-label">Средний балл</div></div><div class="stat-card"><div class="stat-icon">📅</div><div class="stat-value" id="absencesStat">—</div><div class="stat-label">Пропуски</div></div><div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-value" id="subjectsCountStat">—</div><div class="stat-label">Предметов</div></div></div>
             <div class="all-grades-section"><div class="card-title">📋 Оценки</div><div class="filter-bar"><select id="filterSubject"><option value="">Все предметы</option></select><button id="clearFiltersBtn" class="curator-btn">Очистить</button></div><div id="gradesTableContainer" style="max-height:300px;overflow-y:auto;"></div></div>
-            <div class="distribution-container"><div class="card-title">📊 Распределение</div><div id="distributionContent"></div></div>
+            <div class="distribution-container"><div class="card-title">📊 Распределение оценок</div><div id="distributionContent"></div></div>
             <main class="main-dashboard" id="mainDashboard">
                 <div class="card"><div class="card-title">📊 Успеваемость</div><div><span>Средний балл:</span><span id="avgScoreDisplay" style="font-size:1.8rem;font-weight:800;">—</span></div><div class="progress-bar-container"><div class="progress-bar" id="avgProgress"></div></div><button class="nav-btn" style="width:100%;margin-top:16px;" data-page="detailed-progress">📈 Подробнее →</button></div>
                 <div class="card"><div class="card-title">📆 Посещаемость</div><div><span>Пропуски:</span><span id="absencesDisplay" style="font-size:1.8rem;font-weight:800;">—</span></div><div class="progress-bar-container"><div class="progress-bar" id="attendanceProgress"></div></div><button class="nav-btn" style="width:100%;margin-top:16px;" data-page="attendance-detail">📅 Подробнее →</button></div>
@@ -189,6 +178,7 @@
         </div>
         
         <div id="noStudentsMessage" class="no-students-message" style="display:none;text-align:center;padding:60px;"><h3>Нет студентов</h3></div>
+        
         <div id="curatorPanel" class="curator-panel" style="display:none;background:#fff0f8;border-radius:40px;padding:24px;margin-top:20px;"><h4>🔧 Панель куратора</h4><div class="control-group"><label>Ученик:</label><select id="studentForGradeSelect" class="curator-select"></select></div><div class="control-group"><label>Оценка:</label><select id="subjectSelect" class="curator-select"></select><select id="gradeSelect" class="curator-select"><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option></select><div class="grade-type-group"><label><input type="radio" name="gradeType" value="normal" checked> Обычная</label><label><input type="radio" name="gradeType" value="control"> Контрольная (×2)</label></div><input type="date" id="gradeDate"><input type="text" id="gradeComment" placeholder="Комментарий"><button id="addGradeBtn" class="curator-btn">Поставить</button></div><div class="control-group"><label>Пропуск:</label><input type="date" id="absenceDate"><select id="absenceType"><option value="болезнь">Болезнь</option><option value="уважительная">Уважительная</option><option value="неуважительная">Неуважительная</option></select><button id="addAbsenceBtn" class="curator-btn">Добавить</button></div><div id="curatorSuccessMsg" class="success-msg" style="display:none;background:#e8f4e6;padding:10px;border-radius:40px;margin-top:12px;text-align:center;"></div></div>
         
         <nav class="bottom-nav"><button class="nav-btn active-dashboard" data-page="dashboard">📋 Главная</button><button class="nav-btn" data-page="detailed-progress">📈 Успеваемость</button><button class="nav-btn" data-page="attendance-detail">📅 Посещаемость</button></nav>
@@ -197,7 +187,7 @@
 </div>
 
 <script>
-    // ========== ИНИЦИАЛИЗАЦИЯ (СОХРАНЯЕМ АККАУНТЫ) ==========
+    // ========== ИНИЦИАЛИЗАЦИЯ ==========
     if (!localStorage.getItem('users') || JSON.parse(localStorage.getItem('users')).length === 0) {
         localStorage.setItem('users', JSON.stringify([
             { id: 'u1', name: 'ГЕННАДИЙ ДРАГОН', email: 'gennadij@dragons.ru', password: 'dragongennadij', role: 'curator' },
@@ -243,15 +233,14 @@
     function getStudentForParent(email) { return students.find(s=>s.parentEmail===email); }
     function avgGrade(student) { if(!student?.grades) return "—"; let total=0,sum=0; for(let s in student.grades) for(let g of student.grades[s]){ let v=typeof g==='object'?g.value:g, w=(typeof g==='object'&&g.weight)?g.weight:1; sum+=v*w; total+=w; } return total===0?"—":(sum/total).toFixed(2); }
     
-    // ОПЛАТА (ТОЛЬКО РОДИТЕЛЯМ)
+    // ОПЛАТА (только родители)
     function initPayments(studentId){ if(!payments[studentId]){ payments[studentId]={}; ['Сен','Окт','Ноя','Дек','Янв','Фев','Мар','Апр','Май','Июн'].forEach(m=>payments[studentId][m]={paid:false,date:null}); saveAll(); } }
     function renderPayments(){ let st=getStudentForParent(currentUser.email); if(!st) return; initPayments(st.id); let months=Object.keys(payments[st.id]); document.getElementById('paymentCalendar').innerHTML=months.map(m=>`<div class="payment-month-card ${payments[st.id][m].paid?'paid':'unpaid'}" onclick="togglePayment('${st.id}','${m}')"><div class="payment-status">${payments[st.id][m].paid?'✅':'❌'}</div><div class="payment-month">${m}</div></div>`).join(''); }
     window.togglePayment=function(sid,m){ let cur=payments[sid][m]; payments[sid][m]={paid:!cur.paid,date:!cur.paid?new Date().toLocaleDateString():null}; saveAll(); renderPayments(); let msg=document.getElementById('paymentMessage'); msg.style.display='block'; msg.innerHTML=payments[sid][m].paid?`✅ ${m} оплачен!`:`❌ Оплата отменена`; setTimeout(()=>msg.style.display='none',2000); };
-    function showPaymentNotif(){ let st=getStudentForParent(currentUser?.email); if(!st) return; initPayments(st.id); let months=['Сен','Окт','Ноя','Дек','Янв','Фев','Мар','Апр','Май','Июн']; let curMonth=months[new Date().getMonth()]; if(payments[st.id][curMonth] && !payments[st.id][curMonth].paid && !localStorage.getItem(`notif_${st.id}_${new Date().getMonth()}`)){ let d=document.createElement('div'); d.className='notification'; d.innerHTML=`⚠️ Не оплачен ${curMonth}`; document.body.appendChild(d); setTimeout(()=>d.remove(),4000); localStorage.setItem(`notif_${st.id}_${new Date().getMonth()}`,'true'); } }
     
-    // УДАЛЕНИЕ РОДИТЕЛЯ КУРАТОРОМ
+    // УДАЛЕНИЕ РОДИТЕЛЯ (только куратор)
     window.deleteParent = function(email, name){
-        if(confirm(`Удалить родителя "${name}" из группы? Связь с учеником будет разорвана.`)){
+        if(confirm(`Удалить родителя "${name}" из группы?`)){
             let student = students.find(s=>s.parentEmail===email && s.group===currentCuratorActiveGroup);
             if(student){ student.parentEmail=null; student.parentName=null; saveAll(); renderRegisteredUsers(); renderStudentsList(); renderChatsList(); let msg=document.getElementById('curatorSuccessMsg'); msg.style.display='block'; msg.innerHTML=`✅ Родитель "${name}" удалён`; setTimeout(()=>msg.style.display='none',2000); }
         }
@@ -266,10 +255,9 @@
         if(!container) return;
         if(parents.length===0){ usersContainer.style.display='none'; return; }
         usersContainer.style.display='block';
-        container.innerHTML=parents.map(p=>`<div class="user-card"><div class="user-info-text"><strong>${p.name}</strong><br><span style="font-size:0.7rem;">${p.email}</span></div><button class="curator-btn delete-user-btn" onclick="window.deleteParent('${p.email}','${p.name.replace(/'/g,"\\'")}')">🗑️ Удалить</button></div>`).join('');
+        container.innerHTML=parents.map(p=>`<div class="user-card"><div><strong>${p.name}</strong><br><span style="font-size:0.7rem;">${p.email}</span></div><button class="curator-btn delete-user-btn" onclick="window.deleteParent('${p.email}','${p.name.replace(/'/g,"\\'")}')">🗑️ Удалить</button></div>`).join('');
     }
     
-    // ОСТАЛЬНЫЕ ФУНКЦИИ
     function renderAllGradesTable(){
         let st=getStudentById(selectedStudentId);
         if(!st) return;
@@ -331,6 +319,17 @@
         grid.innerHTML=groupStudents.map(st=>{ let parent=users.find(u=>u.email===st.parentEmail); let parentName=parent?parent.name:(st.parentName||"Родитель"); let last=chatMessages.filter(m=>m.studentId===st.id).slice(-1)[0]; return `<div class="chat-item ${selectedChatStudentId===st.id?'active':''}" onclick="window.selectChatStudent('${st.id}')"><div class="chat-avatar">${parentName.charAt(0)}</div><div><div class="chat-name">💬 Чат с ${parentName}</div><div class="chat-preview" style="font-size:0.8rem;">${last?last.text.substring(0,40):'Нет сообщений'}</div></div></div>`; }).join('');
     }
     
+    function renderParentChat(){
+        let st=getStudentForParent(currentUser.email);
+        if(!st) return;
+        let parentName=currentUser.name;
+        let grid=document.getElementById('parentChatGrid');
+        if(!grid) return;
+        document.getElementById('parentChatContainer').style.display='block';
+        grid.innerHTML=`<div class="chat-item active" onclick="window.selectChatStudent('${st.id}')"><div class="chat-avatar">${parentName.charAt(0)}</div><div><div class="chat-name">💬 Чат с куратором</div></div></div>`;
+        if(selectedChatStudentId===st.id) renderChatMessages();
+    }
+    
     function renderGroupSubjectsUI(){
         if(!currentCuratorActiveGroup) return;
         let subjects=getSubjectsForGroup(currentCuratorActiveGroup);
@@ -348,19 +347,30 @@
     }
     
     function fullUpdate(){
-        if(!currentCuratorActiveGroup) return;
-        renderStudentsList(); renderChatsList(); renderGroupSubjectsUI(); renderRegisteredUsers();
-        let groupStudents=students.filter(s=>s.group===currentCuratorActiveGroup);
-        if(groupStudents.length>0 && (!selectedStudentId || !groupStudents.find(s=>s.id===selectedStudentId))){ selectedStudentId=groupStudents[0].id; selectedChatStudentId=selectedStudentId; selectedGradeStudentId=selectedStudentId; }
-        if(selectedStudentId){ let st=getStudentById(selectedStudentId); if(st){ displayStudentStats(st); renderGradeDistribution(st); } }
-        renderAllGradesTable();
+        if(currentUser?.role==='curator'){
+            if(!currentCuratorActiveGroup) return;
+            renderStudentsList(); renderChatsList(); renderGroupSubjectsUI(); renderRegisteredUsers();
+            let groupStudents=students.filter(s=>s.group===currentCuratorActiveGroup);
+            if(groupStudents.length>0 && (!selectedStudentId || !groupStudents.find(s=>s.id===selectedStudentId))){ selectedStudentId=groupStudents[0].id; selectedChatStudentId=selectedStudentId; selectedGradeStudentId=selectedStudentId; }
+            if(selectedStudentId){ let st=getStudentById(selectedStudentId); if(st){ displayStudentStats(st); renderGradeDistribution(st); } }
+            renderAllGradesTable();
+        } else if(currentUser?.role==='parent'){
+            let st=getStudentForParent(currentUser.email);
+            if(st){
+                selectedStudentId=st.id; selectedChatStudentId=st.id;
+                displayStudentStats(st); renderGradeDistribution(st);
+                renderAllGradesTable();
+                renderParentChat();
+                renderChatMessages();
+            }
+        }
     }
     
     window.selectStudent=function(id){ selectedStudentId=id; selectedChatStudentId=id; selectedGradeStudentId=id; fullUpdate(); renderChatMessages(); };
     window.selectChatStudent=function(id){ selectedChatStudentId=id; selectedStudentId=id; selectedGradeStudentId=id; fullUpdate(); renderChatMessages(); };
     
     function renderChatMessages(){
-        let sid=currentUser?.role==='curator'?selectedChatStudentId:(currentUser?.role==='parent'?getStudentForParent(currentUser.email)?.id:null);
+        let sid=currentUser?.role==='curator'?selectedChatStudentId:getStudentForParent(currentUser.email)?.id;
         if(!sid) return;
         if(currentUser?.role==='curator'){ let st=getStudentById(sid); if(st){ let parent=users.find(u=>u.email===st.parentEmail); document.getElementById('chatHeaderName').innerHTML=`Чат с ${parent?parent.name:(st.parentName||"Родитель")}`; } }
         else { document.getElementById('chatHeaderName').innerHTML=`Чат с куратором`; }
@@ -378,7 +388,6 @@
         if(addAbsence){ let nb=addAbsence.cloneNode(true); addAbsence.parentNode.replaceChild(nb,addAbsence); nb.onclick=()=>{ let st=getStudentById(selectedStudentId); if(st){ let date=document.getElementById('absenceDate').value||new Date().toISOString().slice(0,10); let type=document.getElementById('absenceType').value; if(!st.absences) st.absences=[]; if(!st.absences.find(a=>a.date===date)){ st.absences.push({date,type}); saveAll(); fullUpdate(); msgDiv.style.display='block'; msgDiv.innerHTML=`📅 Пропуск добавлен`; setTimeout(()=>msgDiv.style.display='none',2000); } else { msgDiv.style.display='block'; msgDiv.innerHTML='⚠️ Пропуск уже есть'; setTimeout(()=>msgDiv.style.display='none',2000); } } }; }
     }
     
-    // НАВИГАЦИЯ
     let mainDash=document.getElementById('mainDashboard'), dynCont=document.getElementById('dynamic-page-content'), navBtns=document.querySelectorAll('.nav-btn');
     function getDetailedPage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let subjects=getSubjectsForGroup(st.group); let rows=subjects.map(s=>{ let grades=st.grades?.[s]||[]; let avg=grades.length?(grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1):"—"; let last=grades[grades.length-1]; let lastVal=last?(typeof last==='object'?last.value:last):"—"; return `<tr><td>📚 ${s}</td><td>${avg}</td><td><span class="grade-badge-sm">${lastVal}</span></td></tr>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" style="margin-top:20px;" data-back="dashboard">← На главную</button></div>`; }
     function getAttendancePage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let days=(st.absences||[]).slice().reverse().map(a=>`<div style="padding:10px;background:#ffe0f0;border-radius:40px;margin:8px 0;">📅 ${a.date} — ${a.type}</div>`).join(''); return `<div class="detail-page"><div class="detail-title">📅 Посещаемость: ${st.name}</div>${days||'<div>✨ Нет пропусков</div>'}<button class="back-link" data-back="dashboard">← На главную</button></div>`; }
@@ -391,7 +400,6 @@
     document.getElementById('deleteGroupBtn')?.addEventListener('click',()=>{ if(currentCuratorActiveGroup && confirm(`Удалить группу "${currentCuratorActiveGroup}"?`)){ let groups=curatorGroups[currentUser.email]; let idx=groups.indexOf(currentCuratorActiveGroup); if(idx!==-1) groups.splice(idx,1); curatorGroups[currentUser.email]=groups; saveAll(); if(groups.length>0){ currentCuratorActiveGroup=groups[0]; localStorage.setItem('curatorActiveGroup',currentCuratorActiveGroup); } else { currentCuratorActiveGroup=null; localStorage.removeItem('curatorActiveGroup'); document.getElementById('studentStatsBlock').style.display='none'; document.getElementById('noStudentsMessage').style.display='block'; } renderCuratorGroupsSelect(); fullUpdate(); } });
     document.getElementById('confirmAddGroupBtn')?.addEventListener('click',()=>{ let ng=document.getElementById('newGroupNameInput').value.trim(); if(ng && currentUser){ let taken=false; for(let ce in curatorGroups) if(ce!==currentUser.email && curatorGroups[ce]?.includes(ng)) taken=true; if(taken){ let msg=document.getElementById('curatorSuccessMsg'); msg.style.display='block'; msg.innerHTML='⚠️ Группа уже закреплена'; setTimeout(()=>msg.style.display='none',2000); return; } if(!curatorGroups[currentUser.email]) curatorGroups[currentUser.email]=[]; if(!curatorGroups[currentUser.email].includes(ng)){ curatorGroups[currentUser.email].push(ng); if(!groupSubjects[ng]) groupSubjects[ng]=[...DEFAULT_SUBJECTS]; saveAll(); renderCuratorGroupsSelect(); currentCuratorActiveGroup=ng; fullUpdate(); document.getElementById('newGroupNameInput').value=''; } } });
     
-    // АВТОРИЗАЦИЯ
     document.getElementById('regRole').onchange=function(){ let isParent=this.value==='parent'; document.getElementById('parentFields').style.display=isParent?'block':'none'; document.getElementById('curatorFields').style.display=isParent?'none':'block'; };
     document.getElementById('regRole').dispatchEvent(new Event('change'));
     document.querySelectorAll('.auth-tab').forEach(tab=>{ tab.onclick=()=>{ let t=tab.dataset.tab; document.querySelectorAll('.auth-tab').forEach(tt=>tt.classList.remove('active')); tab.classList.add('active'); document.getElementById('loginForm').classList.toggle('hidden',t!=='login'); document.getElementById('registerForm').classList.toggle('hidden',t!=='register'); }; });
@@ -413,40 +421,47 @@
             document.getElementById('userNameSpan').innerText=currentUser.name;
             document.getElementById('userAvatar').innerHTML=userAvatars[currentUser.email]||"🌸";
             let badge=document.getElementById('userRoleBadge');
+            
+            // КЛЮЧЕВОЕ: разделяем интерфейс для родителя и куратора
             if(currentUser.role==='parent'){
                 badge.innerText='Родитель';
+                // Скрываем кураторские панели
+                document.getElementById('curatorOnlyArea').style.display='none';
+                document.getElementById('curatorPanel').style.display='none';
+                document.getElementById('curatorGroupPanel').style.display='none';
+                // Показываем родительскую область
+                document.getElementById('parentOnlyArea').style.display='block';
                 document.getElementById('paymentsSection').style.display='block';
                 renderPayments();
-                showPaymentNotif();
-            } else {
-                badge.innerText='Куратор';
-                document.getElementById('paymentsSection').style.display='none';
-            }
-            let today=new Date().toISOString().slice(0,10);
-            if(document.getElementById('gradeDate')) document.getElementById('gradeDate').value=today;
-            if(document.getElementById('absenceDate')) document.getElementById('absenceDate').value=today;
-            if(currentUser.role==='parent'){
-                document.getElementById('curatorGroupPanel').style.display='none';
-                document.getElementById('curatorPanel').style.display='none';
+                // Показываем статистику студента
                 let st=getStudentForParent(currentUser.email);
                 if(st){
                     document.getElementById('studentStatsBlock').style.display='block';
                     document.getElementById('noStudentsMessage').style.display='none';
                     selectedStudentId=st.id; selectedChatStudentId=st.id; selectedGradeStudentId=st.id;
                     displayStudentStats(st); renderGradeDistribution(st);
-                    document.getElementById('chatHeaderName').innerHTML='Чат с куратором';
+                    renderParentChat();
                     renderChatMessages();
                 } else { document.getElementById('studentStatsBlock').style.display='none'; document.getElementById('noStudentsMessage').style.display='block'; }
             } else {
-                document.getElementById('curatorGroupPanel').style.display='block';
+                badge.innerText='Куратор';
+                // Показываем кураторские панели
+                document.getElementById('curatorOnlyArea').style.display='block';
                 document.getElementById('curatorPanel').style.display='block';
-                document.getElementById('studentStatsBlock').style.display='block';
+                document.getElementById('parentOnlyArea').style.display='none';
+                document.getElementById('paymentsSection').style.display='none';
+                // Кураторские данные
                 if(!curatorGroups[currentUser.email]) curatorGroups[currentUser.email]=[];
                 renderCuratorGroupsSelect();
                 if(currentCuratorActiveGroup) fullUpdate();
                 else if(curatorGroups[currentUser.email].length){ currentCuratorActiveGroup=curatorGroups[currentUser.email][0]; fullUpdate(); }
                 else { document.getElementById('studentStatsBlock').style.display='none'; document.getElementById('noStudentsMessage').style.display='block'; }
             }
+            
+            let today=new Date().toISOString().slice(0,10);
+            if(document.getElementById('gradeDate')) document.getElementById('gradeDate').value=today;
+            if(document.getElementById('absenceDate')) document.getElementById('absenceDate').value=today;
+            
             initChat(); initCuratorControls(); initNav(); renderAllGradesTable();
         } else showAuth();
     }
