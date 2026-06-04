@@ -24,13 +24,11 @@
             color: var(--text-dark);
             padding: 20px;
             min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
         }
         .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
-        .heart { position: absolute; font-size: 18px; opacity: 0.1; animation: floatHeart linear infinite; pointer-events: none; }
+        .heart { position: absolute; font-size: 18px; opacity: 0.1; animation: floatHeart linear infinite; }
         @keyframes floatHeart { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.1; } 90% { opacity: 0.1; } 100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; } }
-        .star-bg { position: absolute; font-size: 14px; opacity: 0.08; animation: twinkle 4s infinite alternate; pointer-events: none; }
+        .star-bg { position: absolute; font-size: 14px; opacity: 0.08; animation: twinkle 4s infinite alternate; }
         @keyframes twinkle { 0% { opacity: 0.03; transform: scale(0.8); } 100% { opacity: 0.1; transform: scale(1.2); } }
         
         .app-container {
@@ -99,7 +97,7 @@
         .student-card.active { border-color: var(--primary); background: #ffe0f0; }
         .student-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
         .delete-user-btn { background: #e06b9e; color: white; border: none; border-radius: 40px; padding: 6px 14px; font-size: 0.7rem; cursor: pointer; transition: 0.2s; }
-        .delete-user-btn:hover { background: #c45a8c; transform: scale(1.02); }
+        .delete-user-btn:hover { background: #c45a8c; }
         
         .chats-grid { display: flex; flex-direction: column; gap: 12px; max-height: 320px; overflow-y: auto; }
         .chat-item { display: flex; align-items: center; gap: 15px; padding: 14px 20px; background: rgba(255,245,249,0.7); border-radius: 70px; cursor: pointer; transition: all 0.3s; border: 1px solid transparent; }
@@ -204,13 +202,10 @@
 <div id="dashboardBlock" class="dashboard-content">
     <div class="dashboard-header"><div class="date-badge" id="currentDateBadge"></div><div class="user-info"><div class="user-avatar" id="userAvatar" onclick="openProfileModal()">🌸</div><span>Привет, <span id="userNameSpan"></span>!</span><span id="userRoleBadge"></span><button id="logoutBtnMain" class="logout-btn">🚪 Выйти</button></div></div>
 
-    <!-- ОПЛАТА (только для родителей) -->
     <div id="paymentsSection" class="payments-section" style="display:none"><div class="card-title">💰 Оплата колледжа</div><div id="paymentCalendar" class="payment-calendar"></div><div id="paymentMessage" style="margin-top:12px;text-align:center;padding:8px;background:#e8f4e6;border-radius:40px;display:none;"></div></div>
 
-    <!-- ОТЧЁТ ПО ОПЛАТАМ (только для куратора) -->
     <div id="paymentsReport" class="payments-report" style="display:none"><div class="card-title">📊 Отчёт по оплате родителей</div><div id="paymentsReportContent"></div></div>
 
-    <!-- КУРАТОРСКАЯ ОБЛАСТЬ -->
     <div id="curatorArea" style="display:none">
         <div class="curator-group-info">
             <div class="group-selector"><strong>📚 Мои группы:</strong><select id="curatorGroupSelect" class="curator-select"></select><button id="deleteGroupBtn" class="curator-btn">🗑️ Удалить группу</button><input type="text" id="newGroupNameInput" placeholder="Новая группа" class="curator-input" style="width:150px;"><button id="confirmAddGroupBtn" class="curator-btn">➕ Добавить</button></div>
@@ -244,7 +239,6 @@
 </div>
 
 <script>
-// ДАННЫЕ ПО УМОЛЧАНИЮ
 if (!localStorage.getItem('users') || JSON.parse(localStorage.getItem('users')).length === 0) {
     localStorage.setItem('users', JSON.stringify([
         { id: 'u1', name: 'ГЕННАДИЙ ДРАГОН', email: 'gennadij@dragons.ru', password: 'dragongennadij', role: 'curator' },
@@ -291,12 +285,10 @@ function getStudentForParent(email) { return students.find(s=>s.parentEmail===em
 function getSubjectsForGroup(g) { if (!groupSubjects[g]) groupSubjects[g] = ["Математика","Русский язык","Физика","Информатика","Физкультура"]; return groupSubjects[g]; }
 function avgGrade(st) { if(!st?.grades) return "—"; let t=0,s=0; for(let subj in st.grades) for(let g of st.grades[subj]){ let v=typeof g==='object'?g.value:g, w=(typeof g==='object'&&g.weight)?g.weight:1; s+=v*w; t+=w; } return t===0?"—":(s/t).toFixed(2); }
 
-// ОПЛАТА ДЛЯ РОДИТЕЛЯ
 function initPayments(sid){ if(!payments[sid]){ payments[sid]={}; MONTHS.forEach(m=>payments[sid][m]={paid:false, date:null}); saveAll(); } }
 function renderPayments(){ let st=getStudentForParent(currentUser?.email); if(!st) return; initPayments(st.id); document.getElementById('paymentCalendar').innerHTML=MONTHS.map(m=>`<div class="payment-month-card ${payments[st.id][m].paid?'paid':'unpaid'}" onclick="togglePayment('${st.id}','${m}')"><div>${payments[st.id][m].paid?'✅':'❌'}</div><div>${m}</div></div>`).join(''); }
 window.togglePayment=function(sid,m){ payments[sid][m].paid=!payments[sid][m].paid; payments[sid][m].date=payments[sid][m].paid?new Date().toLocaleDateString('ru-RU'):null; saveAll(); renderPayments(); let msg=document.getElementById('paymentMessage'); msg.style.display='block'; msg.innerHTML=payments[sid][m].paid?`✅ ${m} оплачен!`:`❌ Оплата отменена`; setTimeout(()=>msg.style.display='none',2000); renderPaymentsReport(); };
 
-// ОТЧЁТ ПО ОПЛАТАМ ДЛЯ КУРАТОРА
 function renderPaymentsReport(){
     if(!currentCuratorActiveGroup || currentUser?.role!=='curator') return;
     let groupStudents = students.filter(s=>s.group===currentCuratorActiveGroup);
@@ -316,15 +308,14 @@ function renderPaymentsReport(){
             let paid = r.payments[m]?.paid;
             html += `<td style="text-align:center;">${paid ? '<span class="paid-badge">✅ Оплачено</span>' : '<span class="unpaid-badge">❌ Не оплачено</span>'}</td>`;
         }
-        html += `<tr>`;
+        html += `</tr>`;
     }
     html += `</tbody></table>`;
     document.getElementById('paymentsReportContent').innerHTML = html;
 }
 
-// УДАЛЕНИЕ РОДИТЕЛЯ КУРАТОРОМ
 window.deleteParent = function(email, name){
-    if(confirm(`Удалить родителя "${name}" из группы? Связь с учеником будет разорвана.`)){
+    if(confirm(`Удалить родителя "${name}" из группы?`)){
         let student = students.find(s=>s.parentEmail===email && s.group===currentCuratorActiveGroup);
         if(student){ student.parentEmail=null; student.parentName=null; saveAll(); renderRegisteredUsers(); renderStudentsList(); renderChatsList(); renderPaymentsReport(); document.getElementById('curatorSuccessMsg').innerHTML=`✅ Родитель "${name}" удалён`; document.getElementById('curatorSuccessMsg').style.display='block'; setTimeout(()=>document.getElementById('curatorSuccessMsg').style.display='none',2000); }
     }
@@ -340,7 +331,6 @@ function renderRegisteredUsers(){
     container.innerHTML=parents.map(p=>`<div class="user-card"><div><strong>${p.name}</strong><br><small>${p.email}</small></div><button class="delete-user-btn" onclick="window.deleteParent('${p.email}','${p.name.replace(/'/g,"\\'")}')">🗑️ Удалить</button></div>`).join('');
 }
 
-// ГРАФИК УСПЕВАЕМОСТИ
 function renderSubjectChart(){
     let student = getStudentById(selectedStudentId);
     let subject = document.getElementById('subjectForChart')?.value;
@@ -385,7 +375,7 @@ function renderAllGradesTable(){
     let cont=document.getElementById('gradesTableContainer');
     if(!cont) return;
     if(grades.length===0){ cont.innerHTML='<div style="text-align:center;padding:40px;">📭 Нет оценок</div>'; return; }
-    cont.innerHTML=`<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g=>`<tr><td>${g.date||"—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight===2?'Контрольная ×2':'Обычная'}</td><td>${g.comment||"—"}</td></tr>`).join('')}</tbody></table>`;
+    cont.innerHTML=`<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g=>`<tr><td>${g.date||"—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight===2?'Контрольная ×2':'Обычная'}</td><td>${g.comment||"—"}</td>`).join('')}</tbody></table>`;
 }
 
 function renderGradeDistribution(st){
@@ -505,9 +495,8 @@ function initCuratorControls(){
     if(addAbsence){ let nb=addAbsence.cloneNode(true); addAbsence.parentNode.replaceChild(nb,addAbsence); nb.onclick=()=>{ let st=getStudentById(selectedStudentId); if(st){ let date=document.getElementById('absenceDate').value||new Date().toISOString().slice(0,10); let type=document.getElementById('absenceType').value; if(!st.absences) st.absences=[]; if(!st.absences.find(a=>a.date===date)){ st.absences.push({date,type}); saveAll(); fullUpdate(); msgDiv.style.display='block'; msgDiv.innerHTML=`📅 Пропуск добавлен`; setTimeout(()=>msgDiv.style.display='none',2000); } else { msgDiv.style.display='block'; msgDiv.innerHTML='⚠️ Пропуск уже есть'; setTimeout(()=>msgDiv.style.display='none',2000); } } }; }
 }
 
-// НАВИГАЦИЯ
 let mainDash=document.getElementById('mainDashboard'), dynCont=document.getElementById('dynamic-page-content'), navBtns=document.querySelectorAll('.nav-btn');
-function getDetailedPage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let subs=getSubjectsForGroup(st.group); let rows=subs.map(s=>{ let grades=st.grades?.[s]||[]; let avg=grades.length?(grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1):"—"; let last=grades[grades.length-1]; let lastVal=last?(typeof last==='object'?last.value:last):"—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td style="text-align:center;"><span class="grade-badge-sm">${lastVal}</span></td></tr>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
+function getDetailedPage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let subs=getSubjectsForGroup(st.group); let rows=subs.map(s=>{ let grades=st.grades?.[s]||[]; let avg=grades.length?(grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1):"—"; let last=grades[grades.length-1]; let lastVal=last?(typeof last==='object'?last.value:last):"—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td style="text-align:center;"><span class="grade-badge-sm">${lastVal}</span></td>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
 function getAttendancePage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let days=(st.absences||[]).slice().reverse().map(a=>`<div style="padding:12px;background:#ffe0f0;border-radius:40px;margin:8px 0;">📅 ${a.date} — ${a.type}</div>`).join(''); return `<div class="detail-page"><div class="detail-title">📅 Посещаемость: ${st.name}</div>${days||'<div style="padding:20px;text-align:center;">✨ Нет пропусков</div>'}<button class="back-link" data-back="dashboard">← На главную</button></div>`; }
 function showDetail(pageId){ if(mainDash) mainDash.style.display='none'; let content=pageId==='detailed-progress'?getDetailedPage():getAttendancePage(); dynCont.innerHTML=content; dynCont.style.display='block'; navBtns.forEach(btn=>btn.classList.toggle('active-dashboard',btn.dataset.page===pageId)); document.querySelectorAll('.back-link').forEach(btn=>btn.onclick=()=>showMain()); }
 function showMain(){ if(mainDash) mainDash.style.display='grid'; dynCont.style.display='none'; dynCont.innerHTML=''; navBtns.forEach(btn=>btn.classList.toggle('active-dashboard',btn.dataset.page==='dashboard')); fullUpdate(); }
@@ -518,7 +507,6 @@ document.getElementById('filterSubject')?.addEventListener('change',()=>renderAl
 document.getElementById('deleteGroupBtn')?.addEventListener('click',()=>{ if(currentCuratorActiveGroup && confirm(`Удалить группу "${currentCuratorActiveGroup}"?`)){ let groups=curatorGroups[currentUser.email]; let idx=groups.indexOf(currentCuratorActiveGroup); if(idx!==-1) groups.splice(idx,1); curatorGroups[currentUser.email]=groups; saveAll(); if(groups.length>0){ currentCuratorActiveGroup=groups[0]; localStorage.setItem('curatorActiveGroup',currentCuratorActiveGroup); } else { currentCuratorActiveGroup=null; document.getElementById('studentStatsBlock').style.display='none'; document.getElementById('noStudentsMessage').style.display='block'; } renderCuratorGroupsSelect(); fullUpdate(); renderPaymentsReport(); } });
 document.getElementById('confirmAddGroupBtn')?.addEventListener('click',()=>{ let ng=document.getElementById('newGroupNameInput').value.trim(); if(ng && currentUser){ let taken=false; for(let ce in curatorGroups) if(ce!==currentUser.email && curatorGroups[ce]?.includes(ng)) taken=true; if(taken){ document.getElementById('curatorSuccessMsg').innerHTML='⚠️ Группа уже закреплена'; document.getElementById('curatorSuccessMsg').style.display='block'; setTimeout(()=>document.getElementById('curatorSuccessMsg').style.display='none',2000); return; } if(!curatorGroups[currentUser.email]) curatorGroups[currentUser.email]=[]; if(!curatorGroups[currentUser.email].includes(ng)){ curatorGroups[currentUser.email].push(ng); if(!groupSubjects[ng]) groupSubjects[ng]=["Математика","Русский язык","Физика","Информатика","Физкультура"]; saveAll(); renderCuratorGroupsSelect(); currentCuratorActiveGroup=ng; fullUpdate(); document.getElementById('newGroupNameInput').value=''; renderPaymentsReport(); } } });
 
-// АВТОРИЗАЦИЯ
 document.getElementById('regRole').onchange=function(){ let isParent=this.value==='parent'; document.getElementById('parentFields').style.display=isParent?'block':'none'; document.getElementById('curatorFields').style.display=isParent?'none':'block'; };
 document.getElementById('regRole').dispatchEvent(new Event('change'));
 document.querySelectorAll('.auth-tab').forEach(tab=>{ tab.onclick=()=>{ let t=tab.dataset.tab; document.querySelectorAll('.auth-tab').forEach(tt=>tt.classList.remove('active')); tab.classList.add('active'); document.getElementById('loginForm').classList.toggle('hidden',t!=='login'); document.getElementById('registerForm').classList.toggle('hidden',t!=='register'); }; });
