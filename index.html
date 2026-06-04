@@ -31,8 +31,8 @@
         .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
         .heart { position: absolute; font-size: 18px; opacity: 0.12; animation: floatHeart linear infinite; pointer-events: none; }
         @keyframes floatHeart { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.12; } 90% { opacity: 0.12; } 100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; } }
-        .star-bg { position: absolute; font-size: 14px; opacity: 0.1; animation: twinkle 4s infinite alternate; pointer-events: none; }
-        @keyframes twinkle { 0% { opacity: 0.05; transform: scale(0.8); } 100% { opacity: 0.15; transform: scale(1.2); } }
+        .star-bg { position: absolute; font-size: 14px; opacity: 0.08; animation: twinkle 4s infinite alternate; pointer-events: none; }
+        @keyframes twinkle { 0% { opacity: 0.04; transform: scale(0.8); } 100% { opacity: 0.12; transform: scale(1.2); } }
         
         .app-container {
             max-width: 1400px;
@@ -95,7 +95,7 @@
         
         .curator-group-info, .students-list, .chats-list, .users-list, .payments-section { background: rgba(255,255,255,0.92); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 1px solid var(--border); }
         .students-grid, .users-grid { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 18px; max-height: 220px; overflow-y: auto; }
-        .student-card, .user-card { background: rgba(255,245,249,0.7); border-radius: 70px; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; flex: 1; }
+        .student-card, .user-card { background: rgba(255,245,249,0.7); border-radius: 70px; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; }
         .student-card:hover, .user-card:hover { transform: translateY(-3px); background: rgba(255,240,248,0.95); }
         .student-card.active { border-color: var(--primary); background: #ffe0f0; }
         .student-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
@@ -113,6 +113,7 @@
         .stat-card:hover { transform: translateY(-8px); background: rgba(255,255,255,0.95); }
         .stat-icon { font-size: 2.8rem; margin-bottom: 15px; }
         .stat-value { font-size: 2.4rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .stat-label { font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; font-weight: 500; }
         
         .card-title { font-weight: 800; font-size: 1.25rem; margin-bottom: 20px; color: var(--primary-dark); display: flex; align-items: center; gap: 12px; }
         .filter-bar { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
@@ -186,7 +187,7 @@
 <div id="dashboardBlock" class="dashboard-content">
     <div class="dashboard-header"><div class="date-badge" id="currentDateBadge"></div><div class="user-info"><div class="user-avatar" id="userAvatar" onclick="openProfileModal()">🌸</div><span>Привет, <span id="userNameSpan"></span>!</span><span id="userRoleBadge"></span><button id="logoutBtnMain" class="logout-btn">🚪 Выйти</button></div></div>
 
-    <!-- ОПЛАТА -->
+    <!-- ОПЛАТА (только для родителей) -->
     <div id="paymentsSection" class="payments-section" style="display:none"><div class="card-title">💰 Оплата колледжа</div><div id="paymentCalendar" class="payment-calendar"></div><div id="paymentMessage" style="margin-top:12px;text-align:center;padding:8px;background:#e8f4e6;border-radius:40px;display:none;"></div></div>
 
     <!-- КУРАТОРСКАЯ ОБЛАСТЬ -->
@@ -274,7 +275,7 @@ window.togglePayment=function(sid,m){ payments[sid][m].paid=!payments[sid][m].pa
 
 // ========== УДАЛЕНИЕ РОДИТЕЛЯ ==========
 window.deleteParent=function(email,name){
-    if(confirm(`Удалить родителя "${name}" из группы?`)){
+    if(confirm(`Удалить родителя "${name}" из группы? Связь с учеником будет разорвана.`)){
         let student=students.find(s=>s.parentEmail===email && s.group===currentCuratorActiveGroup);
         if(student){ student.parentEmail=null; student.parentName=null; saveAll(); renderRegisteredUsers(); renderStudentsList(); renderChatsList(); document.getElementById('curatorSuccessMsg').innerHTML=`✅ Родитель "${name}" удалён`; document.getElementById('curatorSuccessMsg').style.display='block'; setTimeout(()=>document.getElementById('curatorSuccessMsg').style.display='none',2000); }
     }
@@ -360,7 +361,7 @@ function renderChatsList(){
 function renderGroupSubjectsUI(){
     if(!currentCuratorActiveGroup) return;
     let subs=getSubjectsForGroup(currentCuratorActiveGroup);
-    document.getElementById('groupSubjectsList').innerHTML=subs.map(s=>`<span class="subject-tag">📘 ${s} <button class="delete-subject-btn" data-subj="${s}" style="background:none;border:none;color:#e06b9e;">✖</button></span>`).join('');
+    document.getElementById('groupSubjectsList').innerHTML=subs.map(s=>`<span class="subject-tag">📘 ${s} <button class="delete-subject-btn" data-subj="${s}" style="background:none;border:none;color:#e06b9e;cursor:pointer;">✖</button></span>`).join('');
     document.querySelectorAll('.delete-subject-btn').forEach(btn=>{ btn.onclick=()=>{ let subj=btn.dataset.subj; groupSubjects[currentCuratorActiveGroup]=groupSubjects[currentCuratorActiveGroup].filter(x=>x!==subj); saveAll(); renderGroupSubjectsUI(); updateFilters(getSubjectsForGroup(currentCuratorActiveGroup)); fullUpdate(); }; });
     let addBtn=document.getElementById('addSubjectToGroupBtn'); if(addBtn){ let nb=addBtn.cloneNode(true); addBtn.parentNode.replaceChild(nb,addBtn); nb.onclick=()=>{ let ns=document.getElementById('newSubjectName').value.trim(); if(ns && currentCuratorActiveGroup && !groupSubjects[currentCuratorActiveGroup].includes(ns)){ groupSubjects[currentCuratorActiveGroup].push(ns); saveAll(); renderGroupSubjectsUI(); updateFilters(getSubjectsForGroup(currentCuratorActiveGroup)); fullUpdate(); document.getElementById('newSubjectName').value=''; } }; }
 }
@@ -490,8 +491,8 @@ function showAuth(){ document.getElementById('authBlock').style.display='block';
 
 function createFloatingElements(){
     let cont=document.getElementById('floatingBg'); if(!cont) return; cont.innerHTML='';
-    for(let i=0;i<35;i++){ let d=document.createElement('div'); d.className='heart'; d.innerHTML='❤️'; d.style.left=Math.random()*100+'%'; d.style.fontSize=(12+Math.random()*18)+'px'; d.style.animationDuration=(8+Math.random()*15)+'s'; d.style.animationDelay=(Math.random()*20)+'s'; cont.appendChild(d); }
-    for(let i=0;i<45;i++){ let s=document.createElement('div'); s.className='star-bg'; s.innerHTML='⭐'; s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%'; s.style.fontSize=(8+Math.random()*14)+'px'; s.style.animationDuration=(3+Math.random()*6)+'s'; s.style.animationDelay=(Math.random()*10)+'s'; cont.appendChild(s); }
+    for(let i=0;i<40;i++){ let d=document.createElement('div'); d.className='heart'; d.innerHTML='❤️'; d.style.left=Math.random()*100+'%'; d.style.fontSize=(12+Math.random()*18)+'px'; d.style.animationDuration=(8+Math.random()*15)+'s'; d.style.animationDelay=(Math.random()*20)+'s'; cont.appendChild(d); }
+    for(let i=0;i<50;i++){ let s=document.createElement('div'); s.className='star-bg'; s.innerHTML='⭐'; s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%'; s.style.fontSize=(8+Math.random()*14)+'px'; s.style.animationDuration=(3+Math.random()*6)+'s'; s.style.animationDelay=(Math.random()*10)+'s'; cont.appendChild(s); }
 }
 function updateDateBadge(){ let b=document.getElementById('currentDateBadge'); if(b) b.innerHTML=`📅 ${new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})}`; }
 
