@@ -28,10 +28,10 @@
             overflow-x: hidden;
         }
         .floating-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
-        .heart { position: absolute; font-size: 18px; opacity: 0.12; animation: floatHeart linear infinite; pointer-events: none; }
-        @keyframes floatHeart { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.12; } 90% { opacity: 0.12; } 100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; } }
+        .heart { position: absolute; font-size: 18px; opacity: 0.1; animation: floatHeart linear infinite; pointer-events: none; }
+        @keyframes floatHeart { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.1; } 90% { opacity: 0.1; } 100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; } }
         .star-bg { position: absolute; font-size: 14px; opacity: 0.08; animation: twinkle 4s infinite alternate; pointer-events: none; }
-        @keyframes twinkle { 0% { opacity: 0.04; transform: scale(0.8); } 100% { opacity: 0.12; transform: scale(1.2); } }
+        @keyframes twinkle { 0% { opacity: 0.03; transform: scale(0.8); } 100% { opacity: 0.1; transform: scale(1.2); } }
         
         .app-container {
             max-width: 1400px;
@@ -92,9 +92,9 @@
         .save-profile-btn, .delete-account-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 16px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 15px; }
         .delete-account-btn { background: #e06b9e; }
         
-        .curator-group-info, .students-list, .chats-list, .users-list, .payments-section { background: rgba(255,255,255,0.92); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 1px solid var(--border); }
+        .curator-group-info, .students-list, .chats-list, .users-list, .payments-section, .payments-report { background: rgba(255,255,255,0.92); border-radius: 48px; padding: 22px; margin-bottom: 25px; border: 1px solid var(--border); }
         .students-grid, .users-grid { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 18px; max-height: 220px; overflow-y: auto; }
-        .student-card, .user-card { background: rgba(255,245,249,0.7); border-radius: 70px; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; flex: 1; }
+        .student-card, .user-card { background: rgba(255,245,249,0.7); border-radius: 70px; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; }
         .student-card:hover, .user-card:hover { transform: translateY(-3px); background: rgba(255,240,248,0.95); }
         .student-card.active { border-color: var(--primary); background: #ffe0f0; }
         .student-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
@@ -127,6 +127,11 @@
         .payment-month-card.unpaid { background: var(--payment-unpaid); border-color: var(--warning); }
         .payment-month-card:hover { transform: translateY(-3px); }
         
+        .payment-report-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        .payment-report-table th, .payment-report-table td { padding: 12px 8px; border-bottom: 1px solid var(--border); text-align: left; }
+        .paid-badge { background: #a8e6cf; padding: 4px 12px; border-radius: 40px; font-size: 0.8rem; }
+        .unpaid-badge { background: #ffb3ba; padding: 4px 12px; border-radius: 40px; font-size: 0.8rem; }
+        
         .curator-panel { background: rgba(255,240,248,0.95); border-radius: 48px; padding: 28px; margin-top: 25px; border: 2px solid #ffd9ec; }
         .control-group { display: flex; gap: 18px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
         .control-group label { font-weight: 700; color: var(--text-muted); min-width: 100px; }
@@ -146,6 +151,9 @@
         .card:hover { transform: translateY(-8px); background: rgba(255,255,255,0.98); }
         .progress-bar-container { background: #f0dce8; border-radius: 40px; height: 12px; margin: 20px 0; overflow: hidden; }
         .progress-bar { background: linear-gradient(90deg, var(--primary), var(--primary-light)); border-radius: 40px; height: 100%; width: 0%; transition: width 0.6s; }
+        
+        .subject-chart-container { margin-top: 20px; }
+        .subject-chart-select { width: 100%; max-width: 320px; margin-bottom: 20px; }
         
         .chat-container-modern { background: rgba(254,248,252,0.95); border-radius: 40px; overflow: hidden; }
         .chat-header { padding: 18px 24px; background: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 15px; }
@@ -171,7 +179,9 @@
         .no-students-message { text-align: center; padding: 70px; background: rgba(255,240,248,0.9); border-radius: 56px; }
         .group-selector { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
         .subject-tag { background: #ffe0f0; padding: 6px 12px; border-radius: 40px; display: inline-flex; align-items: center; gap: 8px; margin: 4px; }
+        .delete-subject-btn { background: none; border: none; color: #e06b9e; cursor: pointer; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -187,6 +197,9 @@
 
     <!-- ОПЛАТА (только для родителей) -->
     <div id="paymentsSection" class="payments-section" style="display:none"><div class="card-title">💰 Оплата колледжа</div><div id="paymentCalendar" class="payment-calendar"></div><div id="paymentMessage" style="margin-top:12px;text-align:center;padding:8px;background:#e8f4e6;border-radius:40px;display:none;"></div></div>
+
+    <!-- ОТЧЁТ ПО ОПЛАТАМ (только для куратора) -->
+    <div id="paymentsReport" class="payments-report" style="display:none"><div class="card-title">📊 Отчёт по оплате родителей</div><div id="paymentsReportContent"></div></div>
 
     <!-- КУРАТОРСКАЯ ОБЛАСТЬ -->
     <div id="curatorArea" style="display:none">
@@ -204,6 +217,7 @@
         <div class="stats-row"><div class="stat-card"><div class="stat-icon">📚</div><div class="stat-value" id="avgScoreStat">—</div><div class="stat-label">Средний балл</div></div><div class="stat-card"><div class="stat-icon">📅</div><div class="stat-value" id="absencesStat">—</div><div class="stat-label">Пропуски</div></div><div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-value" id="subjectsCountStat">—</div><div class="stat-label">Предметов</div></div></div>
         <div class="all-grades-section" style="background:rgba(255,255,255,0.9);border-radius:48px;padding:24px;margin-bottom:28px;"><div class="card-title">📋 История оценок</div><div class="filter-bar"><select id="filterSubject"><option value="">Все предметы</option></select><button id="clearFiltersBtn" class="curator-btn">Очистить</button></div><div id="gradesTableContainer" style="max-height:400px;overflow-y:auto;"></div></div>
         <div class="distribution-container" style="background:rgba(255,255,255,0.9);border-radius:48px;padding:24px;margin-bottom:28px;"><div class="card-title">📊 Распределение оценок</div><div id="distributionContent"></div></div>
+        <div class="subject-chart-section" style="background:rgba(255,255,255,0.9);border-radius:48px;padding:24px;margin-bottom:28px;"><div class="card-title">📈 Динамика успеваемости по предмету</div><select id="subjectForChart" class="filter-select subject-chart-select"><option value="">Выберите предмет</option></select><div class="subject-chart-container"><canvas id="subjectGradesChart"></canvas></div></div>
         <main class="main-dashboard" id="mainDashboard">
             <div class="card"><div class="card-title">📊 Успеваемость</div><div><span>Средний балл:</span><span id="avgScoreDisplay" style="font-size:2rem;font-weight:800;">—</span></div><div class="progress-bar-container"><div class="progress-bar" id="avgProgress"></div></div><button class="nav-btn" style="margin-top:20px;width:100%;" data-page="detailed-progress">📈 Подробнее →</button></div>
             <div class="card"><div class="card-title">📆 Посещаемость</div><div><span>Пропуски:</span><span id="absencesDisplay" style="font-size:2rem;font-weight:800;">—</span></div><div class="progress-bar-container"><div class="progress-bar" id="attendanceProgress"></div></div><button class="nav-btn" style="margin-top:20px;width:100%;" data-page="attendance-detail">📅 Подробнее →</button></div>
@@ -221,7 +235,7 @@
 </div>
 
 <script>
-// ДАННЫЕ ПО УМОЛЧАНИЮ (если нет аккаунтов)
+// ДАННЫЕ ПО УМОЛЧАНИЮ
 if (!localStorage.getItem('users') || JSON.parse(localStorage.getItem('users')).length === 0) {
     localStorage.setItem('users', JSON.stringify([
         { id: 'u1', name: 'ГЕННАДИЙ ДРАГОН', email: 'gennadij@dragons.ru', password: 'dragongennadij', role: 'curator' },
@@ -249,7 +263,9 @@ let userAvatars = JSON.parse(localStorage.getItem('userAvatars'));
 let payments = JSON.parse(localStorage.getItem('payments'));
 let currentUser = null;
 let selectedStudentId = null, selectedChatStudentId = null, selectedGradeStudentId = null, currentCuratorActiveGroup = null, lastSelectedSubject = null;
+let subjectGradesChart = null;
 const AVATARS = ["🌸","🌺","🌷","🌹","⭐","🌟","✨","💫","🐱","🦋","🌈","🍎","📚","🎓"];
+const MONTHS = ['Сен','Окт','Ноя','Дек','Янв','Фев','Мар','Апр','Май','Июн'];
 
 function saveAll() {
     localStorage.setItem('students', JSON.stringify(students));
@@ -266,16 +282,43 @@ function getStudentForParent(email) { return students.find(s=>s.parentEmail===em
 function getSubjectsForGroup(g) { if (!groupSubjects[g]) groupSubjects[g] = ["Математика","Русский язык","Физика","Информатика","Физкультура"]; return groupSubjects[g]; }
 function avgGrade(st) { if(!st?.grades) return "—"; let t=0,s=0; for(let subj in st.grades) for(let g of st.grades[subj]){ let v=typeof g==='object'?g.value:g, w=(typeof g==='object'&&g.weight)?g.weight:1; s+=v*w; t+=w; } return t===0?"—":(s/t).toFixed(2); }
 
-// ОПЛАТА
-function initPayments(sid){ if(!payments[sid]){ payments[sid]={}; ['Сен','Окт','Ноя','Дек','Янв','Фев','Мар','Апр','Май','Июн'].forEach(m=>payments[sid][m]={paid:false}); saveAll(); } }
-function renderPayments(){ let st=getStudentForParent(currentUser?.email); if(!st) return; initPayments(st.id); document.getElementById('paymentCalendar').innerHTML=Object.keys(payments[st.id]).map(m=>`<div class="payment-month-card ${payments[st.id][m].paid?'paid':'unpaid'}" onclick="togglePayment('${st.id}','${m}')"><div>${payments[st.id][m].paid?'✅':'❌'}</div><div>${m}</div></div>`).join(''); }
-window.togglePayment=function(sid,m){ payments[sid][m].paid=!payments[sid][m].paid; saveAll(); renderPayments(); let msg=document.getElementById('paymentMessage'); msg.style.display='block'; msg.innerHTML=payments[sid][m].paid?`✅ ${m} оплачен!`:`❌ Оплата отменена`; setTimeout(()=>msg.style.display='none',2000); };
+// ОПЛАТА ДЛЯ РОДИТЕЛЯ
+function initPayments(sid){ if(!payments[sid]){ payments[sid]={}; MONTHS.forEach(m=>payments[sid][m]={paid:false, date:null}); saveAll(); } }
+function renderPayments(){ let st=getStudentForParent(currentUser?.email); if(!st) return; initPayments(st.id); document.getElementById('paymentCalendar').innerHTML=MONTHS.map(m=>`<div class="payment-month-card ${payments[st.id][m].paid?'paid':'unpaid'}" onclick="togglePayment('${st.id}','${m}')"><div>${payments[st.id][m].paid?'✅':'❌'}</div><div>${m}</div></div>`).join(''); }
+window.togglePayment=function(sid,m){ payments[sid][m].paid=!payments[sid][m].paid; payments[sid][m].date=payments[sid][m].paid?new Date().toLocaleDateString('ru-RU'):null; saveAll(); renderPayments(); let msg=document.getElementById('paymentMessage'); msg.style.display='block'; msg.innerHTML=payments[sid][m].paid?`✅ ${m} оплачен!`:`❌ Оплата отменена`; setTimeout(()=>msg.style.display='none',2000); renderPaymentsReport(); };
 
-// УДАЛЕНИЕ РОДИТЕЛЯ КУРАТОРОМ
+// ОТЧЁТ ПО ОПЛАТАМ ДЛЯ КУРАТОРА
+function renderPaymentsReport(){
+    if(!currentCuratorActiveGroup || currentUser?.role!=='curator') return;
+    let groupStudents = students.filter(s=>s.group===currentCuratorActiveGroup);
+    let report = [];
+    for(let st of groupStudents){
+        let parent = users.find(u=>u.email===st.parentEmail);
+        if(parent){
+            initPayments(st.id);
+            let row = { studentName: st.name, parentName: parent.name, payments: payments[st.id] };
+            report.push(row);
+        }
+    }
+    if(report.length===0){ document.getElementById('paymentsReportContent').innerHTML='<div style="text-align:center;padding:40px;">Нет привязанных родителей</div>'; return; }
+    let html = `<table class="payment-report-table"><thead><tr><th>Родитель</th><th>Студент</th>${MONTHS.map(m=>`<th>${m}</th>`).join('')}</tr></thead><tbody>`;
+    for(let r of report){
+        html += `<tr><td><strong>${r.parentName}</strong></td><td>${r.studentName}</td>`;
+        for(let m of MONTHS){
+            let paid = r.payments[m]?.paid;
+            html += `<td>${paid ? '<span class="paid-badge">✅ Оплачено</span>' : '<span class="unpaid-badge">❌ Не оплачено</span>'}</td>`;
+        }
+        html += `</tr>`;
+    }
+    html += `</tbody></table>`;
+    document.getElementById('paymentsReportContent').innerHTML = html;
+}
+
+// УДАЛЕНИЕ РОДИТЕЛЯ
 window.deleteParent = function(email, name){
     if(confirm(`Удалить родителя "${name}" из группы? Связь с учеником будет разорвана.`)){
         let student = students.find(s=>s.parentEmail===email && s.group===currentCuratorActiveGroup);
-        if(student){ student.parentEmail=null; student.parentName=null; saveAll(); renderRegisteredUsers(); renderStudentsList(); renderChatsList(); document.getElementById('curatorSuccessMsg').innerHTML=`✅ Родитель "${name}" удалён`; document.getElementById('curatorSuccessMsg').style.display='block'; setTimeout(()=>document.getElementById('curatorSuccessMsg').style.display='none',2000); }
+        if(student){ student.parentEmail=null; student.parentName=null; saveAll(); renderRegisteredUsers(); renderStudentsList(); renderChatsList(); renderPaymentsReport(); document.getElementById('curatorSuccessMsg').innerHTML=`✅ Родитель "${name}" удалён`; document.getElementById('curatorSuccessMsg').style.display='block'; setTimeout(()=>document.getElementById('curatorSuccessMsg').style.display='none',2000); }
     }
 };
 
@@ -287,6 +330,25 @@ function renderRegisteredUsers(){
     if(parents.length===0){ usersDiv.style.display='none'; return; }
     usersDiv.style.display='block';
     container.innerHTML=parents.map(p=>`<div class="user-card"><div><strong>${p.name}</strong><br><small>${p.email}</small></div><button class="delete-user-btn" onclick="window.deleteParent('${p.email}','${p.name.replace(/'/g,"\\'")}')">🗑️ Удалить</button></div>`).join('');
+}
+
+// ГРАФИК УСПЕВАЕМОСТИ
+function renderSubjectChart(){
+    let student = getStudentById(selectedStudentId);
+    let subject = document.getElementById('subjectForChart')?.value;
+    if(!student || !subject){ if(subjectGradesChart) subjectGradesChart.destroy(); return; }
+    let grades = student.grades?.[subject] || [];
+    let dates = [], values = [];
+    for(let g of grades){ dates.push(typeof g==='object'?(g.date||"дата"):"оценка"); values.push(typeof g==='object'?g.value:g); }
+    if(subjectGradesChart) subjectGradesChart.destroy();
+    let ctx = document.getElementById('subjectGradesChart')?.getContext('2d');
+    if(ctx && dates.length>0){ subjectGradesChart = new Chart(ctx, { type: 'line', data: { labels: dates, datasets: [{ label: `Оценки по ${subject}`, data: values, borderColor: '#e87fb0', backgroundColor: 'rgba(232,127,176,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#c45a8c', pointBorderColor: '#fff', pointRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: true, scales: { y: { min: 1, max: 5, ticks: { stepSize: 1 } } } } }); }
+    else if(ctx){ ctx.fillStyle = '#f0dce8'; ctx.fillRect(0,0,ctx.canvas.width,100); ctx.fillStyle = '#c27096'; ctx.font = '14px Inter'; ctx.fillText('Нет данных для отображения', 50, 50); }
+}
+
+function updateChartSelect(subjects){
+    let chartSel = document.getElementById('subjectForChart');
+    if(chartSel){ chartSel.innerHTML = '<option value="">-- Выберите предмет --</option>' + subjects.map(s=>`<option value="${s}">${s}</option>`).join(''); chartSel.onchange = () => renderSubjectChart(); }
 }
 
 function renderAllGradesTable(){
@@ -319,6 +381,7 @@ function updateFilters(subjects){
     if(fs) fs.innerHTML='<option value="">Все предметы</option>'+subjects.map(s=>`<option value="${s}">${s}</option>`).join('');
     let ss=document.getElementById('subjectSelect');
     if(ss){ ss.innerHTML=subjects.map(s=>`<option value="${s}">📚 ${s}</option>`).join(''); if(lastSelectedSubject && subjects.includes(lastSelectedSubject)) ss.value=lastSelectedSubject; }
+    updateChartSelect(subjects);
     document.getElementById('subjectsCountStat').innerText=subjects.length;
 }
 
@@ -359,7 +422,7 @@ function renderChatsList(){
 function renderGroupSubjectsUI(){
     if(!currentCuratorActiveGroup) return;
     let subs=getSubjectsForGroup(currentCuratorActiveGroup);
-    document.getElementById('groupSubjectsList').innerHTML=subs.map(s=>`<span class="subject-tag">📘 ${s} <button class="delete-subject-btn" data-subj="${s}" style="background:none;border:none;color:#e06b9e;cursor:pointer;">✖</button></span>`).join('');
+    document.getElementById('groupSubjectsList').innerHTML=subs.map(s=>`<span class="subject-tag">📘 ${s} <button class="delete-subject-btn" data-subj="${s}">✖</button></span>`).join('');
     document.querySelectorAll('.delete-subject-btn').forEach(btn=>{ btn.onclick=()=>{ let subj=btn.dataset.subj; groupSubjects[currentCuratorActiveGroup]=groupSubjects[currentCuratorActiveGroup].filter(x=>x!==subj); saveAll(); renderGroupSubjectsUI(); updateFilters(getSubjectsForGroup(currentCuratorActiveGroup)); fullUpdate(); }; });
     let addBtn=document.getElementById('addSubjectToGroupBtn'); if(addBtn){ let nb=addBtn.cloneNode(true); addBtn.parentNode.replaceChild(nb,addBtn); nb.onclick=()=>{ let ns=document.getElementById('newSubjectName').value.trim(); if(ns && currentCuratorActiveGroup && !groupSubjects[currentCuratorActiveGroup].includes(ns)){ groupSubjects[currentCuratorActiveGroup].push(ns); saveAll(); renderGroupSubjectsUI(); updateFilters(getSubjectsForGroup(currentCuratorActiveGroup)); fullUpdate(); document.getElementById('newSubjectName').value=''; } }; }
 }
@@ -368,7 +431,7 @@ function renderCuratorGroupsSelect(){
     let groups=curatorGroups[currentUser?.email]||[];
     let sel=document.getElementById('curatorGroupSelect');
     sel.innerHTML=groups.map(g=>`<option value="${g}" ${currentCuratorActiveGroup===g?'selected':''}>📁 ${g}</option>`).join('');
-    sel.onchange=()=>{ currentCuratorActiveGroup=sel.value; localStorage.setItem('curatorActiveGroup',currentCuratorActiveGroup); fullUpdate(); };
+    sel.onchange=()=>{ currentCuratorActiveGroup=sel.value; localStorage.setItem('curatorActiveGroup',currentCuratorActiveGroup); fullUpdate(); renderPaymentsReport(); };
     if(groups.length && !currentCuratorActiveGroup) currentCuratorActiveGroup=groups[0];
 }
 
@@ -378,11 +441,12 @@ function fullUpdate(){
         renderStudentsList(); renderChatsList(); renderGroupSubjectsUI(); renderRegisteredUsers();
         let group=students.filter(s=>s.group===currentCuratorActiveGroup);
         if(group.length && (!selectedStudentId || !group.find(s=>s.id===selectedStudentId))){ selectedStudentId=group[0].id; selectedChatStudentId=selectedStudentId; selectedGradeStudentId=selectedStudentId; }
-        if(selectedStudentId){ let st=getStudentById(selectedStudentId); if(st){ displayStudentStats(st); renderGradeDistribution(st); } }
+        if(selectedStudentId){ let st=getStudentById(selectedStudentId); if(st){ displayStudentStats(st); renderGradeDistribution(st); renderSubjectChart(); } }
         renderAllGradesTable();
+        renderPaymentsReport();
     } else if(currentUser?.role==='parent'){
         let st=getStudentForParent(currentUser.email);
-        if(st){ selectedStudentId=st.id; selectedChatStudentId=st.id; displayStudentStats(st); renderGradeDistribution(st); renderAllGradesTable(); renderChatMessages(); }
+        if(st){ selectedStudentId=st.id; selectedChatStudentId=st.id; displayStudentStats(st); renderGradeDistribution(st); renderAllGradesTable(); renderSubjectChart(); renderChatMessages(); }
     }
 }
 
@@ -420,7 +484,7 @@ function initCuratorControls(){
 
 // НАВИГАЦИЯ
 let mainDash=document.getElementById('mainDashboard'), dynCont=document.getElementById('dynamic-page-content'), navBtns=document.querySelectorAll('.nav-btn');
-function getDetailedPage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let subs=getSubjectsForGroup(st.group); let rows=subs.map(s=>{ let grades=st.grades?.[s]||[]; let avg=grades.length?(grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1):"—"; let last=grades[grades.length-1]; let lastVal=last?(typeof last==='object'?last.value:last):"—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td style="text-align:center;"><span class="grade-badge-sm">${lastVal}</span></td>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
+function getDetailedPage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let subs=getSubjectsForGroup(st.group); let rows=subs.map(s=>{ let grades=st.grades?.[s]||[]; let avg=grades.length?(grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1):"—"; let last=grades[grades.length-1]; let lastVal=last?(typeof last==='object'?last.value:last):"—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td style="text-align:center;"><span class="grade-badge-sm">${lastVal}</span></td>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody><tr><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
 function getAttendancePage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let days=(st.absences||[]).slice().reverse().map(a=>`<div style="padding:12px;background:#ffe0f0;border-radius:40px;margin:8px 0;">📅 ${a.date} — ${a.type}</div>`).join(''); return `<div class="detail-page"><div class="detail-title">📅 Посещаемость: ${st.name}</div>${days||'<div style="padding:20px;text-align:center;">✨ Нет пропусков</div>'}<button class="back-link" data-back="dashboard">← На главную</button></div>`; }
 function showDetail(pageId){ if(mainDash) mainDash.style.display='none'; let content=pageId==='detailed-progress'?getDetailedPage():getAttendancePage(); dynCont.innerHTML=content; dynCont.style.display='block'; navBtns.forEach(btn=>btn.classList.toggle('active-dashboard',btn.dataset.page===pageId)); document.querySelectorAll('.back-link').forEach(btn=>btn.onclick=()=>showMain()); }
 function showMain(){ if(mainDash) mainDash.style.display='grid'; dynCont.style.display='none'; dynCont.innerHTML=''; navBtns.forEach(btn=>btn.classList.toggle('active-dashboard',btn.dataset.page==='dashboard')); fullUpdate(); }
@@ -428,8 +492,8 @@ function initNav(){ showMain(); navBtns.forEach(btn=>{ btn.onclick=()=>{ let pag
 
 document.getElementById('clearFiltersBtn')?.addEventListener('click',()=>{ if(document.getElementById('filterSubject')) document.getElementById('filterSubject').value=""; renderAllGradesTable(); });
 document.getElementById('filterSubject')?.addEventListener('change',()=>renderAllGradesTable());
-document.getElementById('deleteGroupBtn')?.addEventListener('click',()=>{ if(currentCuratorActiveGroup && confirm(`Удалить группу "${currentCuratorActiveGroup}"?`)){ let groups=curatorGroups[currentUser.email]; let idx=groups.indexOf(currentCuratorActiveGroup); if(idx!==-1) groups.splice(idx,1); curatorGroups[currentUser.email]=groups; saveAll(); if(groups.length>0){ currentCuratorActiveGroup=groups[0]; localStorage.setItem('curatorActiveGroup',currentCuratorActiveGroup); } else { currentCuratorActiveGroup=null; document.getElementById('studentStatsBlock').style.display='none'; document.getElementById('noStudentsMessage').style.display='block'; } renderCuratorGroupsSelect(); fullUpdate(); } });
-document.getElementById('confirmAddGroupBtn')?.addEventListener('click',()=>{ let ng=document.getElementById('newGroupNameInput').value.trim(); if(ng && currentUser){ let taken=false; for(let ce in curatorGroups) if(ce!==currentUser.email && curatorGroups[ce]?.includes(ng)) taken=true; if(taken){ document.getElementById('curatorSuccessMsg').innerHTML='⚠️ Группа уже закреплена'; document.getElementById('curatorSuccessMsg').style.display='block'; setTimeout(()=>document.getElementById('curatorSuccessMsg').style.display='none',2000); return; } if(!curatorGroups[currentUser.email]) curatorGroups[currentUser.email]=[]; if(!curatorGroups[currentUser.email].includes(ng)){ curatorGroups[currentUser.email].push(ng); if(!groupSubjects[ng]) groupSubjects[ng]=["Математика","Русский язык","Физика","Информатика","Физкультура"]; saveAll(); renderCuratorGroupsSelect(); currentCuratorActiveGroup=ng; fullUpdate(); document.getElementById('newGroupNameInput').value=''; } } });
+document.getElementById('deleteGroupBtn')?.addEventListener('click',()=>{ if(currentCuratorActiveGroup && confirm(`Удалить группу "${currentCuratorActiveGroup}"?`)){ let groups=curatorGroups[currentUser.email]; let idx=groups.indexOf(currentCuratorActiveGroup); if(idx!==-1) groups.splice(idx,1); curatorGroups[currentUser.email]=groups; saveAll(); if(groups.length>0){ currentCuratorActiveGroup=groups[0]; localStorage.setItem('curatorActiveGroup',currentCuratorActiveGroup); } else { currentCuratorActiveGroup=null; document.getElementById('studentStatsBlock').style.display='none'; document.getElementById('noStudentsMessage').style.display='block'; } renderCuratorGroupsSelect(); fullUpdate(); renderPaymentsReport(); } });
+document.getElementById('confirmAddGroupBtn')?.addEventListener('click',()=>{ let ng=document.getElementById('newGroupNameInput').value.trim(); if(ng && currentUser){ let taken=false; for(let ce in curatorGroups) if(ce!==currentUser.email && curatorGroups[ce]?.includes(ng)) taken=true; if(taken){ document.getElementById('curatorSuccessMsg').innerHTML='⚠️ Группа уже закреплена'; document.getElementById('curatorSuccessMsg').style.display='block'; setTimeout(()=>document.getElementById('curatorSuccessMsg').style.display='none',2000); return; } if(!curatorGroups[currentUser.email]) curatorGroups[currentUser.email]=[]; if(!curatorGroups[currentUser.email].includes(ng)){ curatorGroups[currentUser.email].push(ng); if(!groupSubjects[ng]) groupSubjects[ng]=["Математика","Русский язык","Физика","Информатика","Физкультура"]; saveAll(); renderCuratorGroupsSelect(); currentCuratorActiveGroup=ng; fullUpdate(); document.getElementById('newGroupNameInput').value=''; renderPaymentsReport(); } } });
 
 // АВТОРИЗАЦИЯ
 document.getElementById('regRole').onchange=function(){ let isParent=this.value==='parent'; document.getElementById('parentFields').style.display=isParent?'block':'none'; document.getElementById('curatorFields').style.display=isParent?'none':'block'; };
@@ -459,13 +523,14 @@ function showDashboard(){
             document.getElementById('curatorArea').style.display='none';
             document.getElementById('curatorPanel').style.display='none';
             document.getElementById('paymentsSection').style.display='block';
+            document.getElementById('paymentsReport').style.display='none';
             renderPayments();
             let st=getStudentForParent(currentUser.email);
             if(st){
                 document.getElementById('studentStatsBlock').style.display='block';
                 document.getElementById('noStudentsMessage').style.display='none';
                 selectedStudentId=st.id; selectedChatStudentId=st.id; selectedGradeStudentId=st.id;
-                displayStudentStats(st); renderGradeDistribution(st);
+                displayStudentStats(st); renderGradeDistribution(st); renderSubjectChart();
                 renderChatMessages();
             } else { document.getElementById('studentStatsBlock').style.display='none'; document.getElementById('noStudentsMessage').style.display='block'; }
         } else {
@@ -473,10 +538,11 @@ function showDashboard(){
             document.getElementById('curatorArea').style.display='block';
             document.getElementById('curatorPanel').style.display='block';
             document.getElementById('paymentsSection').style.display='none';
+            document.getElementById('paymentsReport').style.display='block';
             if(!curatorGroups[currentUser.email]) curatorGroups[currentUser.email]=[];
             renderCuratorGroupsSelect();
-            if(currentCuratorActiveGroup) fullUpdate();
-            else if(curatorGroups[currentUser.email].length){ currentCuratorActiveGroup=curatorGroups[currentUser.email][0]; fullUpdate(); }
+            if(currentCuratorActiveGroup){ fullUpdate(); renderPaymentsReport(); }
+            else if(curatorGroups[currentUser.email].length){ currentCuratorActiveGroup=curatorGroups[currentUser.email][0]; fullUpdate(); renderPaymentsReport(); }
             else { document.getElementById('studentStatsBlock').style.display='none'; document.getElementById('noStudentsMessage').style.display='block'; }
         }
         let today=new Date().toISOString().slice(0,10);
