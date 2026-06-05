@@ -51,17 +51,32 @@
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
         @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 5px rgba(232,127,176,0.2); } 50% { box-shadow: 0 0 15px rgba(232,127,176,0.3); } }
         
-        .auth-container { max-width: 520px; margin: 0 auto; animation: fadeInUp 0.5s ease; }
-        .auth-tabs { display: flex; gap: 20px; background: rgba(255,245,249,0.9); backdrop-filter: blur(10px); padding: 8px; border-radius: 70px; margin-bottom: 28px; border: 1px solid rgba(255,255,255,0.5); }
-        .auth-tab { flex: 1; background: transparent; border: none; font-size: 1.05rem; font-weight: 700; padding: 14px 24px; cursor: pointer; color: var(--text-muted); border-radius: 60px; transition: all 0.3s; }
-        .auth-tab.active { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; box-shadow: 0 8px 20px rgba(232,127,176,0.3); }
-        .auth-form { display: flex; flex-direction: column; gap: 20px; }
-        .auth-form.hidden { display: none; }
-        .auth-input, .auth-select { padding: 18px 24px; border: 2px solid rgba(255,208,228,0.6); border-radius: 60px; font-size: 1rem; background: rgba(255,255,255,0.95); width: 100%; }
-        .auth-input:focus { outline: none; border-color: var(--primary); }
-        .auth-btn { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border: none; border-radius: 60px; padding: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; }
-        .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(232,127,176,0.3); }
-        .auth-error { color: var(--warning); font-size: 0.85rem; text-align: center; background: rgba(255,224,240,0.9); padding: 10px; border-radius: 50px; }
+        .auth-container {
+            max-width: 480px;
+            margin: 0 auto;
+            text-align: center;
+            animation: fadeInUp 0.5s ease;
+        }
+        .tg-login-btn {
+            background: linear-gradient(135deg, #0088cc, #00aaff);
+            color: white;
+            border: none;
+            border-radius: 60px;
+            padding: 18px 32px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .tg-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,136,204,0.4);
+        }
+        .auth-logo { font-size: 3rem; margin-bottom: 20px; }
         
         .dashboard-content { display: none; }
         .dashboard-content.active { display: block; animation: fadeIn 0.6s ease; }
@@ -197,7 +212,16 @@
 
 <div id="profileModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>👤 Мой профиль</h3><button class="close-modal" onclick="closeProfileModal()">×</button></div><div class="profile-field"><label>Имя</label><input type="text" id="profileName"></div><div class="profile-field"><label>Email</label><input type="email" id="profileEmail" readonly style="background:#f5f5f5;"></div><div class="profile-field"><label>Аватар</label><div class="avatar-selector" id="avatarSelector"></div></div><button class="save-profile-btn" onclick="saveProfileChanges()">💾 Сохранить</button><button class="delete-account-btn" onclick="deleteAccount()">🗑️ Удалить аккаунт</button></div></div>
 
-<div id="authBlock"><div class="auth-container"><div class="auth-tabs"><button class="auth-tab active" data-tab="login">🌸 Вход</button><button class="auth-tab" data-tab="register">✨ Регистрация</button></div><div id="loginForm" class="auth-form"><input type="email" id="loginEmail" class="auth-input" placeholder="Email"><input type="password" id="loginPassword" class="auth-input" placeholder="Пароль"><button id="doLoginBtn" class="auth-btn">🌟 Войти</button><div id="loginError" class="auth-error"></div></div><div id="registerForm" class="auth-form hidden"><input type="text" id="regName" class="auth-input" placeholder="Имя"><input type="email" id="regEmail" class="auth-input" placeholder="Email"><select id="regRole" class="auth-select"><option value="parent">Родитель</option><option value="curator">Куратор</option></select><div id="parentFields"><input type="text" id="regChildName" class="auth-input" placeholder="ФИО студента"><input type="text" id="regGroupNumber" class="auth-input" placeholder="Группа"></div><div id="curatorFields" style="display:none"><input type="text" id="regCuratorGroup" class="auth-input" placeholder="Ваша группа"></div><input type="password" id="regPassword" class="auth-input" placeholder="Пароль (мин.6)"><button id="doRegisterBtn" class="auth-btn">✨ Зарегистрироваться</button><div id="regError" class="auth-error"></div></div></div></div>
+<div id="authBlock">
+    <div class="auth-container">
+        <div class="auth-logo">📚</div>
+        <h1 style="color:#c45a8c; margin-bottom:10px">Колледж</h1>
+        <p style="color:#c27096; margin-bottom:30px">Успеваемость, посещаемость, оплата</p>
+        <div id="telegramLoginBtn" class="tg-login-btn">🔵 Войти через Telegram</div>
+        <div id="telegramWidget" style="display:none; margin-top:20px;"></div>
+        <div id="tgError" class="auth-error" style="display:none; margin-top:20px"></div>
+    </div>
+</div>
 
 <div id="dashboardBlock" class="dashboard-content">
     <div class="dashboard-header"><div class="date-badge" id="currentDateBadge"></div><div class="user-info"><div class="user-avatar" id="userAvatar" onclick="openProfileModal()">🌸</div><span>Привет, <span id="userNameSpan"></span>!</span><span id="userRoleBadge"></span><button id="logoutBtnMain" class="logout-btn">🚪 Выйти</button></div></div>
@@ -238,342 +262,817 @@
 </div>
 </div>
 
-<script>
-if (!localStorage.getItem('users') || JSON.parse(localStorage.getItem('users')).length === 0) {
-    localStorage.setItem('users', JSON.stringify([
-        { id: 'u1', name: 'ГЕННАДИЙ ДРАГОН', email: 'gennadij@dragons.ru', password: 'dragongennadij', role: 'curator' },
-        { id: 'u2', name: 'МАНИЙ ДАНИС', email: 'maniy@danis.ru', password: 'maniy123', role: 'parent' },
-        { id: 'u3', name: 'СУЛТАНОВ ДАНИС', email: 'sultanov@danis.ru', password: 'sultanov123', role: 'parent' },
-        { id: 'u4', name: 'ЧИФ КИФ', email: 'chief@kif.ru', password: 'chiefkif', role: 'curator' }
-    ]));
-    localStorage.setItem('students', JSON.stringify([
-        { id: 's1', name: 'Студент Маний', group: 'П-201', parentEmail: 'maniy@danis.ru', parentName: 'МАНИЙ ДАНИС', grades: {}, absences: [] },
-        { id: 's2', name: 'Студент Султанов', group: 'П-202', parentEmail: 'sultanov@danis.ru', parentName: 'СУЛТАНОВ ДАНИС', grades: {}, absences: [] }
-    ]));
-    localStorage.setItem('curatorGroups', JSON.stringify({ 'gennadij@dragons.ru': ['П-201', 'П-202'], 'chief@kif.ru': ['П-203'] }));
-    localStorage.setItem('groupSubjects', JSON.stringify({ 'П-201': ['Математика','Русский язык','Физика','Информатика','Физкультура'], 'П-202': ['Математика','Литература','Химия','Биология','Физкультура'], 'П-203': ['Математика','Английский','История','Обществознание','Физкультура'] }));
-    localStorage.setItem('chatMessages', JSON.stringify([]));
-    localStorage.setItem('userAvatars', JSON.stringify({}));
-    localStorage.setItem('payments', JSON.stringify({}));
-}
-
-let students = JSON.parse(localStorage.getItem('students'));
-let users = JSON.parse(localStorage.getItem('users'));
-let chatMessages = JSON.parse(localStorage.getItem('chatMessages'));
-let curatorGroups = JSON.parse(localStorage.getItem('curatorGroups'));
-let groupSubjects = JSON.parse(localStorage.getItem('groupSubjects'));
-let userAvatars = JSON.parse(localStorage.getItem('userAvatars'));
-let payments = JSON.parse(localStorage.getItem('payments'));
-let currentUser = null;
-let selectedStudentId = null, selectedChatStudentId = null, selectedGradeStudentId = null, currentCuratorActiveGroup = null, lastSelectedSubject = null;
-let subjectGradesChart = null;
-const AVATARS = ["🌸","🌺","🌷","🌹","⭐","🌟","✨","💫","🐱","🦋","🌈","🍎","📚","🎓"];
-const MONTHS = ['Сен','Окт','Ноя','Дек','Янв','Фев','Мар','Апр','Май','Июн'];
-
-function saveAll() {
-    localStorage.setItem('students', JSON.stringify(students));
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
-    localStorage.setItem('curatorGroups', JSON.stringify(curatorGroups));
-    localStorage.setItem('groupSubjects', JSON.stringify(groupSubjects));
-    localStorage.setItem('userAvatars', JSON.stringify(userAvatars));
-    localStorage.setItem('payments', JSON.stringify(payments));
-}
-
-function getStudentById(id) { return students.find(s=>s.id===id); }
-function getStudentForParent(email) { return students.find(s=>s.parentEmail===email); }
-function getSubjectsForGroup(g) { if (!groupSubjects[g]) groupSubjects[g] = ["Математика","Русский язык","Физика","Информатика","Физкультура"]; return groupSubjects[g]; }
-function avgGrade(st) { if(!st?.grades) return "—"; let t=0,s=0; for(let subj in st.grades) for(let g of st.grades[subj]){ let v=typeof g==='object'?g.value:g, w=(typeof g==='object'&&g.weight)?g.weight:1; s+=v*w; t+=w; } return t===0?"—":(s/t).toFixed(2); }
-
-function initPayments(sid){ if(!payments[sid]){ payments[sid]={}; MONTHS.forEach(m=>payments[sid][m]={paid:false, date:null}); saveAll(); } }
-function renderPayments(){ let st=getStudentForParent(currentUser?.email); if(!st) return; initPayments(st.id); document.getElementById('paymentCalendar').innerHTML=MONTHS.map(m=>`<div class="payment-month-card ${payments[st.id][m].paid?'paid':'unpaid'}" onclick="togglePayment('${st.id}','${m}')"><div>${payments[st.id][m].paid?'✅':'❌'}</div><div>${m}</div></div>`).join(''); }
-window.togglePayment=function(sid,m){ payments[sid][m].paid=!payments[sid][m].paid; payments[sid][m].date=payments[sid][m].paid?new Date().toLocaleDateString('ru-RU'):null; saveAll(); renderPayments(); let msg=document.getElementById('paymentMessage'); msg.style.display='block'; msg.innerHTML=payments[sid][m].paid?`✅ ${m} оплачен!`:`❌ Оплата отменена`; setTimeout(()=>msg.style.display='none',2000); renderPaymentsReport(); };
-
-function renderPaymentsReport(){
-    if(!currentCuratorActiveGroup || currentUser?.role!=='curator') return;
-    let groupStudents = students.filter(s=>s.group===currentCuratorActiveGroup);
-    let report = [];
-    for(let st of groupStudents){
-        let parent = users.find(u=>u.email===st.parentEmail);
-        if(parent){
-            initPayments(st.id);
-            report.push({ studentName: st.name, parentName: parent.name, payments: payments[st.id] });
+<script type="importmap">
+    {
+        "imports": {
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+            "firebase/database": "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"
         }
     }
-    if(report.length===0){ document.getElementById('paymentsReportContent').innerHTML='<div style="text-align:center;padding:40px;">Нет привязанных родителей</div>'; return; }
-    let html = `<table class="payment-report-table"><thead><tr><th>Родитель</th><th>Студент</th>${MONTHS.map(m=>`<th>${m}</th>`).join('')} </thead><tbody>`;
-    for(let r of report){
-        html += `<tr><td style="font-weight:600;">${r.parentName}</td><td>${r.studentName}</td>`;
-        for(let m of MONTHS){
-            let paid = r.payments[m]?.paid;
-            html += `<td style="text-align:center;">${paid ? '<span class="paid-badge">✅ Оплачено</span>' : '<span class="unpaid-badge">❌ Не оплачено</span>'}</td>`;
+</script>
+
+<script type="module">
+    // ========== FIREBASE КОНФИГУРАЦИЯ ==========
+    import { initializeApp } from "firebase/app";
+    import { getDatabase, ref, set, get, child, push, update, remove, onValue, query, orderByChild, equalTo } from "firebase/database";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyB3B3jJkVpQDdTLHn6GTgKcq1IhKZ3HvNQ",
+        authDomain: "web-application-for-parents.firebaseapp.com",
+        databaseURL: "https://web-application-for-parents-default-rtdb.firebaseio.com",
+        projectId: "web-application-for-parents",
+        storageBucket: "web-application-for-parents.firebasestorage.app",
+        messagingSenderId: "80865187309",
+        appId: "1:80865187309:web:746c3f3191a15699fef4b7"
+    };
+    
+    // Инициализация Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    
+    console.log('✅ Firebase подключен!');
+    
+    // ========== TELEGRAM НАСТРОЙКИ ==========
+    const TELEGRAM_BOT_TOKEN = "8412841252:AAF-rc8AF3h5HyRUsSZkvk3ePRk9EZ5Nv28";
+    const TELEGRAM_BOT_USERNAME = "college12_bot";
+    
+    // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
+    let currentUser = null;
+    let selectedStudentId = null, selectedChatStudentId = null, selectedGradeStudentId = null, currentCuratorActiveGroup = null, lastSelectedSubject = null;
+    let subjectGradesChart = null;
+    let students = [], users = [], chatMessages = [], curatorGroups = {}, groupSubjects = {}, userAvatars = {}, payments = {};
+    
+    const AVATARS = ["🌸","🌺","🌷","🌹","⭐","🌟","✨","💫","🐱","🦋","🌈","🍎","📚","🎓"];
+    const MONTHS = ['Сен','Окт','Ноя','Дек','Янв','Фев','Мар','Апр','Май','Июн'];
+    
+    // ========== ЗАГРУЗКА ДАННЫХ ИЗ FIREBASE ==========
+    async function loadAllData() {
+        try {
+            // Загружаем пользователей
+            const usersSnapshot = await get(child(ref(db), 'users'));
+            users = usersSnapshot.val() ? Object.values(usersSnapshot.val()) : [];
+            
+            // Загружаем студентов
+            const studentsSnapshot = await get(child(ref(db), 'students'));
+            students = studentsSnapshot.val() ? Object.values(studentsSnapshot.val()) : [];
+            
+            // Загружаем сообщения
+            const messagesSnapshot = await get(child(ref(db), 'messages'));
+            chatMessages = messagesSnapshot.val() ? Object.values(messagesSnapshot.val()).flat() : [];
+            
+            // Загружаем группы кураторов
+            const curatorGroupsSnapshot = await get(child(ref(db), 'curatorGroups'));
+            curatorGroups = curatorGroupsSnapshot.val() || {};
+            
+            // Загружаем предметы групп
+            const groupSubjectsSnapshot = await get(child(ref(db), 'groupSubjects'));
+            groupSubjects = groupSubjectsSnapshot.val() || {};
+            
+            // Загружаем аватары
+            const avatarsSnapshot = await get(child(ref(db), 'userAvatars'));
+            userAvatars = avatarsSnapshot.val() || {};
+            
+            // Загружаем платежи
+            const paymentsSnapshot = await get(child(ref(db), 'payments'));
+            payments = paymentsSnapshot.val() || {};
+            
+            console.log('✅ Все данные загружены из Firebase');
+            return true;
+        } catch (error) {
+            console.error('Ошибка загрузки данных:', error);
+            return false;
         }
-        html += `</tr>`;
     }
-    html += `</tbody></table>`;
-    document.getElementById('paymentsReportContent').innerHTML = html;
-}
-
-window.deleteParent = function(email, name){
-    if(confirm(`Удалить родителя "${name}" из группы?`)){
-        let student = students.find(s=>s.parentEmail===email && s.group===currentCuratorActiveGroup);
-        if(student){ student.parentEmail=null; student.parentName=null; saveAll(); renderRegisteredUsers(); renderStudentsList(); renderChatsList(); renderPaymentsReport(); document.getElementById('curatorSuccessMsg').innerHTML=`✅ Родитель "${name}" удалён`; document.getElementById('curatorSuccessMsg').style.display='block'; setTimeout(()=>document.getElementById('curatorSuccessMsg').style.display='none',2000); }
+    
+    // ========== СОХРАНЕНИЕ ДАННЫХ В FIREBASE ==========
+    async function saveUserToFB(user) {
+        const emailKey = user.email.replace(/\./g, '_');
+        await set(ref(db, `users/${emailKey}`), user);
     }
-};
-
-function renderRegisteredUsers(){
-    if(!currentCuratorActiveGroup || currentUser?.role!=='curator') return;
-    let parents=users.filter(u=>students.some(s=>s.group===currentCuratorActiveGroup && s.parentEmail===u.email));
-    let container=document.getElementById('usersGrid'), usersDiv=document.getElementById('registeredUsersContainer');
-    if(!container) return;
-    if(parents.length===0){ usersDiv.style.display='none'; return; }
-    usersDiv.style.display='block';
-    container.innerHTML=parents.map(p=>`<div class="user-card"><div><strong>${p.name}</strong><br><small>${p.email}</small></div><button class="delete-user-btn" onclick="window.deleteParent('${p.email}','${p.name.replace(/'/g,"\\'")}')">🗑️ Удалить</button></div>`).join('');
-}
-
-function renderSubjectChart(){
-    let student = getStudentById(selectedStudentId);
-    let subject = document.getElementById('subjectForChart')?.value;
-    if(!student || !subject){ 
-        if(subjectGradesChart) { subjectGradesChart.destroy(); subjectGradesChart = null; }
-        let ctx = document.getElementById('subjectGradesChart')?.getContext('2d');
-        if(ctx){ ctx.fillStyle = '#f0dce8'; ctx.fillRect(0,0,ctx.canvas.width,100); ctx.fillStyle = '#c27096'; ctx.font = '14px Inter'; ctx.fillText('Выберите предмет для отображения графика', 50, 50); }
-        return; 
+    
+    async function saveStudentToFB(student) {
+        await set(ref(db, `students/${student.id}`), student);
     }
-    let grades = student.grades?.[subject] || [];
-    let dates = [], values = [];
-    for(let g of grades){ dates.push(typeof g==='object'?(g.date||"дата"):"оценка"); values.push(typeof g==='object'?g.value:g); }
-    if(subjectGradesChart) subjectGradesChart.destroy();
-    let ctx = document.getElementById('subjectGradesChart')?.getContext('2d');
-    if(ctx){
-        if(dates.length>0){
-            subjectGradesChart = new Chart(ctx, { type: 'line', data: { labels: dates, datasets: [{ label: `Оценки по ${subject}`, data: values, borderColor: '#e87fb0', backgroundColor: 'rgba(232,127,176,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#c45a8c', pointBorderColor: '#fff', pointRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: true, scales: { y: { min: 1, max: 5, ticks: { stepSize: 1 } } } } });
-        } else {
-            ctx.fillStyle = '#f0dce8'; ctx.fillRect(0,0,ctx.canvas.width,100); ctx.fillStyle = '#c27096'; ctx.font = '14px Inter'; ctx.fillText('Нет оценок по этому предмету', 50, 50);
-        }
+    
+    async function saveMessageToFB(message) {
+        const messagesRef = ref(db, `messages/${message.studentId}`);
+        const snapshot = await get(messagesRef);
+        const existing = snapshot.val() || [];
+        existing.push(message);
+        await set(messagesRef, existing);
     }
-}
-
-function updateChartSelect(subjects){
-    let chartSel = document.getElementById('subjectForChart');
-    if(chartSel){ 
-        let currentVal = chartSel.value;
-        chartSel.innerHTML = '<option value="">-- Выберите предмет --</option>' + subjects.map(s=>`<option value="${s}">${s}</option>`).join('');
-        if(currentVal && subjects.includes(currentVal)) chartSel.value = currentVal;
-        chartSel.onchange = () => renderSubjectChart(); 
+    
+    async function saveCuratorGroupsToFB(email, groups) {
+        const emailKey = email.replace(/\./g, '_');
+        await set(ref(db, `curatorGroups/${emailKey}`), groups);
     }
-}
-
-function renderAllGradesTable(){
-    let st=getStudentById(selectedStudentId);
-    if(!st) return;
-    let grades=[];
-    for(let s in st.grades) for(let g of st.grades[s]) grades.push({subject:s,value:typeof g==='object'?g.value:g,date:typeof g==='object'?g.date:"",comment:typeof g==='object'?g.comment:"",weight:typeof g==='object'?g.weight:1});
-    grades.sort((a,b)=>(b.date||"").localeCompare(a.date||""));
-    let fs=document.getElementById('filterSubject')?.value;
-    if(fs && fs!="") grades=grades.filter(g=>g.subject===fs);
-    let cont=document.getElementById('gradesTableContainer');
-    if(!cont) return;
-    if(grades.length===0){ cont.innerHTML='<div style="text-align:center;padding:40px;">📭 Нет оценок</div>'; return; }
-    cont.innerHTML=`<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g=>`<tr><td>${g.date||"—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight===2?'Контрольная ×2':'Обычная'}</td><td>${g.comment||"—"}</td>`).join('')}</tbody></table>`;
-}
-
-function renderGradeDistribution(st){
-    if(!st) return;
-    let cnt=[0,0,0,0],tot=0;
-    for(let s in st.grades) for(let g of st.grades[s]){ let v=typeof g==='object'?g.value:g, w=(typeof g==='object'&&g.weight)?g.weight:1; if(v===5)cnt[0]+=w; else if(v===4)cnt[1]+=w; else if(v===3)cnt[2]+=w; else if(v===2)cnt[3]+=w; tot+=w; }
-    let names=["Отлично","Хорошо","Удовлетворительно","Неудовлетворительно"], colors=["#a8e6cf","#b8deff","#ffd3b6","#ffb3ba"];
-    let cont=document.getElementById('distributionContent');
-    if(!cont) return;
-    if(tot===0){ cont.innerHTML='<div style="text-align:center;padding:40px;">📊 Нет оценок</div>'; return; }
-    cont.innerHTML=names.map((n,i)=>{ let pct=tot>0?(cnt[i]/tot*100).toFixed(1):0; return `<div style="margin-bottom:15px;"><div style="display:flex;justify-content:space-between;"><span>${n}</span><span>${cnt[i]} шт (${pct}%)</span></div><div style="background:#eee;border-radius:30px;height:30px;"><div style="width:${pct}%;background:${colors[i]};border-radius:30px;height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;">${pct>15?pct+'%':''}</div></div></div>`; }).join('');
-}
-
-function updateFilters(subjects){
-    let fs=document.getElementById('filterSubject');
-    if(fs) fs.innerHTML='<option value="">Все предметы</option>'+subjects.map(s=>`<option value="${s}">${s}</option>`).join('');
-    let ss=document.getElementById('subjectSelect');
-    if(ss){ ss.innerHTML=subjects.map(s=>`<option value="${s}">📚 ${s}</option>`).join(''); if(lastSelectedSubject && subjects.includes(lastSelectedSubject)) ss.value=lastSelectedSubject; }
-    updateChartSelect(subjects);
-    document.getElementById('subjectsCountStat').innerText=subjects.length;
-}
-
-function displayStudentStats(st){
-    if(!st) return;
-    let avg=avgGrade(st), abs=st.absences?.length||0, subjects=getSubjectsForGroup(st.group), avgP=avg!=="—"?parseFloat(avg)/5*100:0;
-    document.getElementById('avgScoreDisplay').innerText=avg;
-    document.getElementById('avgScoreStat').innerText=avg;
-    document.getElementById('absencesDisplay').innerText=abs;
-    document.getElementById('absencesStat').innerText=abs;
-    document.getElementById('subjectsCountStat').innerText=subjects.length;
-    document.getElementById('avgProgress').style.width=avgP+"%";
-    document.getElementById('attendanceProgress').style.width=Math.min(100,100-(abs/50*100))+"%";
-    document.getElementById('currentStudentName').innerHTML=st.name;
-    document.getElementById('studentGroupBadge').innerHTML=`Группа ${st.group}`;
-    updateFilters(subjects);
-}
-
-function renderStudentsList(){
-    if(!currentCuratorActiveGroup) return;
-    let group=students.filter(s=>s.group===currentCuratorActiveGroup);
-    let cont=document.getElementById('studentsGrid');
-    if(cont){ cont.innerHTML=group.map(s=>`<div class="student-card ${selectedStudentId===s.id?'active':''}" onclick="window.selectStudent('${s.id}')"><div class="student-avatar">${s.name.charAt(0)}</div><div><strong>${s.name}</strong><br><span style="font-size:0.7rem;">${s.group}</span></div></div>`).join(''); document.getElementById('studentsListContainer').style.display=group.length?'block':'none'; }
-    let sel=document.getElementById('studentForGradeSelect');
-    if(sel){ sel.innerHTML='<option value="">-- Выберите ученика --</option>'+group.map(s=>`<option value="${s.id}" ${selectedGradeStudentId===s.id?'selected':''}>${s.name}</option>`).join(''); sel.onchange=function(){ if(this.value){ selectedGradeStudentId=this.value; selectedStudentId=this.value; selectedChatStudentId=this.value; fullUpdate(); renderChatMessages(); } }; }
-}
-
-function renderChatsList(){
-    if(!currentCuratorActiveGroup) return;
-    let group=students.filter(s=>s.group===currentCuratorActiveGroup);
-    let grid=document.getElementById('chatsGrid');
-    if(!grid) return;
-    if(group.length===0){ document.getElementById('chatsListContainer').style.display='none'; return; }
-    document.getElementById('chatsListContainer').style.display='block';
-    grid.innerHTML=group.map(st=>{ let parent=users.find(u=>u.email===st.parentEmail); let pn=parent?parent.name:(st.parentName||"Родитель"); let last=chatMessages.filter(m=>m.studentId===st.id).slice(-1)[0]; return `<div class="chat-item ${selectedChatStudentId===st.id?'active':''}" onclick="window.selectChatStudent('${st.id}')"><div class="chat-avatar">${pn.charAt(0)}</div><div><div class="chat-name">💬 Чат с ${pn}</div><div class="chat-preview" style="font-size:0.8rem;">${last?last.text.substring(0,40):'Нет сообщений'}</div></div></div>`; }).join('');
-}
-
-function renderGroupSubjectsUI(){
-    if(!currentCuratorActiveGroup) return;
-    let subs=getSubjectsForGroup(currentCuratorActiveGroup);
-    document.getElementById('groupSubjectsList').innerHTML=subs.map(s=>`<span class="subject-tag">📘 ${s} <button class="delete-subject-btn" data-subj="${s}">✖</button></span>`).join('');
-    document.querySelectorAll('.delete-subject-btn').forEach(btn=>{ btn.onclick=()=>{ let subj=btn.dataset.subj; groupSubjects[currentCuratorActiveGroup]=groupSubjects[currentCuratorActiveGroup].filter(x=>x!==subj); saveAll(); renderGroupSubjectsUI(); updateFilters(getSubjectsForGroup(currentCuratorActiveGroup)); fullUpdate(); }; });
-    let addBtn=document.getElementById('addSubjectToGroupBtn'); if(addBtn){ let nb=addBtn.cloneNode(true); addBtn.parentNode.replaceChild(nb,addBtn); nb.onclick=()=>{ let ns=document.getElementById('newSubjectName').value.trim(); if(ns && currentCuratorActiveGroup && !groupSubjects[currentCuratorActiveGroup].includes(ns)){ groupSubjects[currentCuratorActiveGroup].push(ns); saveAll(); renderGroupSubjectsUI(); updateFilters(getSubjectsForGroup(currentCuratorActiveGroup)); fullUpdate(); document.getElementById('newSubjectName').value=''; } }; }
-}
-
-function renderCuratorGroupsSelect(){
-    let groups=curatorGroups[currentUser?.email]||[];
-    let sel=document.getElementById('curatorGroupSelect');
-    sel.innerHTML=groups.map(g=>`<option value="${g}" ${currentCuratorActiveGroup===g?'selected':''}>📁 ${g}</option>`).join('');
-    sel.onchange=()=>{ currentCuratorActiveGroup=sel.value; localStorage.setItem('curatorActiveGroup',currentCuratorActiveGroup); fullUpdate(); renderPaymentsReport(); };
-    if(groups.length && !currentCuratorActiveGroup) currentCuratorActiveGroup=groups[0];
-}
-
-function fullUpdate(){
-    if(currentUser?.role==='curator'){
-        if(!currentCuratorActiveGroup) return;
-        renderStudentsList(); renderChatsList(); renderGroupSubjectsUI(); renderRegisteredUsers();
-        let group=students.filter(s=>s.group===currentCuratorActiveGroup);
-        if(group.length && (!selectedStudentId || !group.find(s=>s.id===selectedStudentId))){ selectedStudentId=group[0].id; selectedChatStudentId=selectedStudentId; selectedGradeStudentId=selectedStudentId; }
-        if(selectedStudentId){ let st=getStudentById(selectedStudentId); if(st){ displayStudentStats(st); renderGradeDistribution(st); renderSubjectChart(); } }
-        renderAllGradesTable();
+    
+    async function saveGroupSubjectsToFB(group, subjects) {
+        await set(ref(db, `groupSubjects/${group}`), subjects);
+    }
+    
+    async function saveAvatarToFB(email, avatar) {
+        const emailKey = email.replace(/\./g, '_');
+        await set(ref(db, `userAvatars/${emailKey}`), avatar);
+    }
+    
+    async function savePaymentToFB(studentId, month, paid, date) {
+        await set(ref(db, `payments/${studentId}/${month}`), { paid, date });
+    }
+    
+    // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+    function getStudentById(id) { return students.find(s => s.id === id); }
+    function getStudentForParent(email) { return students.find(s => s.parentEmail === email); }
+    function getSubjectsForGroup(g) { return groupSubjects[g] || ["Математика","Русский язык","Физика","Информатика","Физкультура"]; }
+    function avgGrade(st) { 
+        if(!st?.grades) return "—"; 
+        let t=0,s=0; 
+        for(let subj in st.grades) for(let g of st.grades[subj]){ 
+            let v=typeof g==='object'?g.value:g, w=(typeof g==='object'&&g.weight)?g.weight:1; 
+            s+=v*w; t+=w; 
+        } 
+        return t===0?"—":(s/t).toFixed(2); 
+    }
+    
+    // ========== ОПЛАТА ==========
+    function initPayments(sid){ if(!payments[sid]){ payments[sid]={}; MONTHS.forEach(m=>payments[sid][m]={paid:false, date:null}); } }
+    function renderPayments(){ 
+        let st = getStudentForParent(currentUser?.email); 
+        if(!st) return; 
+        initPayments(st.id); 
+        document.getElementById('paymentCalendar').innerHTML = MONTHS.map(m=>`<div class="payment-month-card ${payments[st.id][m].paid?'paid':'unpaid'}" onclick="togglePayment('${st.id}','${m}')"><div>${payments[st.id][m].paid?'✅':'❌'}</div><div>${m}</div></div>`).join(''); 
+    }
+    window.togglePayment = async function(sid,m){ 
+        payments[sid][m].paid = !payments[sid][m].paid; 
+        payments[sid][m].date = payments[sid][m].paid ? new Date().toLocaleDateString('ru-RU') : null; 
+        await savePaymentToFB(sid, m, payments[sid][m].paid, payments[sid][m].date);
+        renderPayments(); 
         renderPaymentsReport();
-    } else if(currentUser?.role==='parent'){
-        let st=getStudentForParent(currentUser.email);
-        if(st){ selectedStudentId=st.id; selectedChatStudentId=st.id; displayStudentStats(st); renderGradeDistribution(st); renderAllGradesTable(); renderSubjectChart(); renderChatMessages(); }
-    }
-}
-
-window.selectStudent=function(id){ selectedStudentId=id; selectedChatStudentId=id; selectedGradeStudentId=id; fullUpdate(); renderChatMessages(); };
-window.selectChatStudent=function(id){ selectedChatStudentId=id; selectedStudentId=id; selectedGradeStudentId=id; fullUpdate(); renderChatMessages(); };
-
-function renderChatMessages(){
-    let sid=currentUser?.role==='curator'?selectedChatStudentId:getStudentForParent(currentUser?.email)?.id;
-    if(!sid) return;
-    if(currentUser?.role==='curator'){ let st=getStudentById(sid); if(st){ let parent=users.find(u=>u.email===st.parentEmail); document.getElementById('chatHeaderName').innerHTML=`Чат с ${parent?parent.name:(st.parentName||"Родитель")}`; } }
-    else { document.getElementById('chatHeaderName').innerHTML=`Чат с куратором`; }
-    let msgs=chatMessages.filter(m=>m.studentId===sid);
-    document.getElementById('chatMessagesModern').innerHTML=msgs.map(msg=>`<div class="message-modern ${msg.sender==='parent'?'parent':'curator'}"><div class="message-avatar">${msg.sender==='parent'?'👨‍👩‍👧':'📚'}</div><div class="message-bubble-modern">${msg.text}</div><div class="message-time-modern" style="font-size:0.7rem;margin-top:5px;">${msg.time||''}</div></div>`).join('');
-    let cont=document.getElementById('chatMessagesModern'); if(cont) cont.scrollTop=cont.scrollHeight;
-}
-
-function addChatMessage(text,sender){
-    let sid=currentUser?.role==='curator'?selectedChatStudentId:getStudentForParent(currentUser?.email)?.id;
-    if(!sid) return;
-    chatMessages.push({text,sender,time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),studentId:sid});
-    saveAll(); renderChatMessages(); if(currentUser?.role==='curator') renderChatsList();
-}
-
-function initChat(){
-    let btn=document.getElementById('modernSendBtn'), inp=document.getElementById('modernChatInput');
-    if(btn){ let nb=btn.cloneNode(true); btn.parentNode.replaceChild(nb,btn); nb.onclick=()=>{ let msg=inp?.value.trim(); if(msg && currentUser){ addChatMessage(msg,currentUser.role==='parent'?'parent':'curator'); inp.value=''; } }; }
-    if(inp) inp.onkeypress=e=>{ if(e.key==='Enter'){ let msg=inp.value.trim(); if(msg && currentUser){ addChatMessage(msg,currentUser.role==='parent'?'parent':'curator'); inp.value=''; } } };
-}
-
-function initCuratorControls(){
-    let addGrade=document.getElementById('addGradeBtn'), addAbsence=document.getElementById('addAbsenceBtn'), msgDiv=document.getElementById('curatorSuccessMsg');
-    if(addGrade){ let nb=addGrade.cloneNode(true); addGrade.parentNode.replaceChild(nb,addGrade); nb.onclick=()=>{ let st=getStudentById(selectedGradeStudentId); if(!st){ msgDiv.style.display='block'; msgDiv.innerHTML='⚠️ Выберите ученика'; setTimeout(()=>msgDiv.style.display='none',2000); return; } let subj=document.getElementById('subjectSelect').value; if(!subj){ msgDiv.style.display='block'; msgDiv.innerHTML='⚠️ Выберите предмет'; setTimeout(()=>msgDiv.style.display='none',2000); return; } lastSelectedSubject=subj; let val=parseInt(document.getElementById('gradeSelect').value); let date=document.getElementById('gradeDate').value||new Date().toISOString().slice(0,10); let comment=document.getElementById('gradeComment').value.trim(); let isControl=document.querySelector('input[name="gradeType"]:checked').value==='control'; let weight=isControl?2:1; if(!st.grades) st.grades={}; if(!st.grades[subj]) st.grades[subj]=[]; st.grades[subj].push({value:val,date:date,comment:comment||"Без комментария",weight:weight}); saveAll(); fullUpdate(); setTimeout(()=>{ let ss=document.getElementById('subjectSelect'); if(ss && lastSelectedSubject && [...ss.options].some(o=>o.value===lastSelectedSubject)) ss.value=lastSelectedSubject; },50); msgDiv.style.display='block'; msgDiv.innerHTML=`✅ Оценка ${val} по ${subj}${isControl?' (×2)':''}`; setTimeout(()=>msgDiv.style.display='none',2000); }; }
-    if(addAbsence){ let nb=addAbsence.cloneNode(true); addAbsence.parentNode.replaceChild(nb,addAbsence); nb.onclick=()=>{ let st=getStudentById(selectedStudentId); if(st){ let date=document.getElementById('absenceDate').value||new Date().toISOString().slice(0,10); let type=document.getElementById('absenceType').value; if(!st.absences) st.absences=[]; if(!st.absences.find(a=>a.date===date)){ st.absences.push({date,type}); saveAll(); fullUpdate(); msgDiv.style.display='block'; msgDiv.innerHTML=`📅 Пропуск добавлен`; setTimeout(()=>msgDiv.style.display='none',2000); } else { msgDiv.style.display='block'; msgDiv.innerHTML='⚠️ Пропуск уже есть'; setTimeout(()=>msgDiv.style.display='none',2000); } } }; }
-}
-
-let mainDash=document.getElementById('mainDashboard'), dynCont=document.getElementById('dynamic-page-content'), navBtns=document.querySelectorAll('.nav-btn');
-function getDetailedPage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let subs=getSubjectsForGroup(st.group); let rows=subs.map(s=>{ let grades=st.grades?.[s]||[]; let avg=grades.length?(grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1):"—"; let last=grades[grades.length-1]; let lastVal=last?(typeof last==='object'?last.value:last):"—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td style="text-align:center;"><span class="grade-badge-sm">${lastVal}</span></td>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
-function getAttendancePage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let days=(st.absences||[]).slice().reverse().map(a=>`<div style="padding:12px;background:#ffe0f0;border-radius:40px;margin:8px 0;">📅 ${a.date} — ${a.type}</div>`).join(''); return `<div class="detail-page"><div class="detail-title">📅 Посещаемость: ${st.name}</div>${days||'<div style="padding:20px;text-align:center;">✨ Нет пропусков</div>'}<button class="back-link" data-back="dashboard">← На главную</button></div>`; }
-function showDetail(pageId){ if(mainDash) mainDash.style.display='none'; let content=pageId==='detailed-progress'?getDetailedPage():getAttendancePage(); dynCont.innerHTML=content; dynCont.style.display='block'; navBtns.forEach(btn=>btn.classList.toggle('active-dashboard',btn.dataset.page===pageId)); document.querySelectorAll('.back-link').forEach(btn=>btn.onclick=()=>showMain()); }
-function showMain(){ if(mainDash) mainDash.style.display='grid'; dynCont.style.display='none'; dynCont.innerHTML=''; navBtns.forEach(btn=>btn.classList.toggle('active-dashboard',btn.dataset.page==='dashboard')); fullUpdate(); }
-function initNav(){ showMain(); navBtns.forEach(btn=>{ btn.onclick=()=>{ let page=btn.dataset.page; page==='dashboard'?showMain():showDetail(page); }; }); }
-
-document.getElementById('clearFilterBtn')?.addEventListener('click',()=>{ if(document.getElementById('filterSubject')) document.getElementById('filterSubject').value=""; renderAllGradesTable(); });
-document.getElementById('filterSubject')?.addEventListener('change',()=>renderAllGradesTable());
-document.getElementById('deleteGroupBtn')?.addEventListener('click',()=>{ if(currentCuratorActiveGroup && confirm(`Удалить группу "${currentCuratorActiveGroup}"?`)){ let groups=curatorGroups[currentUser.email]; let idx=groups.indexOf(currentCuratorActiveGroup); if(idx!==-1) groups.splice(idx,1); curatorGroups[currentUser.email]=groups; saveAll(); if(groups.length>0){ currentCuratorActiveGroup=groups[0]; localStorage.setItem('curatorActiveGroup',currentCuratorActiveGroup); } else { currentCuratorActiveGroup=null; document.getElementById('studentStatsBlock').style.display='none'; document.getElementById('noStudentsMessage').style.display='block'; } renderCuratorGroupsSelect(); fullUpdate(); renderPaymentsReport(); } });
-document.getElementById('confirmAddGroupBtn')?.addEventListener('click',()=>{ let ng=document.getElementById('newGroupNameInput').value.trim(); if(ng && currentUser){ let taken=false; for(let ce in curatorGroups) if(ce!==currentUser.email && curatorGroups[ce]?.includes(ng)) taken=true; if(taken){ document.getElementById('curatorSuccessMsg').innerHTML='⚠️ Группа уже закреплена'; document.getElementById('curatorSuccessMsg').style.display='block'; setTimeout(()=>document.getElementById('curatorSuccessMsg').style.display='none',2000); return; } if(!curatorGroups[currentUser.email]) curatorGroups[currentUser.email]=[]; if(!curatorGroups[currentUser.email].includes(ng)){ curatorGroups[currentUser.email].push(ng); if(!groupSubjects[ng]) groupSubjects[ng]=["Математика","Русский язык","Физика","Информатика","Физкультура"]; saveAll(); renderCuratorGroupsSelect(); currentCuratorActiveGroup=ng; fullUpdate(); document.getElementById('newGroupNameInput').value=''; renderPaymentsReport(); } } });
-
-document.getElementById('regRole').onchange=function(){ let isParent=this.value==='parent'; document.getElementById('parentFields').style.display=isParent?'block':'none'; document.getElementById('curatorFields').style.display=isParent?'none':'block'; };
-document.getElementById('regRole').dispatchEvent(new Event('change'));
-document.querySelectorAll('.auth-tab').forEach(tab=>{ tab.onclick=()=>{ let t=tab.dataset.tab; document.querySelectorAll('.auth-tab').forEach(tt=>tt.classList.remove('active')); tab.classList.add('active'); document.getElementById('loginForm').classList.toggle('hidden',t!=='login'); document.getElementById('registerForm').classList.toggle('hidden',t!=='register'); }; });
-document.getElementById('doRegisterBtn').onclick=()=>{ let name=document.getElementById('regName').value.trim(), email=document.getElementById('regEmail').value.trim(), role=document.getElementById('regRole').value, pwd=document.getElementById('regPassword').value, err=document.getElementById('regError'); if(!name||!email||!pwd){ err.innerText='Заполните все поля'; return; } if(pwd.length<6){ err.innerText='Пароль минимум 6 символов'; return; } if(users.find(u=>u.email===email)){ err.innerText='Email уже существует'; return; } if(role==='parent'){ let child=document.getElementById('regChildName').value.trim(), group=document.getElementById('regGroupNumber').value.trim(); if(!child||!group){ err.innerText='Заполните данные студента'; return; } let ex=students.find(s=>s.name===child); if(!ex) students.push({id:`s${Date.now()}`,name:child,group:group,parentEmail:email,parentName:name,grades:{},absences:[]}); else if(ex.parentEmail && ex.parentEmail!==email){ err.innerText='Студент уже привязан'; return; } else { ex.parentEmail=email; ex.parentName=name; ex.group=group; } } else { let cg=document.getElementById('regCuratorGroup').value.trim(); if(!curatorGroups[email]) curatorGroups[email]=[]; if(cg && !curatorGroups[email].includes(cg)) curatorGroups[email].push(cg); if(cg && !groupSubjects[cg]) groupSubjects[cg]=["Математика","Русский язык","Физика","Информатика","Физкультура"]; } users.push({id:`u${Date.now()}`,name,email,password:pwd,role}); saveAll(); alert('Регистрация успешна!'); document.querySelector('.auth-tab[data-tab="login"]').click(); };
-document.getElementById('doLoginBtn').onclick=()=>{ let email=document.getElementById('loginEmail').value.trim(), pwd=document.getElementById('loginPassword').value; let user=users.find(u=>u.email===email && u.password===pwd); if(!user){ document.getElementById('loginError').innerText='Неверный email или пароль'; return; } currentUser=user; localStorage.setItem('currentUser',JSON.stringify(user)); if(user.role==='parent'){ let st=getStudentForParent(user.email); if(st){ selectedStudentId=st.id; selectedChatStudentId=st.id; selectedGradeStudentId=st.id; } } if(user.role==='curator'){ if(!curatorGroups[user.email]) curatorGroups[user.email]=[]; let saved=localStorage.getItem('curatorActiveGroup'); if(saved && curatorGroups[user.email].includes(saved)) currentCuratorActiveGroup=saved; else if(curatorGroups[user.email].length) currentCuratorActiveGroup=curatorGroups[user.email][0]; } showDashboard(); };
-document.getElementById('logoutBtnMain').onclick=()=>{ localStorage.removeItem('currentUser'); currentUser=null; showAuth(); };
-
-function renderAvatarSelector(){ let cont=document.getElementById('avatarSelector'); if(!cont) return; let cur=userAvatars[currentUser?.email]||"🌸"; cont.innerHTML=AVATARS.map(av=>`<div class="avatar-option ${cur===av?'selected':''}" data-avatar="${av}">${av}</div>`).join(''); document.querySelectorAll('.avatar-option').forEach(opt=>{ opt.onclick=()=>{ document.querySelectorAll('.avatar-option').forEach(o=>o.classList.remove('selected')); opt.classList.add('selected'); }; }); }
-window.deleteAccount=function(){ if(confirm('Удалить аккаунт?')){ let email=currentUser.email; users=users.filter(u=>u.email!==email); saveAll(); localStorage.removeItem('currentUser'); currentUser=null; showAuth(); closeProfileModal(); alert('Аккаунт удалён'); } };
-window.openProfileModal=function(){ if(!currentUser) return; document.getElementById('profileName').value=currentUser.name; document.getElementById('profileEmail').value=currentUser.email; renderAvatarSelector(); document.getElementById('profileModal').classList.add('active'); };
-window.closeProfileModal=function(){ document.getElementById('profileModal').classList.remove('active'); };
-window.saveProfileChanges=function(){ let newName=document.getElementById('profileName').value.trim(); let selAv=document.querySelector('.avatar-option.selected')?.dataset.avatar; if(newName){ let idx=users.findIndex(u=>u.email===currentUser.email); if(idx!==-1){ users[idx].name=newName; currentUser.name=newName; localStorage.setItem('currentUser',JSON.stringify(currentUser)); saveAll(); document.getElementById('userNameSpan').innerText=newName; } } if(selAv){ userAvatars[currentUser.email]=selAv; saveAll(); document.getElementById('userAvatar').innerHTML=selAv; } closeProfileModal(); alert('Профиль обновлён'); };
-
-function showDashboard(){
-    if(currentUser){
-        document.getElementById('authBlock').style.display='none';
-        document.getElementById('dashboardBlock').classList.add('active');
-        document.getElementById('dashboardBlock').style.display='block';
-        document.getElementById('userNameSpan').innerText=currentUser.name;
-        document.getElementById('userAvatar').innerHTML=userAvatars[currentUser.email]||"🌸";
-        let badge=document.getElementById('userRoleBadge');
-        
-        if(currentUser.role==='parent'){
-            badge.innerText='Родитель';
-            document.getElementById('curatorArea').style.display='none';
-            document.getElementById('curatorPanel').style.display='none';
-            document.getElementById('paymentsSection').style.display='block';
-            document.getElementById('paymentsReport').style.display='none';
-            renderPayments();
-            let st=getStudentForParent(currentUser.email);
-            if(st){
-                document.getElementById('studentStatsBlock').style.display='block';
-                document.getElementById('noStudentsMessage').style.display='none';
-                selectedStudentId=st.id; selectedChatStudentId=st.id; selectedGradeStudentId=st.id;
-                displayStudentStats(st); renderGradeDistribution(st); renderSubjectChart();
-                renderChatMessages();
-            } else { document.getElementById('studentStatsBlock').style.display='none'; document.getElementById('noStudentsMessage').style.display='block'; }
-        } else {
-            badge.innerText='Куратор';
-            document.getElementById('curatorArea').style.display='block';
-            document.getElementById('curatorPanel').style.display='block';
-            document.getElementById('paymentsSection').style.display='none';
-            document.getElementById('paymentsReport').style.display='block';
-            if(!curatorGroups[currentUser.email]) curatorGroups[currentUser.email]=[];
-            renderCuratorGroupsSelect();
-            if(currentCuratorActiveGroup){ fullUpdate(); renderPaymentsReport(); }
-            else if(curatorGroups[currentUser.email].length){ currentCuratorActiveGroup=curatorGroups[currentUser.email][0]; fullUpdate(); renderPaymentsReport(); }
-            else { document.getElementById('studentStatsBlock').style.display='none'; document.getElementById('noStudentsMessage').style.display='block'; }
+        let msg = document.getElementById('paymentMessage'); 
+        msg.style.display='block'; 
+        msg.innerHTML = payments[sid][m].paid ? `✅ ${m} оплачен!` : `❌ Оплата отменена`; 
+        setTimeout(()=>msg.style.display='none',2000); 
+    };
+    
+    function renderPaymentsReport(){
+        if(!currentCuratorActiveGroup || currentUser?.role!=='curator') return;
+        let groupStudents = students.filter(s=>s.group===currentCuratorActiveGroup);
+        let report = [];
+        for(let st of groupStudents){
+            let parent = users.find(u=>u.email===st.parentEmail);
+            if(parent){
+                initPayments(st.id);
+                report.push({ studentName: st.name, parentName: parent.name, payments: payments[st.id] });
+            }
         }
-        let today=new Date().toISOString().slice(0,10);
-        if(document.getElementById('gradeDate')) document.getElementById('gradeDate').value=today;
-        if(document.getElementById('absenceDate')) document.getElementById('absenceDate').value=today;
-        initChat(); initCuratorControls(); initNav(); renderAllGradesTable();
-    } else showAuth();
-}
-function showAuth(){ document.getElementById('authBlock').style.display='block'; document.getElementById('dashboardBlock').classList.remove('active'); document.getElementById('dashboardBlock').style.display='none'; }
-
-function createFloatingElements(){
-    let cont=document.getElementById('floatingBg'); if(!cont) return; cont.innerHTML='';
-    for(let i=0;i<40;i++){ let d=document.createElement('div'); d.className='heart'; d.innerHTML='❤️'; d.style.left=Math.random()*100+'%'; d.style.fontSize=(12+Math.random()*18)+'px'; d.style.animationDuration=(8+Math.random()*15)+'s'; d.style.animationDelay=(Math.random()*20)+'s'; cont.appendChild(d); }
-    for(let i=0;i<50;i++){ let s=document.createElement('div'); s.className='star-bg'; s.innerHTML='⭐'; s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%'; s.style.fontSize=(8+Math.random()*14)+'px'; s.style.animationDuration=(3+Math.random()*6)+'s'; s.style.animationDelay=(Math.random()*10)+'s'; cont.appendChild(s); }
-}
-function updateDateBadge(){ let b=document.getElementById('currentDateBadge'); if(b) b.innerHTML=`📅 ${new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})}`; }
-
-createFloatingElements(); updateDateBadge(); setInterval(updateDateBadge,60000);
-saveAll();
-if(localStorage.getItem('currentUser')){ currentUser=JSON.parse(localStorage.getItem('currentUser')); showDashboard(); } else showAuth();
+        if(report.length===0){ document.getElementById('paymentsReportContent').innerHTML='<div style="text-align:center;padding:40px;">Нет привязанных родителей</div>'; return; }
+        let html = `<table class="payment-report-table"><thead><tr><th>Родитель</th><th>Студент</th>${MONTHS.map(m=>`<th>${m}</th>`).join('')} </thead><tbody>`;
+        for(let r of report){
+            html += `<tr><td style="font-weight:600;">${r.parentName}</td><td>${r.studentName}</td>`;
+            for(let m of MONTHS){
+                let paid = r.payments[m]?.paid;
+                html += `<td style="text-align:center;">${paid ? '<span class="paid-badge">✅ Оплачено</span>' : '<span class="unpaid-badge">❌ Не оплачено</span>'}</td>`;
+            }
+            html += `</tr>`;
+        }
+        html += `</tbody></table>`;
+        document.getElementById('paymentsReportContent').innerHTML = html;
+    }
+    
+    // ========== УДАЛЕНИЕ РОДИТЕЛЯ ==========
+    window.deleteParent = async function(email, name){
+        if(confirm(`Удалить родителя "${name}" из группы? Связь с учеником будет разорвана.`)){
+            let student = students.find(s=>s.parentEmail===email && s.group===currentCuratorActiveGroup);
+            if(student){ 
+                student.parentEmail = null; 
+                student.parentName = null; 
+                await saveStudentToFB(student);
+                await loadAllData();
+                renderRegisteredUsers(); 
+                renderStudentsList(); 
+                renderChatsList(); 
+                renderPaymentsReport(); 
+                document.getElementById('curatorSuccessMsg').innerHTML = `✅ Родитель "${name}" удалён`; 
+                document.getElementById('curatorSuccessMsg').style.display='block'; 
+                setTimeout(()=>document.getElementById('curatorSuccessMsg').style.display='none',2000);
+            }
+        }
+    };
+    
+    function renderRegisteredUsers(){
+        if(!currentCuratorActiveGroup || currentUser?.role!=='curator') return;
+        let parents = users.filter(u=>students.some(s=>s.group===currentCuratorActiveGroup && s.parentEmail===u.email));
+        let container = document.getElementById('usersGrid'), usersDiv = document.getElementById('registeredUsersContainer');
+        if(!container) return;
+        if(parents.length===0){ usersDiv.style.display='none'; return; }
+        usersDiv.style.display='block';
+        container.innerHTML = parents.map(p=>`<div class="user-card"><div><strong>${p.name}</strong><br><small>${p.email}</small></div><button class="delete-user-btn" onclick="window.deleteParent('${p.email}','${p.name.replace(/'/g,"\\'")}')">🗑️ Удалить</button></div>`).join('');
+    }
+    
+    // ========== ГРАФИК ==========
+    function renderSubjectChart(){
+        let student = getStudentById(selectedStudentId);
+        let subject = document.getElementById('subjectForChart')?.value;
+        if(!student || !subject){ 
+            if(subjectGradesChart) { subjectGradesChart.destroy(); subjectGradesChart = null; }
+            let ctx = document.getElementById('subjectGradesChart')?.getContext('2d');
+            if(ctx){ ctx.fillStyle = '#f0dce8'; ctx.fillRect(0,0,ctx.canvas.width,100); ctx.fillStyle = '#c27096'; ctx.font = '14px Inter'; ctx.fillText('Выберите предмет для отображения графика', 50, 50); }
+            return; 
+        }
+        let grades = student.grades?.[subject] || [];
+        let dates = [], values = [];
+        for(let g of grades){ dates.push(typeof g==='object'?(g.date||"дата"):"оценка"); values.push(typeof g==='object'?g.value:g); }
+        if(subjectGradesChart) subjectGradesChart.destroy();
+        let ctx = document.getElementById('subjectGradesChart')?.getContext('2d');
+        if(ctx){
+            if(dates.length>0){
+                subjectGradesChart = new Chart(ctx, { type: 'line', data: { labels: dates, datasets: [{ label: `Оценки по ${subject}`, data: values, borderColor: '#e87fb0', backgroundColor: 'rgba(232,127,176,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#c45a8c', pointBorderColor: '#fff', pointRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: true, scales: { y: { min: 1, max: 5, ticks: { stepSize: 1 } } } } });
+            } else {
+                ctx.fillStyle = '#f0dce8'; ctx.fillRect(0,0,ctx.canvas.width,100); ctx.fillStyle = '#c27096'; ctx.font = '14px Inter'; ctx.fillText('Нет оценок по этому предмету', 50, 50);
+            }
+        }
+    }
+    
+    function updateChartSelect(subjects){
+        let chartSel = document.getElementById('subjectForChart');
+        if(chartSel){ 
+            let currentVal = chartSel.value;
+            chartSel.innerHTML = '<option value="">-- Выберите предмет --</option>' + subjects.map(s=>`<option value="${s}">${s}</option>`).join('');
+            if(currentVal && subjects.includes(currentVal)) chartSel.value = currentVal;
+            chartSel.onchange = () => renderSubjectChart(); 
+        }
+    }
+    
+    // ========== ОЦЕНКИ И СТАТИСТИКА ==========
+    function renderAllGradesTable(){
+        let st = getStudentById(selectedStudentId);
+        if(!st) return;
+        let grades = [];
+        for(let s in st.grades) for(let g of st.grades[s]) grades.push({subject:s,value:typeof g==='object'?g.value:g,date:typeof g==='object'?g.date:"",comment:typeof g==='object'?g.comment:"",weight:typeof g==='object'?g.weight:1});
+        grades.sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+        let fs = document.getElementById('filterSubject')?.value;
+        if(fs && fs!="") grades = grades.filter(g=>g.subject===fs);
+        let cont = document.getElementById('gradesTableContainer');
+        if(!cont) return;
+        if(grades.length===0){ cont.innerHTML='<div style="text-align:center;padding:40px;">📭 Нет оценок</div>'; return; }
+        cont.innerHTML = `<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g=>`<tr><td>${g.date||"—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight===2?'Контрольная ×2':'Обычная'}</td><td>${g.comment||"—"}</td></tr>`).join('')}</tbody></table>`;
+    }
+    
+    function renderGradeDistribution(st){
+        if(!st) return;
+        let cnt=[0,0,0,0],tot=0;
+        for(let s in st.grades) for(let g of st.grades[s]){ let v=typeof g==='object'?g.value:g, w=(typeof g==='object'&&g.weight)?g.weight:1; if(v===5)cnt[0]+=w; else if(v===4)cnt[1]+=w; else if(v===3)cnt[2]+=w; else if(v===2)cnt[3]+=w; tot+=w; }
+        let names=["Отлично","Хорошо","Удовлетворительно","Неудовлетворительно"], colors=["#a8e6cf","#b8deff","#ffd3b6","#ffb3ba"];
+        let cont = document.getElementById('distributionContent');
+        if(!cont) return;
+        if(tot===0){ cont.innerHTML='<div style="text-align:center;padding:40px;">📊 Нет оценок</div>'; return; }
+        cont.innerHTML = names.map((n,i)=>{ let pct=tot>0?(cnt[i]/tot*100).toFixed(1):0; return `<div style="margin-bottom:15px;"><div style="display:flex;justify-content:space-between;"><span>${n}</span><span>${cnt[i]} шт (${pct}%)</span></div><div style="background:#eee;border-radius:30px;height:30px;"><div style="width:${pct}%;background:${colors[i]};border-radius:30px;height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;">${pct>15?pct+'%':''}</div></div></div>`; }).join('');
+    }
+    
+    function updateFilters(subjects){
+        let fs = document.getElementById('filterSubject');
+        if(fs) fs.innerHTML = '<option value="">Все предметы</option>' + subjects.map(s=>`<option value="${s}">${s}</option>`).join('');
+        let ss = document.getElementById('subjectSelect');
+        if(ss){ ss.innerHTML = subjects.map(s=>`<option value="${s}">📚 ${s}</option>`).join(''); if(lastSelectedSubject && subjects.includes(lastSelectedSubject)) ss.value = lastSelectedSubject; }
+        updateChartSelect(subjects);
+        document.getElementById('subjectsCountStat').innerText = subjects.length;
+    }
+    
+    function displayStudentStats(st){
+        if(!st) return;
+        let avg = avgGrade(st), abs = st.absences?.length||0, subjects = getSubjectsForGroup(st.group), avgP = avg!=="—"?parseFloat(avg)/5*100:0;
+        document.getElementById('avgScoreDisplay').innerText = avg;
+        document.getElementById('avgScoreStat').innerText = avg;
+        document.getElementById('absencesDisplay').innerText = abs;
+        document.getElementById('absencesStat').innerText = abs;
+        document.getElementById('subjectsCountStat').innerText = subjects.length;
+        document.getElementById('avgProgress').style.width = avgP+"%";
+        document.getElementById('attendanceProgress').style.width = Math.min(100,100-(abs/50*100))+"%";
+        document.getElementById('currentStudentName').innerHTML = st.name;
+        document.getElementById('studentGroupBadge').innerHTML = `Группа ${st.group}`;
+        updateFilters(subjects);
+    }
+    
+    // ========== RENDER СПИСКОВ ==========
+    function renderStudentsList(){
+        if(!currentCuratorActiveGroup) return;
+        let group = students.filter(s=>s.group===currentCuratorActiveGroup);
+        let cont = document.getElementById('studentsGrid');
+        if(cont){ 
+            cont.innerHTML = group.map(s=>`<div class="student-card ${selectedStudentId===s.id?'active':''}" onclick="window.selectStudent('${s.id}')"><div class="student-avatar">${s.name.charAt(0)}</div><div><strong>${s.name}</strong><br><span style="font-size:0.7rem;">${s.group}</span></div></div>`).join(''); 
+            document.getElementById('studentsListContainer').style.display = group.length?'block':'none'; 
+        }
+        let sel = document.getElementById('studentForGradeSelect');
+        if(sel){ 
+            sel.innerHTML = '<option value="">-- Выберите ученика --</option>' + group.map(s=>`<option value="${s.id}" ${selectedGradeStudentId===s.id?'selected':''}>${s.name}</option>`).join(''); 
+            sel.onchange = function(){ if(this.value){ selectedGradeStudentId = this.value; selectedStudentId = this.value; selectedChatStudentId = this.value; fullUpdate(); renderChatMessages(); } }; 
+        }
+    }
+    
+    function renderChatsList(){
+        if(!currentCuratorActiveGroup) return;
+        let group = students.filter(s=>s.group===currentCuratorActiveGroup);
+        let grid = document.getElementById('chatsGrid');
+        if(!grid) return;
+        if(group.length===0){ document.getElementById('chatsListContainer').style.display='none'; return; }
+        document.getElementById('chatsListContainer').style.display='block';
+        grid.innerHTML = group.map(st=>{ 
+            let parent = users.find(u=>u.email===st.parentEmail); 
+            let pn = parent?parent.name:(st.parentName||"Родитель"); 
+            let last = chatMessages.filter(m=>m.studentId===st.id).slice(-1)[0]; 
+            return `<div class="chat-item ${selectedChatStudentId===st.id?'active':''}" onclick="window.selectChatStudent('${st.id}')"><div class="chat-avatar">${pn.charAt(0)}</div><div><div class="chat-name">💬 Чат с ${pn}</div><div class="chat-preview" style="font-size:0.8rem;">${last?last.text.substring(0,40):'Нет сообщений'}</div></div></div>`; 
+        }).join('');
+    }
+    
+    function renderGroupSubjectsUI(){
+        if(!currentCuratorActiveGroup) return;
+        let subs = getSubjectsForGroup(currentCuratorActiveGroup);
+        document.getElementById('groupSubjectsList').innerHTML = subs.map(s=>`<span class="subject-tag">📘 ${s} <button class="delete-subject-btn" data-subj="${s}">✖</button></span>`).join('');
+        document.querySelectorAll('.delete-subject-btn').forEach(btn=>{ 
+            btn.onclick = async ()=>{ 
+                let subj = btn.dataset.subj; 
+                groupSubjects[currentCuratorActiveGroup] = groupSubjects[currentCuratorActiveGroup].filter(x=>x!==subj); 
+                await saveGroupSubjectsToFB(currentCuratorActiveGroup, groupSubjects[currentCuratorActiveGroup]);
+                renderGroupSubjectsUI(); 
+                updateFilters(getSubjectsForGroup(currentCuratorActiveGroup)); 
+                fullUpdate(); 
+            }; 
+        });
+        let addBtn = document.getElementById('addSubjectToGroupBtn'); 
+        if(addBtn){ 
+            let nb = addBtn.cloneNode(true); 
+            addBtn.parentNode.replaceChild(nb,addBtn); 
+            nb.onclick = async ()=>{ 
+                let ns = document.getElementById('newSubjectName').value.trim(); 
+                if(ns && currentCuratorActiveGroup && !groupSubjects[currentCuratorActiveGroup].includes(ns)){ 
+                    groupSubjects[currentCuratorActiveGroup].push(ns); 
+                    await saveGroupSubjectsToFB(currentCuratorActiveGroup, groupSubjects[currentCuratorActiveGroup]);
+                    renderGroupSubjectsUI(); 
+                    updateFilters(getSubjectsForGroup(currentCuratorActiveGroup)); 
+                    fullUpdate(); 
+                    document.getElementById('newSubjectName').value = ''; 
+                } 
+            }; 
+        }
+    }
+    
+    function renderCuratorGroupsSelect(){
+        let groups = curatorGroups[currentUser?.email] || [];
+        let sel = document.getElementById('curatorGroupSelect');
+        sel.innerHTML = groups.map(g=>`<option value="${g}" ${currentCuratorActiveGroup===g?'selected':''}>📁 ${g}</option>`).join('');
+        sel.onchange = ()=>{ currentCuratorActiveGroup = sel.value; localStorage.setItem('curatorActiveGroup',currentCuratorActiveGroup); fullUpdate(); renderPaymentsReport(); };
+        if(groups.length && !currentCuratorActiveGroup) currentCuratorActiveGroup = groups[0];
+    }
+    
+    async function fullUpdate(){
+        if(currentUser?.role==='curator'){
+            if(!currentCuratorActiveGroup) return;
+            renderStudentsList(); renderChatsList(); renderGroupSubjectsUI(); renderRegisteredUsers();
+            let group = students.filter(s=>s.group===currentCuratorActiveGroup);
+            if(group.length && (!selectedStudentId || !group.find(s=>s.id===selectedStudentId))){ selectedStudentId = group[0].id; selectedChatStudentId = selectedStudentId; selectedGradeStudentId = selectedStudentId; }
+            if(selectedStudentId){ let st = getStudentById(selectedStudentId); if(st){ displayStudentStats(st); renderGradeDistribution(st); renderSubjectChart(); } }
+            renderAllGradesTable();
+            renderPaymentsReport();
+        } else if(currentUser?.role==='parent'){
+            let st = getStudentForParent(currentUser.email);
+            if(st){ selectedStudentId = st.id; selectedChatStudentId = st.id; displayStudentStats(st); renderGradeDistribution(st); renderAllGradesTable(); renderSubjectChart(); renderChatMessages(); }
+        }
+    }
+    
+    window.selectStudent = function(id){ selectedStudentId = id; selectedChatStudentId = id; selectedGradeStudentId = id; fullUpdate(); renderChatMessages(); };
+    window.selectChatStudent = function(id){ selectedChatStudentId = id; selectedStudentId = id; selectedGradeStudentId = id; fullUpdate(); renderChatMessages(); };
+    
+    // ========== ЧАТ ==========
+    function renderChatMessages(){
+        let sid = currentUser?.role==='curator' ? selectedChatStudentId : getStudentForParent(currentUser?.email)?.id;
+        if(!sid) return;
+        if(currentUser?.role==='curator'){ 
+            let st = getStudentById(sid); 
+            if(st){ 
+                let parent = users.find(u=>u.email===st.parentEmail); 
+                document.getElementById('chatHeaderName').innerHTML = `Чат с ${parent?parent.name:(st.parentName||"Родитель")}`; 
+            } 
+        } else { 
+            document.getElementById('chatHeaderName').innerHTML = `Чат с куратором`; 
+        }
+        let msgs = chatMessages.filter(m=>m.studentId===sid);
+        document.getElementById('chatMessagesModern').innerHTML = msgs.map(msg=>`<div class="message-modern ${msg.sender==='parent'?'parent':'curator'}"><div class="message-avatar">${msg.sender==='parent'?'👨‍👩‍👧':'📚'}</div><div class="message-bubble-modern">${msg.text}</div><div class="message-time-modern" style="font-size:0.7rem;margin-top:5px;">${msg.time||''}</div></div>`).join('');
+        let cont = document.getElementById('chatMessagesModern'); if(cont) cont.scrollTop = cont.scrollHeight;
+    }
+    
+    async function addChatMessage(text, sender){
+        let sid = currentUser?.role==='curator' ? selectedChatStudentId : getStudentForParent(currentUser?.email)?.id;
+        if(!sid) return;
+        const newMsg = { text, sender, time: new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}), studentId: sid };
+        chatMessages.push(newMsg);
+        await saveMessageToFB(newMsg);
+        renderChatMessages(); 
+        if(currentUser?.role==='curator') renderChatsList();
+    }
+    
+    function initChat(){
+        let btn = document.getElementById('modernSendBtn'), inp = document.getElementById('modernChatInput');
+        if(btn){ 
+            let nb = btn.cloneNode(true); 
+            btn.parentNode.replaceChild(nb,btn); 
+            nb.onclick = ()=>{ 
+                let msg = inp?.value.trim(); 
+                if(msg && currentUser){ 
+                    addChatMessage(msg, currentUser.role==='parent'?'parent':'curator'); 
+                    inp.value = ''; 
+                } 
+            }; 
+        }
+        if(inp) inp.onkeypress = e=>{ if(e.key==='Enter'){ let msg = inp.value.trim(); if(msg && currentUser){ addChatMessage(msg, currentUser.role==='parent'?'parent':'curator'); inp.value = ''; } } };
+    }
+    
+    // ========== ПАНЕЛЬ КУРАТОРА ==========
+    function initCuratorControls(){
+        let addGrade = document.getElementById('addGradeBtn'), addAbsence = document.getElementById('addAbsenceBtn'), msgDiv = document.getElementById('curatorSuccessMsg');
+        if(addGrade){ 
+            let nb = addGrade.cloneNode(true); 
+            addGrade.parentNode.replaceChild(nb,addGrade); 
+            nb.onclick = async ()=>{ 
+                let st = getStudentById(selectedGradeStudentId); 
+                if(!st){ msgDiv.style.display='block'; msgDiv.innerHTML='⚠️ Выберите ученика'; setTimeout(()=>msgDiv.style.display='none',2000); return; } 
+                let subj = document.getElementById('subjectSelect').value; 
+                if(!subj){ msgDiv.style.display='block'; msgDiv.innerHTML='⚠️ Выберите предмет'; setTimeout(()=>msgDiv.style.display='none',2000); return; } 
+                lastSelectedSubject = subj; 
+                let val = parseInt(document.getElementById('gradeSelect').value); 
+                let date = document.getElementById('gradeDate').value || new Date().toISOString().slice(0,10); 
+                let comment = document.getElementById('gradeComment').value.trim(); 
+                let isControl = document.querySelector('input[name="gradeType"]:checked').value === 'control'; 
+                let weight = isControl ? 2 : 1; 
+                if(!st.grades) st.grades = {}; 
+                if(!st.grades[subj]) st.grades[subj] = []; 
+                st.grades[subj].push({value:val, date:date, comment:comment||"Без комментария", weight:weight}); 
+                await saveStudentToFB(st);
+                await loadAllData();
+                fullUpdate(); 
+                setTimeout(()=>{ 
+                    let ss = document.getElementById('subjectSelect'); 
+                    if(ss && lastSelectedSubject && [...ss.options].some(o=>o.value===lastSelectedSubject)) ss.value = lastSelectedSubject; 
+                },50); 
+                msgDiv.style.display='block'; 
+                msgDiv.innerHTML = `✅ Оценка ${val} по ${subj}${isControl?' (×2)':''}`; 
+                setTimeout(()=>msgDiv.style.display='none',2000); 
+            }; 
+        }
+        if(addAbsence){ 
+            let nb = addAbsence.cloneNode(true); 
+            addAbsence.parentNode.replaceChild(nb,addAbsence); 
+            nb.onclick = async ()=>{ 
+                let st = getStudentById(selectedStudentId); 
+                if(st){ 
+                    let date = document.getElementById('absenceDate').value || new Date().toISOString().slice(0,10); 
+                    let type = document.getElementById('absenceType').value; 
+                    if(!st.absences) st.absences = []; 
+                    if(!st.absences.find(a=>a.date===date)){ 
+                        st.absences.push({date,type}); 
+                        await saveStudentToFB(st);
+                        await loadAllData();
+                        fullUpdate(); 
+                        msgDiv.style.display='block'; 
+                        msgDiv.innerHTML = `📅 Пропуск добавлен`; 
+                        setTimeout(()=>msgDiv.style.display='none',2000); 
+                    } else { 
+                        msgDiv.style.display='block'; 
+                        msgDiv.innerHTML = '⚠️ Пропуск уже есть'; 
+                        setTimeout(()=>msgDiv.style.display='none',2000); 
+                    } 
+                } 
+            }; 
+        }
+    }
+    
+    // ========== НАВИГАЦИЯ ==========
+    let mainDash = document.getElementById('mainDashboard'), dynCont = document.getElementById('dynamic-page-content'), navBtns = document.querySelectorAll('.nav-btn');
+    function getDetailedPage(){ 
+        let st = getStudentById(selectedStudentId); 
+        if(!st) return '<div class="detail-page">Нет данных</div>'; 
+        let subs = getSubjectsForGroup(st.group); 
+        let rows = subs.map(s=>{ 
+            let grades = st.grades?.[s]||[]; 
+            let avg = grades.length ? (grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0) / grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1) : "—"; 
+            let last = grades[grades.length-1]; 
+            let lastVal = last ? (typeof last==='object'?last.value:last) : "—"; 
+            return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td style="text-align:center;"><span class="grade-badge-sm">${lastVal}</span></td>`; 
+        }).join(''); 
+        return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; 
+    }
+    function getAttendancePage(){ 
+        let st = getStudentById(selectedStudentId); 
+        if(!st) return '<div class="detail-page">Нет данных</div>'; 
+        let days = (st.absences||[]).slice().reverse().map(a=>`<div style="padding:12px;background:#ffe0f0;border-radius:40px;margin:8px 0;">📅 ${a.date} — ${a.type}</div>`).join(''); 
+        return `<div class="detail-page"><div class="detail-title">📅 Посещаемость: ${st.name}</div>${days||'<div style="padding:20px;text-align:center;">✨ Нет пропусков</div>'}<button class="back-link" data-back="dashboard">← На главную</button></div>`; 
+    }
+    function showDetail(pageId){ 
+        if(mainDash) mainDash.style.display = 'none'; 
+        let content = pageId === 'detailed-progress' ? getDetailedPage() : getAttendancePage(); 
+        dynCont.innerHTML = content; 
+        dynCont.style.display = 'block'; 
+        navBtns.forEach(btn=>btn.classList.toggle('active-dashboard', btn.dataset.page === pageId)); 
+        document.querySelectorAll('.back-link').forEach(btn=>btn.onclick=()=>showMain()); 
+    }
+    function showMain(){ 
+        if(mainDash) mainDash.style.display = 'grid'; 
+        dynCont.style.display = 'none'; 
+        dynCont.innerHTML = ''; 
+        navBtns.forEach(btn=>btn.classList.toggle('active-dashboard', btn.dataset.page === 'dashboard')); 
+        fullUpdate(); 
+    }
+    function initNav(){ 
+        showMain(); 
+        navBtns.forEach(btn=>{ 
+            btn.onclick = ()=>{ 
+                let page = btn.dataset.page; 
+                page === 'dashboard' ? showMain() : showDetail(page); 
+            }; 
+        }); 
+    }
+    
+    document.getElementById('clearFilterBtn')?.addEventListener('click',()=>{ if(document.getElementById('filterSubject')) document.getElementById('filterSubject').value = ""; renderAllGradesTable(); });
+    document.getElementById('filterSubject')?.addEventListener('change',()=>renderAllGradesTable());
+    document.getElementById('deleteGroupBtn')?.addEventListener('click', async ()=>{ 
+        if(currentCuratorActiveGroup && confirm(`Удалить группу "${currentCuratorActiveGroup}"?`)){ 
+            let groups = curatorGroups[currentUser.email]; 
+            let idx = groups.indexOf(currentCuratorActiveGroup); 
+            if(idx !== -1) groups.splice(idx,1); 
+            curatorGroups[currentUser.email] = groups; 
+            await saveCuratorGroupsToFB(currentUser.email, groups);
+            if(groups.length > 0){ 
+                currentCuratorActiveGroup = groups[0]; 
+                localStorage.setItem('curatorActiveGroup', currentCuratorActiveGroup); 
+            } else { 
+                currentCuratorActiveGroup = null; 
+                localStorage.removeItem('curatorActiveGroup'); 
+                document.getElementById('studentStatsBlock').style.display = 'none'; 
+                document.getElementById('noStudentsMessage').style.display = 'block'; 
+            } 
+            renderCuratorGroupsSelect(); 
+            fullUpdate(); 
+            renderPaymentsReport(); 
+        } 
+    });
+    document.getElementById('confirmAddGroupBtn')?.addEventListener('click', async ()=>{ 
+        let ng = document.getElementById('newGroupNameInput').value.trim(); 
+        if(ng && currentUser){ 
+            let taken = false; 
+            for(let ce in curatorGroups) if(ce !== currentUser.email && curatorGroups[ce]?.includes(ng)) taken = true; 
+            if(taken){ 
+                document.getElementById('curatorSuccessMsg').innerHTML = '⚠️ Группа уже закреплена'; 
+                document.getElementById('curatorSuccessMsg').style.display = 'block'; 
+                setTimeout(()=>document.getElementById('curatorSuccessMsg').style.display='none',2000); 
+                return; 
+            } 
+            if(!curatorGroups[currentUser.email]) curatorGroups[currentUser.email] = []; 
+            if(!curatorGroups[currentUser.email].includes(ng)){ 
+                curatorGroups[currentUser.email].push(ng); 
+                if(!groupSubjects[ng]) groupSubjects[ng] = ["Математика","Русский язык","Физика","Информатика","Физкультура"]; 
+                await saveCuratorGroupsToFB(currentUser.email, curatorGroups[currentUser.email]);
+                await saveGroupSubjectsToFB(ng, groupSubjects[ng]);
+                renderCuratorGroupsSelect(); 
+                currentCuratorActiveGroup = ng; 
+                fullUpdate(); 
+                document.getElementById('newGroupNameInput').value = ''; 
+                renderPaymentsReport(); 
+            } 
+        } 
+    });
+    
+    // ========== TELEGRAM АВТОРИЗАЦИЯ ==========
+    function getBotIdFromToken(token) { return token.split(':')[0]; }
+    
+    function initTelegramAuth() {
+        const widgetDiv = document.getElementById('telegramWidget');
+        if (!widgetDiv) return;
+        const botId = getBotIdFromToken(TELEGRAM_BOT_TOKEN);
+        const origin = encodeURIComponent(window.location.origin);
+        widgetDiv.innerHTML = `
+            <iframe src="https://oauth.telegram.org/embed?bot_id=${botId}&origin=${origin}&embed=1&request_access=write" 
+                    width="100%" height="70" style="border:none; border-radius:40px; overflow:hidden;"></iframe>
+            <div style="margin-top: 10px; font-size: 0.8rem; color: #c27096;">
+                Нажмите на кнопку выше для входа через Telegram
+            </div>
+        `;
+        window.addEventListener('message', function(e) {
+            if (e.origin !== 'https://oauth.telegram.org') return;
+            if (e.data && e.data.event === 'auth_user') {
+                handleTelegramLogin(e.data);
+            }
+        });
+    }
+    
+    async function handleTelegramLogin(tgUser) {
+        console.log('Telegram авторизация:', tgUser);
+        let user = users.find(u => u.telegram_id === tgUser.id);
+        if (!user) {
+            const newEmail = `tg_${tgUser.id}@telegram.local`;
+            user = {
+                id: 'tg_' + Date.now(),
+                name: (tgUser.first_name || '') + (tgUser.last_name ? ' ' + tgUser.last_name : ''),
+                email: newEmail,
+                telegram_id: tgUser.id,
+                role: 'parent',
+                avatar: tgUser.photo_url || '🌸',
+                password: null
+            };
+            users.push(user);
+            await saveUserToFB(user);
+            const newStudent = {
+                id: 'stg_' + Date.now(),
+                name: 'Новый студент',
+                group: 'Новая группа',
+                parentEmail: newEmail,
+                parentName: user.name,
+                grades: {},
+                absences: []
+            };
+            students.push(newStudent);
+            await saveStudentToFB(newStudent);
+            alert('Добро пожаловать! Ваш аккаунт создан. Теперь вы можете добавить данные о студенте.');
+        }
+        currentUser = user;
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        await loadAllData();
+        showDashboard();
+    }
+    
+    document.getElementById('telegramLoginBtn').addEventListener('click', function() {
+        const widgetDiv = document.getElementById('telegramWidget');
+        if (widgetDiv.children.length === 0) {
+            initTelegramAuth();
+        }
+        widgetDiv.style.display = 'block';
+        document.getElementById('telegramLoginBtn').style.display = 'none';
+    });
+    
+    document.getElementById('logoutBtnMain').onclick = () => {
+        localStorage.removeItem('currentUser');
+        currentUser = null;
+        document.getElementById('authBlock').style.display = 'block';
+        document.getElementById('dashboardBlock').classList.remove('active');
+        document.getElementById('dashboardBlock').style.display = 'none';
+        document.getElementById('telegramWidget').style.display = 'none';
+        document.getElementById('telegramWidget').innerHTML = '';
+        document.getElementById('telegramLoginBtn').style.display = 'inline-flex';
+    };
+    
+    // ========== ПРОФИЛЬ ==========
+    function renderAvatarSelector(){ 
+        let cont = document.getElementById('avatarSelector'); 
+        if(!cont) return; 
+        let cur = userAvatars[currentUser?.email] || "🌸"; 
+        cont.innerHTML = AVATARS.map(av=>`<div class="avatar-option ${cur===av?'selected':''}" data-avatar="${av}">${av}</div>`).join(''); 
+        document.querySelectorAll('.avatar-option').forEach(opt=>{ 
+            opt.onclick = ()=>{ 
+                document.querySelectorAll('.avatar-option').forEach(o=>o.classList.remove('selected')); 
+                opt.classList.add('selected'); 
+            }; 
+        }); 
+    }
+    window.deleteAccount = async function(){ 
+        if(confirm('Удалить аккаунт?')){ 
+            let email = currentUser.email; 
+            users = users.filter(u=>u.email !== email); 
+            const emailKey = email.replace(/\./g, '_');
+            await remove(ref(db, `users/${emailKey}`));
+            localStorage.removeItem('currentUser'); 
+            currentUser = null; 
+            location.reload(); 
+        } 
+    };
+    window.openProfileModal = function(){ 
+        if(!currentUser) return; 
+        document.getElementById('profileName').value = currentUser.name; 
+        document.getElementById('profileEmail').value = currentUser.email; 
+        renderAvatarSelector(); 
+        document.getElementById('profileModal').classList.add('active'); 
+    };
+    window.closeProfileModal = function(){ document.getElementById('profileModal').classList.remove('active'); };
+    window.saveProfileChanges = async function(){ 
+        let newName = document.getElementById('profileName').value.trim(); 
+        let selAv = document.querySelector('.avatar-option.selected')?.dataset.avatar; 
+        if(newName){ 
+            currentUser.name = newName; 
+            await saveUserToFB(currentUser);
+            document.getElementById('userNameSpan').innerText = newName; 
+        } 
+        if(selAv){ 
+            userAvatars[currentUser.email] = selAv; 
+            await saveAvatarToFB(currentUser.email, selAv);
+            document.getElementById('userAvatar').innerHTML = selAv; 
+        } 
+        closeProfileModal(); 
+        alert('Профиль обновлён'); 
+    };
+    
+    // ========== ОСНОВНАЯ ФУНКЦИЯ ==========
+    async function showDashboard(){
+        if(currentUser){
+            await loadAllData();
+            document.getElementById('authBlock').style.display = 'none';
+            document.getElementById('dashboardBlock').classList.add('active');
+            document.getElementById('dashboardBlock').style.display = 'block';
+            document.getElementById('userNameSpan').innerText = currentUser.name;
+            document.getElementById('userAvatar').innerHTML = userAvatars[currentUser.email] || "🌸";
+            let badge = document.getElementById('userRoleBadge');
+            
+            if(currentUser.role === 'parent'){
+                badge.innerText = 'Родитель';
+                document.getElementById('curatorArea').style.display = 'none';
+                document.getElementById('curatorPanel').style.display = 'none';
+                document.getElementById('paymentsSection').style.display = 'block';
+                document.getElementById('paymentsReport').style.display = 'none';
+                renderPayments();
+                let st = getStudentForParent(currentUser.email);
+                if(st){
+                    document.getElementById('studentStatsBlock').style.display = 'block';
+                    document.getElementById('noStudentsMessage').style.display = 'none';
+                    selectedStudentId = st.id; selectedChatStudentId = st.id; selectedGradeStudentId = st.id;
+                    displayStudentStats(st); renderGradeDistribution(st); renderSubjectChart();
+                    renderChatMessages();
+                } else { 
+                    document.getElementById('studentStatsBlock').style.display = 'none'; 
+                    document.getElementById('noStudentsMessage').style.display = 'block'; 
+                }
+            } else {
+                badge.innerText = 'Куратор';
+                document.getElementById('curatorArea').style.display = 'block';
+                document.getElementById('curatorPanel').style.display = 'block';
+                document.getElementById('paymentsSection').style.display = 'none';
+                document.getElementById('paymentsReport').style.display = 'block';
+                if(!curatorGroups[currentUser.email]) curatorGroups[currentUser.email] = [];
+                renderCuratorGroupsSelect();
+                if(currentCuratorActiveGroup){ 
+                    fullUpdate(); 
+                    renderPaymentsReport(); 
+                } else if(curatorGroups[currentUser.email].length){ 
+                    currentCuratorActiveGroup = curatorGroups[currentUser.email][0]; 
+                    fullUpdate(); 
+                    renderPaymentsReport(); 
+                } else { 
+                    document.getElementById('studentStatsBlock').style.display = 'none'; 
+                    document.getElementById('noStudentsMessage').style.display = 'block'; 
+                }
+            }
+            let today = new Date().toISOString().slice(0,10);
+            if(document.getElementById('gradeDate')) document.getElementById('gradeDate').value = today;
+            if(document.getElementById('absenceDate')) document.getElementById('absenceDate').value = today;
+            initChat(); initCuratorControls(); initNav(); renderAllGradesTable();
+        } else {
+            document.getElementById('authBlock').style.display = 'block';
+            document.getElementById('dashboardBlock').classList.remove('active');
+            document.getElementById('dashboardBlock').style.display = 'none';
+        }
+    }
+    
+    // ========== ЗАПУСК ==========
+    function createFloatingElements(){
+        let cont = document.getElementById('floatingBg'); 
+        if(!cont) return; 
+        cont.innerHTML = '';
+        for(let i=0;i<40;i++){ 
+            let d = document.createElement('div'); 
+            d.className = 'heart'; 
+            d.innerHTML = '❤️'; 
+            d.style.left = Math.random()*100+'%'; 
+            d.style.fontSize = (12+Math.random()*18)+'px'; 
+            d.style.animationDuration = (8+Math.random()*15)+'s'; 
+            d.style.animationDelay = (Math.random()*20)+'s'; 
+            cont.appendChild(d); 
+        }
+        for(let i=0;i<50;i++){ 
+            let s = document.createElement('div'); 
+            s.className = 'star-bg'; 
+            s.innerHTML = '⭐'; 
+            s.style.left = Math.random()*100+'%'; 
+            s.style.top = Math.random()*100+'%'; 
+            s.style.fontSize = (8+Math.random()*14)+'px'; 
+            s.style.animationDuration = (3+Math.random()*6)+'s'; 
+            s.style.animationDelay = (Math.random()*10)+'s'; 
+            cont.appendChild(s); 
+        }
+    }
+    function updateDateBadge(){ 
+        let b = document.getElementById('currentDateBadge'); 
+        if(b) b.innerHTML = `📅 ${new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})}`; 
+    }
+    
+    createFloatingElements(); 
+    updateDateBadge(); 
+    setInterval(updateDateBadge,60000);
+    
+    // Загрузка данных и запуск
+    (async () => {
+        await loadAllData();
+        if(localStorage.getItem('currentUser')){ 
+            currentUser = JSON.parse(localStorage.getItem('currentUser')); 
+            showDashboard(); 
+        } else { 
+            showDashboard(); 
+        }
+    })();
 </script>
 </body>
 </html>
