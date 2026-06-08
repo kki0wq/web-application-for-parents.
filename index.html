@@ -285,6 +285,39 @@ function getStudentForParent(email) { return students.find(s=>s.parentEmail===em
 function getSubjectsForGroup(g) { if (!groupSubjects[g]) groupSubjects[g] = ["Математика","Русский язык","Физика","Информатика","Физкультура"]; return groupSubjects[g]; }
 function avgGrade(st) { if(!st?.grades) return "—"; let t=0,s=0; for(let subj in st.grades) for(let g of st.grades[subj]){ let v=typeof g==='object'?g.value:g, w=(typeof g==='object'&&g.weight)?g.weight:1; s+=v*w; t+=w; } return t===0?"—":(s/t).toFixed(2); }
 
+// Добавляем тестовые оценки для демонстрации графиков
+function addTestGrades() {
+    let testStudent = students.find(s => s.name === 'Студент Маний');
+    if (testStudent && Object.keys(testStudent.grades).length === 0) {
+        testStudent.grades = {
+            'Математика': [
+                { value: 4, date: '2026-01-15', comment: 'Контрольная работа', weight: 2 },
+                { value: 5, date: '2026-01-22', comment: 'Ответ у доски', weight: 1 },
+                { value: 3, date: '2026-01-29', comment: 'Самостоятельная', weight: 1 },
+                { value: 4, date: '2026-02-05', comment: 'Контрольная', weight: 2 },
+                { value: 5, date: '2026-02-12', comment: 'Тест', weight: 1 },
+                { value: 4, date: '2026-02-19', comment: 'Устный ответ', weight: 1 },
+                { value: 5, date: '2026-02-26', comment: 'Итоговая', weight: 2 }
+            ],
+            'Русский язык': [
+                { value: 5, date: '2026-01-14', comment: 'Сочинение', weight: 2 },
+                { value: 4, date: '2026-01-21', comment: 'Диктант', weight: 2 },
+                { value: 5, date: '2026-01-28', comment: 'Устный ответ', weight: 1 },
+                { value: 3, date: '2026-02-04', comment: 'Тест', weight: 1 }
+            ],
+            'Физика': [
+                { value: 3, date: '2026-01-16', comment: 'Лабораторная', weight: 1 },
+                { value: 4, date: '2026-01-23', comment: 'Контрольная', weight: 2 },
+                { value: 4, date: '2026-01-30', comment: 'Практика', weight: 1 },
+                { value: 5, date: '2026-02-06', comment: 'Эксперимент', weight: 1 }
+            ]
+        };
+        saveAll();
+        console.log('✅ Тестовые оценки добавлены!');
+    }
+}
+addTestGrades();
+
 function initPayments(sid){ if(!payments[sid]){ payments[sid]={}; MONTHS.forEach(m=>payments[sid][m]={paid:false, date:null}); saveAll(); } }
 function renderPayments(){ let st=getStudentForParent(currentUser?.email); if(!st) return; initPayments(st.id); document.getElementById('paymentCalendar').innerHTML=MONTHS.map(m=>`<div class="payment-month-card ${payments[st.id][m].paid?'paid':'unpaid'}" onclick="togglePayment('${st.id}','${m}')"><div>${payments[st.id][m].paid?'✅':'❌'}</div><div>${m}</div></div>`).join(''); }
 window.togglePayment=function(sid,m){ payments[sid][m].paid=!payments[sid][m].paid; payments[sid][m].date=payments[sid][m].paid?new Date().toLocaleDateString('ru-RU'):null; saveAll(); renderPayments(); let msg=document.getElementById('paymentMessage'); msg.style.display='block'; msg.innerHTML=payments[sid][m].paid?`✅ ${m} оплачен!`:`❌ Оплата отменена`; setTimeout(()=>msg.style.display='none',2000); renderPaymentsReport(); };
@@ -308,9 +341,9 @@ function renderPaymentsReport(){
             let paid = r.payments[m]?.paid;
             html += `<td style="text-align:center;">${paid ? '<span class="paid-badge">✅ Оплачено</span>' : '<span class="unpaid-badge">❌ Не оплачено</span>'}</td>`;
         }
-        html += `</tr>`;
+        html += `<tr>`;
     }
-    html += `</tbody></table>`;
+    html += `</tbody><table>`;
     document.getElementById('paymentsReportContent').innerHTML = html;
 }
 
@@ -332,24 +365,70 @@ function renderRegisteredUsers(){
 }
 
 function renderSubjectChart(){
+    console.log('📊 renderSubjectChart called');
     let student = getStudentById(selectedStudentId);
     let subject = document.getElementById('subjectForChart')?.value;
+    
     if(!student || !subject){ 
         if(subjectGradesChart) { subjectGradesChart.destroy(); subjectGradesChart = null; }
         let ctx = document.getElementById('subjectGradesChart')?.getContext('2d');
-        if(ctx){ ctx.fillStyle = '#f0dce8'; ctx.fillRect(0,0,ctx.canvas.width,100); ctx.fillStyle = '#c27096'; ctx.font = '14px Inter'; ctx.fillText('Выберите предмет для отображения графика', 50, 50); }
+        if(ctx){ 
+            ctx.fillStyle = '#f0dce8'; 
+            ctx.fillRect(0,0,ctx.canvas.width,100); 
+            ctx.fillStyle = '#c27096'; 
+            ctx.font = '14px Inter'; 
+            ctx.fillText(!student ? 'Сначала выберите ученика' : 'Выберите предмет для отображения графика', 50, 50); 
+        }
         return; 
     }
+    
     let grades = student.grades?.[subject] || [];
     let dates = [], values = [];
-    for(let g of grades){ dates.push(typeof g==='object'?(g.date||"дата"):"оценка"); values.push(typeof g==='object'?g.value:g); }
+    for(let g of grades){ 
+        dates.push(typeof g === 'object' ? (g.date || "дата") : "оценка"); 
+        values.push(typeof g === 'object' ? g.value : g); 
+    }
+    
     if(subjectGradesChart) subjectGradesChart.destroy();
     let ctx = document.getElementById('subjectGradesChart')?.getContext('2d');
+    
     if(ctx){
-        if(dates.length>0){
-            subjectGradesChart = new Chart(ctx, { type: 'line', data: { labels: dates, datasets: [{ label: `Оценки по ${subject}`, data: values, borderColor: '#e87fb0', backgroundColor: 'rgba(232,127,176,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#c45a8c', pointBorderColor: '#fff', pointRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: true, scales: { y: { min: 1, max: 5, ticks: { stepSize: 1 } } } } });
+        if(dates.length > 0){
+            subjectGradesChart = new Chart(ctx, { 
+                type: 'line', 
+                data: { 
+                    labels: dates, 
+                    datasets: [{ 
+                        label: `Оценки по ${subject}`, 
+                        data: values, 
+                        borderColor: '#e87fb0', 
+                        backgroundColor: 'rgba(232,127,176,0.1)', 
+                        tension: 0.3, 
+                        fill: true, 
+                        pointBackgroundColor: '#c45a8c', 
+                        pointBorderColor: '#fff', 
+                        pointRadius: 6 
+                    }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: true, 
+                    scales: { 
+                        y: { 
+                            min: 1, 
+                            max: 5, 
+                            ticks: { stepSize: 1 } 
+                        } 
+                    } 
+                } 
+            });
+            console.log('✅ Chart created successfully');
         } else {
-            ctx.fillStyle = '#f0dce8'; ctx.fillRect(0,0,ctx.canvas.width,100); ctx.fillStyle = '#c27096'; ctx.font = '14px Inter'; ctx.fillText('Нет оценок по этому предмету', 50, 50);
+            ctx.fillStyle = '#f0dce8'; 
+            ctx.fillRect(0,0,ctx.canvas.width,100); 
+            ctx.fillStyle = '#c27096'; 
+            ctx.font = '14px Inter'; 
+            ctx.fillText('Нет оценок по этому предмету', 50, 50);
         }
     }
 }
@@ -375,7 +454,7 @@ function renderAllGradesTable(){
     let cont=document.getElementById('gradesTableContainer');
     if(!cont) return;
     if(grades.length===0){ cont.innerHTML='<div style="text-align:center;padding:40px;">📭 Нет оценок</div>'; return; }
-    cont.innerHTML=`<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g=>`<tr><td>${g.date||"—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight===2?'Контрольная ×2':'Обычная'}</td><td>${g.comment||"—"}</td>`).join('')}</tbody></table>`;
+    cont.innerHTML=`<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g=>`<tr><td>${g.date||"—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight===2?'Контрольная ×2':'Обычная'}</td><td>${g.comment||"—"}</td>`).join('')}</tbody></td>`;
 }
 
 function renderGradeDistribution(st){
@@ -415,11 +494,37 @@ function displayStudentStats(st){
 
 function renderStudentsList(){
     if(!currentCuratorActiveGroup) return;
-    let group=students.filter(s=>s.group===currentCuratorActiveGroup);
-    let cont=document.getElementById('studentsGrid');
-    if(cont){ cont.innerHTML=group.map(s=>`<div class="student-card ${selectedStudentId===s.id?'active':''}" onclick="window.selectStudent('${s.id}')"><div class="student-avatar">${s.name.charAt(0)}</div><div><strong>${s.name}</strong><br><span style="font-size:0.7rem;">${s.group}</span></div></div>`).join(''); document.getElementById('studentsListContainer').style.display=group.length?'block':'none'; }
-    let sel=document.getElementById('studentForGradeSelect');
-    if(sel){ sel.innerHTML='<option value="">-- Выберите ученика --</option>'+group.map(s=>`<option value="${s.id}" ${selectedGradeStudentId===s.id?'selected':''}>${s.name}</option>`).join(''); sel.onchange=function(){ if(this.value){ selectedGradeStudentId=this.value; selectedStudentId=this.value; selectedChatStudentId=this.value; fullUpdate(); renderChatMessages(); } }; }
+    let group = students.filter(s => s.group === currentCuratorActiveGroup);
+    let cont = document.getElementById('studentsGrid');
+    
+    if(cont){ 
+        cont.innerHTML = group.map(s => `
+            <div class="student-card ${selectedStudentId === s.id ? 'active' : ''}" 
+                 onclick="window.selectStudent('${s.id}')">
+                <div class="student-avatar">${s.name.charAt(0)}</div>
+                <div>
+                    <strong>${s.name}</strong>
+                    <br><span style="font-size:0.7rem;">${s.group}</span>
+                </div>
+            </div>
+        `).join(''); 
+        document.getElementById('studentsListContainer').style.display = group.length ? 'block' : 'none'; 
+    }
+    
+    let sel = document.getElementById('studentForGradeSelect');
+    if(sel){ 
+        sel.innerHTML = '<option value="">-- Выберите ученика --</option>' + 
+            group.map(s => `<option value="${s.id}" ${selectedGradeStudentId === s.id ? 'selected' : ''}>${s.name}</option>`).join(''); 
+        sel.onchange = function(){ 
+            if(this.value){ 
+                selectedGradeStudentId = this.value; 
+                selectedStudentId = this.value; 
+                selectedChatStudentId = this.value; 
+                fullUpdate();      
+                renderChatMessages(); 
+            } 
+        }; 
+    }
 }
 
 function renderChatsList(){
@@ -449,22 +554,66 @@ function renderCuratorGroupsSelect(){
 }
 
 function fullUpdate(){
-    if(currentUser?.role==='curator'){
+    console.log('🔄 fullUpdate called, role:', currentUser?.role);
+    
+    if(currentUser?.role === 'curator'){
         if(!currentCuratorActiveGroup) return;
-        renderStudentsList(); renderChatsList(); renderGroupSubjectsUI(); renderRegisteredUsers();
-        let group=students.filter(s=>s.group===currentCuratorActiveGroup);
-        if(group.length && (!selectedStudentId || !group.find(s=>s.id===selectedStudentId))){ selectedStudentId=group[0].id; selectedChatStudentId=selectedStudentId; selectedGradeStudentId=selectedStudentId; }
-        if(selectedStudentId){ let st=getStudentById(selectedStudentId); if(st){ displayStudentStats(st); renderGradeDistribution(st); renderSubjectChart(); } }
+        
+        renderStudentsList(); 
+        renderChatsList(); 
+        renderGroupSubjectsUI(); 
+        renderRegisteredUsers();
+        
+        let group = students.filter(s => s.group === currentCuratorActiveGroup);
+        
+        if(group.length > 0 && (!selectedStudentId || !group.find(s => s.id === selectedStudentId))){ 
+            selectedStudentId = group[0].id; 
+            selectedChatStudentId = selectedStudentId; 
+            selectedGradeStudentId = selectedStudentId; 
+        }
+        
+        if(selectedStudentId){ 
+            let st = getStudentById(selectedStudentId); 
+            if(st){ 
+                console.log('📚 Displaying stats for:', st.name);
+                displayStudentStats(st);           
+                renderGradeDistribution(st);       
+                renderSubjectChart();              
+            }
+        }
+        
         renderAllGradesTable();
         renderPaymentsReport();
-    } else if(currentUser?.role==='parent'){
-        let st=getStudentForParent(currentUser.email);
-        if(st){ selectedStudentId=st.id; selectedChatStudentId=st.id; displayStudentStats(st); renderGradeDistribution(st); renderAllGradesTable(); renderSubjectChart(); renderChatMessages(); }
+        
+    } else if(currentUser?.role === 'parent'){
+        let st = getStudentForParent(currentUser.email);
+        if(st){ 
+            selectedStudentId = st.id; 
+            selectedChatStudentId = st.id; 
+            displayStudentStats(st); 
+            renderGradeDistribution(st); 
+            renderAllGradesTable(); 
+            renderSubjectChart(); 
+            renderChatMessages(); 
+        }
     }
 }
 
-window.selectStudent=function(id){ selectedStudentId=id; selectedChatStudentId=id; selectedGradeStudentId=id; fullUpdate(); renderChatMessages(); };
-window.selectChatStudent=function(id){ selectedChatStudentId=id; selectedStudentId=id; selectedGradeStudentId=id; fullUpdate(); renderChatMessages(); };
+window.selectStudent = function(id){ 
+    console.log('👨‍🎓 Student selected:', id);
+    selectedStudentId = id; 
+    selectedChatStudentId = id; 
+    selectedGradeStudentId = id; 
+    fullUpdate(); 
+    renderChatMessages(); 
+};
+window.selectChatStudent = function(id){ 
+    selectedChatStudentId = id; 
+    selectedStudentId = id; 
+    selectedGradeStudentId = id; 
+    fullUpdate(); 
+    renderChatMessages(); 
+};
 
 function renderChatMessages(){
     let sid=currentUser?.role==='curator'?selectedChatStudentId:getStudentForParent(currentUser?.email)?.id;
@@ -496,7 +645,7 @@ function initCuratorControls(){
 }
 
 let mainDash=document.getElementById('mainDashboard'), dynCont=document.getElementById('dynamic-page-content'), navBtns=document.querySelectorAll('.nav-btn');
-function getDetailedPage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let subs=getSubjectsForGroup(st.group); let rows=subs.map(s=>{ let grades=st.grades?.[s]||[]; let avg=grades.length?(grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1):"—"; let last=grades[grades.length-1]; let lastVal=last?(typeof last==='object'?last.value:last):"—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td style="text-align:center;"><span class="grade-badge-sm">${lastVal}</span></td>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
+function getDetailedPage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let subs=getSubjectsForGroup(st.group); let rows=subs.map(s=>{ let grades=st.grades?.[s]||[]; let avg=grades.length?(grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1):"—"; let last=grades[grades.length-1]; let lastVal=last?(typeof last==='object'?last.value:last):"—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td style="text-align:center;"><span class="grade-badge-sm">${lastVal}</span></td>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th><tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
 function getAttendancePage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let days=(st.absences||[]).slice().reverse().map(a=>`<div style="padding:12px;background:#ffe0f0;border-radius:40px;margin:8px 0;">📅 ${a.date} — ${a.type}</div>`).join(''); return `<div class="detail-page"><div class="detail-title">📅 Посещаемость: ${st.name}</div>${days||'<div style="padding:20px;text-align:center;">✨ Нет пропусков</div>'}<button class="back-link" data-back="dashboard">← На главную</button></div>`; }
 function showDetail(pageId){ if(mainDash) mainDash.style.display='none'; let content=pageId==='detailed-progress'?getDetailedPage():getAttendancePage(); dynCont.innerHTML=content; dynCont.style.display='block'; navBtns.forEach(btn=>btn.classList.toggle('active-dashboard',btn.dataset.page===pageId)); document.querySelectorAll('.back-link').forEach(btn=>btn.onclick=()=>showMain()); }
 function showMain(){ if(mainDash) mainDash.style.display='grid'; dynCont.style.display='none'; dynCont.innerHTML=''; navBtns.forEach(btn=>btn.classList.toggle('active-dashboard',btn.dataset.page==='dashboard')); fullUpdate(); }
