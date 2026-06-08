@@ -329,7 +329,7 @@ function addTestGrades() {
 addTestGrades();
 
 function initPayments(sid){ if(!payments[sid]){ payments[sid]={}; MONTHS.forEach(m=>payments[sid][m]={paid:false, date:null}); saveAll(); } }
-function renderPayments(){ let st=getStudentForParent(currentUser?.email); if(!st) return; initPayments(st.id); document.getElementById('paymentCalendar').innerHTML=MONTHS.map(m=>`<div class="payment-month-card ${payments[st.id][m].paid?'paid':'unpaid'}" onclick="togglePayment('${st.id}','${m}')"><div>${payments[st.id][m].paid?'✅':'❌'}</div><div>${m}</div></div>`).join(''); }
+function renderPayments(){ let st=getStudentForParent(currentUser?.email); if(!st) return; initPayments(st.id); document.getElementById('paymentCalendar').innerHTML=MONTHS.map(m=>`<div class="payment-month-card ${payments[st.id][m].paid?'paid':'unpaid'}" onclick="window.togglePayment('${st.id}','${m}')"><div>${payments[st.id][m].paid?'✅':'❌'}</div><div>${m}</div></div>`).join(''); }
 window.togglePayment=function(sid,m){ payments[sid][m].paid=!payments[sid][m].paid; payments[sid][m].date=payments[sid][m].paid?new Date().toLocaleDateString('ru-RU'):null; saveAll(); renderPayments(); let msg=document.getElementById('paymentMessage'); msg.style.display='block'; msg.innerHTML=payments[sid][m].paid?`✅ ${m} оплачен!`:`❌ Оплата отменена`; setTimeout(()=>msg.style.display='none',2000); renderPaymentsReport(); };
 
 function renderPaymentsReport(){
@@ -351,7 +351,7 @@ function renderPaymentsReport(){
             let paid = r.payments[m]?.paid;
             html += `<td style="text-align:center;">${paid ? '<span class="paid-badge">✅ Оплачено</span>' : '<span class="unpaid-badge">❌ Не оплачено</span>'}</td>`;
         }
-        html += `<tr>`;
+        html += `</tr>`;
     }
     html += `</tbody></table>`;
     document.getElementById('paymentsReportContent').innerHTML = html;
@@ -418,7 +418,7 @@ function renderAllGradesTable(){
     let cont=document.getElementById('gradesTableContainer');
     if(!cont) return;
     if(grades.length===0){ cont.innerHTML='<div style="text-align:center;padding:40px;">📭 Нет оценок</div>'; return; }
-    cont.innerHTML=`<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g=>`<tr><td>${g.date||"—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight===2?'Контрольная ×2':'Обычная'}</td><td>${g.comment||"—"}</td>`).join('')}</tbody></table>`;
+    cont.innerHTML=`<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g=>`<tr><td>${g.date||"—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight===2?'Контрольная ×2':'Обычная'}</td><td>${g.comment||"—"}</td></tr>`).join('')}</tbody></table>`;
 }
 
 function renderGradeDistribution(st){
@@ -538,8 +538,8 @@ function initCuratorControls(){
     if(addAbsence){ let nb=addAbsence.cloneNode(true); addAbsence.parentNode.replaceChild(nb,addAbsence); nb.onclick=()=>{ let st=getStudentById(selectedStudentId); if(st){ let date=document.getElementById('absenceDate').value||new Date().toISOString().slice(0,10); let type=document.getElementById('absenceType').value; if(!st.absences) st.absences=[]; if(!st.absences.find(a=>a.date===date)){ st.absences.push({date,type}); saveAll(); fullUpdate(); msgDiv.style.display='block'; msgDiv.innerHTML=`📅 Пропуск добавлен`; setTimeout(()=>msgDiv.style.display='none',2000); } else { msgDiv.style.display='block'; msgDiv.innerHTML='⚠️ Пропуск уже есть'; setTimeout(()=>msgDiv.style.display='none',2000); } } }; }
 }
 
-let mainDash=document.getElementById('mainDashboard'), dynCont=document.getElementById('dynamic-page-content'), navBtns=document.querySelectorAll('.nav-btn');
-function getDetailedPage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let subs=getSubjectsForGroup(st.group); let rows=subs.map(s=>{ let grades=st.grades?.[s]||[]; let avg=grades.length?(grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1):"—"; let last=grades[grades.length-1]; let lastVal=last?(typeof last==='object'?last.value:last):"—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td style="text-align:center;"><span class="grade-badge-sm">${lastVal}</span></td>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
+let mainDash=document.getElementById('mainDashboard'), dynCont=document.getElementById('dynamic-page-content'), navBtns=document.querySelectorAll('.bottom-nav .nav-btn');
+function getDetailedPage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let subs=getSubjectsForGroup(st.group); let rows=subs.map(s=>{ let grades=st.grades?.[s]||[]; let avg=grades.length?(grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1):"—"; let last=grades[grades.length-1]; let lastVal=last?(typeof last==='object'?last.value:last):"—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td style="text-align:center;"><span class="grade-badge-sm">${lastVal}</span></td></tr>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
 function getAttendancePage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let days=(st.absences||[]).slice().reverse().map(a=>`<div style="padding:12px;background:#ffe0f0;border-radius:40px;margin:8px 0;">📅 ${a.date} — ${a.type}</div>`).join(''); return `<div class="detail-page"><div class="detail-title">📅 Посещаемость: ${st.name}</div>${days||'<div style="padding:20px;text-align:center;">✨ Нет пропусков</div>'}<button class="back-link" data-back="dashboard">← На главную</button></div>`; }
 function showDetail(pageId){ if(mainDash) mainDash.style.display='none'; let content=pageId==='detailed-progress'?getDetailedPage():getAttendancePage(); dynCont.innerHTML=content; dynCont.style.display='block'; navBtns.forEach(btn=>btn.classList.toggle('active-dashboard',btn.dataset.page===pageId)); document.querySelectorAll('.back-link').forEach(btn=>btn.onclick=()=>showMain()); }
 function showMain(){ if(mainDash) mainDash.style.display='grid'; dynCont.style.display='none'; dynCont.innerHTML=''; navBtns.forEach(btn=>btn.classList.toggle('active-dashboard',btn.dataset.page==='dashboard')); fullUpdate(); }
