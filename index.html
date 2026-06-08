@@ -482,20 +482,21 @@ function renderPaymentsReport() {
         container.innerHTML = '<div class="text-center" style="padding:40px;">Нет привязанных родителей</div>';
         return;
     }
-    let html = `<table class="payment-report-table"><thead><tr><th>Родитель</th><th>Студент</th>${MONTHS.map(m => `<th>${m}</th>`).join('')}<tr></thead><tbody>`;
+    let html = `<table class="payment-report-table"><thead><tr><th>Родитель</th><th>Студент</th>${MONTHS.map(m => `<th>${m}</th>`).join('')}</tr></thead><tbody>`;
     for (let r of report) {
         html += `<tr><td style="font-weight:600;">${r.parentName}</td><td>${r.studentName}</td>`;
         for (let m of MONTHS) {
             let paid = r.payments[m]?.paid;
             html += `<td style="text-align:center;">${paid ? '<span class="paid-badge">✅ Оплачено</span>' : '<span class="unpaid-badge">❌ Не оплачено</span>'}</td>`;
         }
-        html += `</tr>`;
+        html += `<tr>`;
     }
-    html += `</tbody> licensierad`;
+    html += `</tbody></table>`;
     container.innerHTML = html;
 }
 
 // ========== ГРАФИКИ ==========
+// *** ИСПРАВЛЕНО: убрана оценка 1 из графика (ось Y начинается с 2) ***
 function renderSubjectChart() {
     let student = getStudentById(selectedStudentId);
     let subject = document.getElementById('subjectForChart')?.value;
@@ -506,17 +507,58 @@ function renderSubjectChart() {
         return;
     }
     let grades = student.grades[subject];
+    
+    // Фильтруем оценки со значением 1
+    let filteredGrades = grades.filter(g => g.value !== 1);
+    
+    if (filteredGrades.length === 0) {
+        if (subjectGradesChart) { subjectGradesChart.destroy(); subjectGradesChart = null; }
+        let ctx = document.getElementById('subjectGradesChart')?.getContext('2d');
+        if (ctx) { ctx.fillStyle = '#f0dce8'; ctx.fillRect(0, 0, ctx.canvas.width, 100); ctx.fillStyle = '#c27096'; ctx.font = '14px Inter'; ctx.fillText('Нет оценок (единицы скрыты)', 50, 50); }
+        return;
+    }
+    
     let dates = [], values = [];
-    for (let g of grades) {
+    for (let g of filteredGrades) {
         dates.push(g.date || "дата");
         values.push(g.value);
     }
+    
     if (subjectGradesChart) subjectGradesChart.destroy();
     let ctx = document.getElementById('subjectGradesChart').getContext('2d');
     subjectGradesChart = new Chart(ctx, {
         type: 'line',
-        data: { labels: dates, datasets: [{ label: `Оценки по ${subject}`, data: values, borderColor: '#e87fb0', backgroundColor: 'rgba(232,127,176,0.1)', tension: 0.3, fill: true, pointBackgroundColor: '#c45a8c', pointRadius: 6 }] },
-        options: { responsive: true, maintainAspectRatio: true, scales: { y: { min: 1, max: 5, ticks: { stepSize: 1 } } } }
+        data: { 
+            labels: dates, 
+            datasets: [{ 
+                label: `Оценки по ${subject}`, 
+                data: values, 
+                borderColor: '#e87fb0', 
+                backgroundColor: 'rgba(232,127,176,0.1)', 
+                tension: 0.3, 
+                fill: true, 
+                pointBackgroundColor: '#c45a8c', 
+                pointRadius: 6 
+            }] 
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: true, 
+            scales: { 
+                y: { 
+                    min: 2,        // Ось Y начинается с 2 (единица скрыта)
+                    max: 5, 
+                    ticks: { 
+                        stepSize: 1,
+                        callback: function(value) {
+                            // Показываем только 2,3,4,5
+                            if (value >= 2) return value;
+                            return null;
+                        }
+                    } 
+                } 
+            } 
+        }
     });
 }
 
@@ -565,8 +607,8 @@ function renderAllGradesTable() {
         return;
     }
     let html = `<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>`;
-    html += grades.map(g => `<tr><td>${g.date || "—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight === 2 ? 'Контрольная ×2' : 'Обычная'}</td><td>${g.comment || "—"}</td></tr>`).join('');
-    html += `</tbody></table>`;
+    html += grades.map(g => `<tr><td style="text-align:center;">${g.date || "—"}</td><td>📚 ${g.subject}</td><td style="text-align:center;"><span class="grade-badge-sm">${g.value}</span></td><td style="text-align:center;">${g.weight === 2 ? 'Контрольная ×2' : 'Обычная'}</td><td>${g.comment || "—"}</td>`).join('');
+    html += `</tbody> licensierad`;
     container.innerHTML = html;
 }
 
@@ -593,7 +635,9 @@ function updateFilters(subjects) {
     if (chartSelect) {
         let currentVal = chartSelect.value;
         chartSelect.innerHTML = '<option value="">-- Выберите предмет --</option>' + subjects.map(s => `<option value="${s}">${s}</option>`).join('');
-        if (currentVal && subjects.includes(currentVal)) chartSelect.value = currentVal;
+        if (currentVal && subjects.includes(currentVal)) {
+            chartSelect.value = currentVal;
+        }
         chartSelect.onchange = () => renderSubjectChart();
     }
     document.getElementById('subjectsCountStat').innerText = subjects.length;
@@ -833,7 +877,7 @@ window.selectChatStudent = function(id) {
     renderChatMessages();
 };
 
-// ========== ПАНЕЛЬ КУРАТОРА (оценки/пропуски) - ИСПРАВЛЕНО ==========
+// ========== ПАНЕЛЬ КУРАТОРА (оценки/пропуски) ==========
 function initCuratorControls() {
     let addGradeBtn = document.getElementById('addGradeBtn');
     let addAbsenceBtn = document.getElementById('addAbsenceBtn');
@@ -870,7 +914,6 @@ function initCuratorControls() {
             saveAll();
             fullUpdate();
             
-            // СОХРАНЯЕМ ВЫБРАННЫЙ ПРЕДМЕТ после обновления
             setTimeout(() => {
                 if (subjectSelect && selectedSubject) {
                     subjectSelect.value = selectedSubject;
@@ -913,7 +956,7 @@ function initCuratorControls() {
     }
 }
 
-// ========== КНОПКА "ПОКАЗАТЬ ВСЕ" - ИСПРАВЛЕНО ==========
+// ========== КНОПКА "ПОКАЗАТЬ ВСЕ" ==========
 function initClearFilterButton() {
     let clearBtn = document.getElementById('clearFilterBtn');
     let filterSelect = document.getElementById('filterSubject');
@@ -925,7 +968,6 @@ function initClearFilterButton() {
         newBtn.addEventListener('click', () => {
             filterSelect.value = "";
             renderAllGradesTable();
-            // Визуальный фидбек
             const originalText = newBtn.innerText;
             newBtn.innerText = '✅ Все предметы показаны!';
             newBtn.style.background = '#2d6a4f';
