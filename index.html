@@ -239,28 +239,39 @@
 </div>
 
 <script>
-// ========== РАСШИРЕННЫЙ СПИСОК ПРЕДМЕТОВ (25 ШТУК) ==========
+// ========== РАСШИРЕННЫЙ СПИСОК ПРЕДМЕТОВ (30 ШТУК) ==========
 const COMMON_SUBJECTS = [
     "Математика", "Русский язык", "Литература", "Иностранный язык (английский)",
     "История", "Обществознание", "География", "Физика", "Химия", "Биология",
     "Информатика", "Физическая культура", "ОБЗР", "Экономика", "Право",
     "Астрономия", "Экология", "Культурология", "Философия", "Педагогика",
-    "Психология", "Социология", "Черчение", "МХК", "Естествознание"
+    "Психология", "Социология", "Черчение", "МХК", "Естествознание",
+    "Алгебра", "Геометрия", "Вероятность и статистика", "Родная литература", "Астрономия"
 ];
 
 // ========== ДАННЫЕ ПО УМОЛЧАНИЮ ==========
 if (!localStorage.getItem('users') || JSON.parse(localStorage.getItem('users')).length === 0) {
+    // Создаем пользователей, включая родителей для студентов
     localStorage.setItem('users', JSON.stringify([
         { id: 'u1', name: 'ГЕННАДИЙ ДРАГОН', email: 'gennadij@dragons.ru', password: 'dragongennadij', role: 'curator' },
         { id: 'u2', name: 'МАНИЙ ДАНИС', email: 'maniy@danis.ru', password: 'maniy123', role: 'parent' },
         { id: 'u3', name: 'СУЛТАНОВ ДАНИС', email: 'sultanov@danis.ru', password: 'sultanov123', role: 'parent' },
-        { id: 'u4', name: 'ЧИФ КИФ', email: 'chief@kif.ru', password: 'chiefkif', role: 'curator' }
+        { id: 'u4', name: 'ЧИФ КИФ', email: 'chief@kif.ru', password: 'chiefkif', role: 'curator' },
+        { id: 'u5', name: 'ИВАНОВА МАРИЯ', email: 'ivanova@mail.ru', password: 'ivanova123', role: 'parent' },
+        { id: 'u6', name: 'ПЕТРОВ СЕРГЕЙ', email: 'petrov@mail.ru', password: 'petrov123', role: 'parent' }
     ]));
+    
     localStorage.setItem('students', JSON.stringify([
         { id: 's1', name: 'Студент Маний', group: 'П-201', parentEmail: 'maniy@danis.ru', parentName: 'МАНИЙ ДАНИС', grades: {}, absences: [] },
-        { id: 's2', name: 'Студент Султанов', group: 'П-202', parentEmail: 'sultanov@danis.ru', parentName: 'СУЛТАНОВ ДАНИС', grades: {}, absences: [] }
+        { id: 's2', name: 'Студент Султанов', group: 'П-202', parentEmail: 'sultanov@danis.ru', parentName: 'СУЛТАНОВ ДАНИС', grades: {}, absences: [] },
+        { id: 's3', name: 'Иванов Артём', group: 'П-201', parentEmail: 'ivanova@mail.ru', parentName: 'ИВАНОВА МАРИЯ', grades: {}, absences: [] },
+        { id: 's4', name: 'Петрова Анна', group: 'П-202', parentEmail: 'petrov@mail.ru', parentName: 'ПЕТРОВ СЕРГЕЙ', grades: {}, absences: [] }
     ]));
-    localStorage.setItem('curatorGroups', JSON.stringify({ 'gennadij@dragons.ru': ['П-201', 'П-202'], 'chief@kif.ru': ['П-203'] }));
+    
+    localStorage.setItem('curatorGroups', JSON.stringify({ 
+        'gennadij@dragons.ru': ['П-201', 'П-202'], 
+        'chief@kif.ru': ['П-203'] 
+    }));
     
     let groupSubjectsData = {};
     for (let group of ['П-201', 'П-202', 'П-203']) {
@@ -268,7 +279,25 @@ if (!localStorage.getItem('users') || JSON.parse(localStorage.getItem('users')).
     }
     localStorage.setItem('groupSubjects', JSON.stringify(groupSubjectsData));
     
-    localStorage.setItem('chatMessages', JSON.stringify([]));
+    // Добавляем тестовые оценки для всех студентов
+    let testGrades = {
+        'Математика': [{ value: 4, date: '2026-01-15', comment: 'Контрольная', weight: 2 }, { value: 5, date: '2026-01-22', comment: 'Устный ответ', weight: 1 }, { value: 3, date: '2026-01-29', comment: 'Самостоятельная', weight: 1 }, { value: 4, date: '2026-02-05', comment: 'Контрольная', weight: 2 }, { value: 5, date: '2026-02-12', comment: 'Тест', weight: 1 }],
+        'Русский язык': [{ value: 5, date: '2026-01-14', comment: 'Сочинение', weight: 2 }, { value: 4, date: '2026-01-21', comment: 'Диктант', weight: 2 }, { value: 5, date: '2026-01-28', comment: 'Устный ответ', weight: 1 }],
+        'Физика': [{ value: 3, date: '2026-01-16', comment: 'Лабораторная', weight: 1 }, { value: 4, date: '2026-01-23', comment: 'Контрольная', weight: 2 }, { value: 4, date: '2026-01-30', comment: 'Практика', weight: 1 }],
+        'Информатика': [{ value: 5, date: '2026-01-17', comment: 'Практическая', weight: 1 }, { value: 4, date: '2026-01-24', comment: 'Тест', weight: 1 }]
+    };
+    
+    let studentsList = JSON.parse(localStorage.getItem('students'));
+    studentsList.forEach(student => {
+        student.grades = JSON.parse(JSON.stringify(testGrades));
+        student.absences = [{ date: '2026-01-20', type: 'болезнь' }, { date: '2026-02-01', type: 'уважительная' }];
+    });
+    localStorage.setItem('students', JSON.stringify(studentsList));
+    
+    localStorage.setItem('chatMessages', JSON.stringify([
+        { text: 'Добрый день! Как успехи?', sender: 'curator', time: '10:30', studentId: 's1' },
+        { text: 'Здравствуйте! Всё хорошо, спасибо!', sender: 'parent', time: '10:32', studentId: 's1' }
+    ]));
     localStorage.setItem('userAvatars', JSON.stringify({}));
     localStorage.setItem('payments', JSON.stringify({}));
 }
@@ -306,20 +335,6 @@ function getSubjectsForGroup(g) {
 }
 function avgGrade(st) { if(!st?.grades) return "—"; let t=0,s=0; for(let subj in st.grades) for(let g of st.grades[subj]){ let v=typeof g==='object'?g.value:g, w=(typeof g==='object'&&g.weight)?g.weight:1; s+=v*w; t+=w; } return t===0?"—":(s/t).toFixed(2); }
 
-function addTestGrades() {
-    let testStudent = students.find(s => s.name === 'Студент Маний');
-    if (testStudent && Object.keys(testStudent.grades).length === 0) {
-        testStudent.grades = {
-            'Математика': [{ value: 4, date: '2026-01-15', comment: 'Контрольная', weight: 2 }, { value: 5, date: '2026-01-22', comment: 'Устный ответ', weight: 1 }, { value: 3, date: '2026-01-29', comment: 'Самостоятельная', weight: 1 }, { value: 4, date: '2026-02-05', comment: 'Контрольная', weight: 2 }, { value: 5, date: '2026-02-12', comment: 'Тест', weight: 1 }],
-            'Русский язык': [{ value: 5, date: '2026-01-14', comment: 'Сочинение', weight: 2 }, { value: 4, date: '2026-01-21', comment: 'Диктант', weight: 2 }, { value: 5, date: '2026-01-28', comment: 'Устный ответ', weight: 1 }],
-            'Физика': [{ value: 3, date: '2026-01-16', comment: 'Лабораторная', weight: 1 }, { value: 4, date: '2026-01-23', comment: 'Контрольная', weight: 2 }, { value: 4, date: '2026-01-30', comment: 'Практика', weight: 1 }],
-            'Информатика': [{ value: 5, date: '2026-01-17', comment: 'Практическая', weight: 1 }, { value: 4, date: '2026-01-24', comment: 'Тест', weight: 1 }]
-        };
-        saveAll();
-    }
-}
-addTestGrades();
-
 function initPayments(sid){ if(!payments[sid]){ payments[sid]={}; MONTHS.forEach(m=>payments[sid][m]={paid:false, date:null}); saveAll(); } }
 function renderPayments(){ let st=getStudentForParent(currentUser?.email); if(!st) return; initPayments(st.id); document.getElementById('paymentCalendar').innerHTML=MONTHS.map(m=>`<div class="payment-month-card ${payments[st.id][m].paid?'paid':'unpaid'}" onclick="togglePayment('${st.id}','${m}')"><div>${payments[st.id][m].paid?'✅':'❌'}</div><div>${m}</div></div>`).join(''); }
 window.togglePayment=function(sid,m){ payments[sid][m].paid=!payments[sid][m].paid; payments[sid][m].date=payments[sid][m].paid?new Date().toLocaleDateString('ru-RU'):null; saveAll(); renderPayments(); let msg=document.getElementById('paymentMessage'); msg.style.display='block'; msg.innerHTML=payments[sid][m].paid?`✅ ${m} оплачен!`:`❌ Оплата отменена`; setTimeout(()=>msg.style.display='none',2000); renderPaymentsReport(); };
@@ -336,7 +351,7 @@ function renderPaymentsReport(){
         }
     }
     if(report.length===0){ document.getElementById('paymentsReportContent').innerHTML='<div style="text-align:center;padding:40px;">Нет привязанных родителей</div>'; return; }
-    let html = `<table class="payment-report-table"><thead><tr><th>Родитель</th><th>Студент</th>${MONTHS.map(m=>`<th>${m}</th>`).join('')}</tr></thead><tbody>`;
+    let html = `<table class="payment-report-table"><thead><tr><th>Родитель</th><th>Студент</th>${MONTHS.map(m=>`<th>${m}</th>`).join('')} </thead><tbody>`;
     for(let r of report){
         html += `<tr><td style="font-weight:600;">${r.parentName}</td><td>${r.studentName}</td>`;
         for(let m of MONTHS){
@@ -510,28 +525,71 @@ function renderChatMessages(){
         if(st){
             let parent=users.find(u=>u.email===st.parentEmail);
             let parentName = parent ? parent.name : (st.parentName || "Родитель");
-            document.getElementById('chatHeaderName').innerHTML = `Чат с ${parentName}`;
+            document.getElementById('chatHeaderName').innerHTML = `💬 Чат с ${parentName}`;
         }
-    } else {
-        document.getElementById('chatHeaderName').innerHTML = `Чат с куратором`;
+    } else if(currentUser?.role==='parent'){
+        document.getElementById('chatHeaderName').innerHTML = `💬 Чат с куратором`;
     }
     
     let msgs=chatMessages.filter(m=>m.studentId===sid);
-    document.getElementById('chatMessagesModern').innerHTML=msgs.map(msg=>`<div class="message-modern ${msg.sender==='parent'?'parent':'curator'}"><div class="message-avatar">${msg.sender==='parent'?'👨‍👩‍👧':'📚'}</div><div class="message-bubble-modern">${msg.text}</div><div class="message-time-modern" style="font-size:0.7rem;margin-top:5px;">${msg.time||''}</div></div>`).join('');
+    let messagesHtml = msgs.length === 0 ? '<div style="text-align:center;padding:40px;color:#c27096;">📭 Нет сообщений. Напишите первое сообщение!</div>' : '';
+    messagesHtml += msgs.map(msg=>`<div class="message-modern ${msg.sender==='parent'?'parent':'curator'}"><div class="message-avatar">${msg.sender==='parent'?'👨‍👩‍👧':'📚'}</div><div class="message-bubble-modern">${escapeHtml(msg.text)}</div><div class="message-time-modern" style="font-size:0.7rem;margin-top:5px;">${msg.time||''}</div></div>`).join('');
+    document.getElementById('chatMessagesModern').innerHTML = messagesHtml;
     let cont=document.getElementById('chatMessagesModern'); if(cont) cont.scrollTop=cont.scrollHeight;
+}
+
+function escapeHtml(text) {
+    let div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 function addChatMessage(text,sender){
     let sid=currentUser?.role==='curator'?selectedChatStudentId:getStudentForParent(currentUser?.email)?.id;
-    if(!sid) return;
-    chatMessages.push({text,sender,time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),studentId:sid});
-    saveAll(); renderChatMessages(); if(currentUser?.role==='curator') renderChatsList();
+    if(!sid) {
+        console.log('Не удалось определить ID студента для чата');
+        return;
+    }
+    if(!text.trim()) return;
+    
+    chatMessages.push({
+        text: text.trim(), 
+        sender: sender, 
+        time: new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),
+        studentId: sid
+    });
+    saveAll(); 
+    renderChatMessages(); 
+    if(currentUser?.role==='curator') renderChatsList();
+    
+    // Уведомление
+    let notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.innerHTML = `✉️ Сообщение отправлено`;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 2000);
 }
 
 function initChat(){
     let btn=document.getElementById('modernSendBtn'), inp=document.getElementById('modernChatInput');
-    if(btn){ let nb=btn.cloneNode(true); btn.parentNode.replaceChild(nb,btn); nb.onclick=()=>{ let msg=inp?.value.trim(); if(msg && currentUser){ addChatMessage(msg,currentUser.role==='parent'?'parent':'curator'); inp.value=''; } }; }
-    if(inp) inp.onkeypress=e=>{ if(e.key==='Enter'){ let msg=inp.value.trim(); if(msg && currentUser){ addChatMessage(msg,currentUser.role==='parent'?'parent':'curator'); inp.value=''; } } };
+    if(btn){ 
+        let nb=btn.cloneNode(true); 
+        btn.parentNode.replaceChild(nb,btn); 
+        nb.onclick=()=>{ 
+            let msg=inp?.value.trim(); 
+            if(msg && currentUser){ 
+                addChatMessage(msg, currentUser.role==='parent' ? 'parent' : 'curator'); 
+                inp.value=''; 
+            } else if(!msg) {
+                let notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.innerHTML = `⚠️ Введите сообщение`;
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 2000);
+            }
+        }; 
+    }
+    if(inp) inp.onkeypress=e=>{ if(e.key==='Enter'){ let msg=inp.value.trim(); if(msg && currentUser){ addChatMessage(msg, currentUser.role==='parent'?'parent':'curator'); inp.value=''; } } };
 }
 
 function initCuratorControls(){
