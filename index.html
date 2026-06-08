@@ -239,21 +239,13 @@
 </div>
 
 <script>
-// ========== СПИСОК ПРЕДМЕТОВ (13 ШТУК) ==========
+// ========== РАСШИРЕННЫЙ СПИСОК ПРЕДМЕТОВ (25 ШТУК) ==========
 const COMMON_SUBJECTS = [
-    "Математика",
-    "Русский язык",
-    "Литература",
-    "Иностранный язык (английский)",
-    "История",
-    "Обществознание",
-    "География",
-    "Физика",
-    "Химия",
-    "Биология",
-    "Информатика",
-    "Физическая культура",
-    "ОБЗР"
+    "Математика", "Русский язык", "Литература", "Иностранный язык (английский)",
+    "История", "Обществознание", "География", "Физика", "Химия", "Биология",
+    "Информатика", "Физическая культура", "ОБЗР", "Экономика", "Право",
+    "Астрономия", "Экология", "Культурология", "Философия", "Педагогика",
+    "Психология", "Социология", "Черчение", "МХК", "Естествознание"
 ];
 
 // ========== ДАННЫЕ ПО УМОЛЧАНИЮ ==========
@@ -344,14 +336,14 @@ function renderPaymentsReport(){
         }
     }
     if(report.length===0){ document.getElementById('paymentsReportContent').innerHTML='<div style="text-align:center;padding:40px;">Нет привязанных родителей</div>'; return; }
-    let html = `<table class="payment-report-table"><thead><tr><th>Родитель</th><th>Студент</th>${MONTHS.map(m=>`<th>${m}</th>`).join('')} </thead><tbody>`;
+    let html = `<table class="payment-report-table"><thead><tr><th>Родитель</th><th>Студент</th>${MONTHS.map(m=>`<th>${m}</th>`).join('')}</tr></thead><tbody>`;
     for(let r of report){
         html += `<tr><td style="font-weight:600;">${r.parentName}</td><td>${r.studentName}</td>`;
         for(let m of MONTHS){
             let paid = r.payments[m]?.paid;
             html += `<td style="text-align:center;">${paid ? '<span class="paid-badge">✅ Оплачено</span>' : '<span class="unpaid-badge">❌ Не оплачено</span>'}</td>`;
         }
-        html += `<tr>`;
+        html += `</tr>`;
     }
     html += `</tbody></table>`;
     document.getElementById('paymentsReportContent').innerHTML = html;
@@ -418,7 +410,7 @@ function renderAllGradesTable(){
     let cont=document.getElementById('gradesTableContainer');
     if(!cont) return;
     if(grades.length===0){ cont.innerHTML='<div style="text-align:center;padding:40px;">📭 Нет оценок</div>'; return; }
-    cont.innerHTML=`<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g=>`<tr><td>${g.date||"—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight===2?'Контрольная ×2':'Обычная'}</td><td>${g.comment||"—"}</td>`).join('')}</tbody></table>`;
+    cont.innerHTML=`<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g=>`<tr><td>${g.date||"—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight===2?'Контрольная ×2':'Обычная'}</td><td>${g.comment||"—"}</td></tr>`).join('')}</tbody></table>`;
 }
 
 function renderGradeDistribution(st){
@@ -510,10 +502,20 @@ window.selectStudent=function(id){ selectedStudentId=id; selectedChatStudentId=i
 window.selectChatStudent=function(id){ selectedChatStudentId=id; selectedStudentId=id; selectedGradeStudentId=id; fullUpdate(); renderChatMessages(); };
 
 function renderChatMessages(){
-    let sid=currentUser?.role==='curator'?selectedChatStudentId:getStudentForParent(currentUser?.email)?.id;
+    let sid=currentUser?.role==='curator' ? selectedChatStudentId : getStudentForParent(currentUser?.email)?.id;
     if(!sid) return;
-    if(currentUser?.role==='curator'){ let st=getStudentById(sid); if(st){ let parent=users.find(u=>u.email===st.parentEmail); document.getElementById('chatHeaderName').innerHTML=`Чат с ${parent?parent.name:(st.parentName||"Родитель")}`; } }
-    else { document.getElementById('chatHeaderName').innerHTML=`Чат с куратором`; }
+    
+    if(currentUser?.role==='curator'){
+        let st=getStudentById(sid);
+        if(st){
+            let parent=users.find(u=>u.email===st.parentEmail);
+            let parentName = parent ? parent.name : (st.parentName || "Родитель");
+            document.getElementById('chatHeaderName').innerHTML = `Чат с ${parentName}`;
+        }
+    } else {
+        document.getElementById('chatHeaderName').innerHTML = `Чат с куратором`;
+    }
+    
     let msgs=chatMessages.filter(m=>m.studentId===sid);
     document.getElementById('chatMessagesModern').innerHTML=msgs.map(msg=>`<div class="message-modern ${msg.sender==='parent'?'parent':'curator'}"><div class="message-avatar">${msg.sender==='parent'?'👨‍👩‍👧':'📚'}</div><div class="message-bubble-modern">${msg.text}</div><div class="message-time-modern" style="font-size:0.7rem;margin-top:5px;">${msg.time||''}</div></div>`).join('');
     let cont=document.getElementById('chatMessagesModern'); if(cont) cont.scrollTop=cont.scrollHeight;
@@ -539,7 +541,7 @@ function initCuratorControls(){
 }
 
 let mainDash=document.getElementById('mainDashboard'), dynCont=document.getElementById('dynamic-page-content'), navBtns=document.querySelectorAll('.nav-btn');
-function getDetailedPage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let subs=getSubjectsForGroup(st.group); let rows=subs.map(s=>{ let grades=st.grades?.[s]||[]; let avg=grades.length?(grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1):"—"; let last=grades[grades.length-1]; let lastVal=last?(typeof last==='object'?last.value:last):"—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td style="text-align:center;"><span class="grade-badge-sm">${lastVal}</span></td>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
+function getDetailedPage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let subs=getSubjectsForGroup(st.group); let rows=subs.map(s=>{ let grades=st.grades?.[s]||[]; let avg=grades.length?(grades.reduce((a,b)=>a+(typeof b==='object'?b.value*(b.weight||1):b),0)/grades.reduce((a,b)=>a+(typeof b==='object'?(b.weight||1):1),0)).toFixed(1):"—"; let last=grades[grades.length-1]; let lastVal=last?(typeof last==='object'?last.value:last):"—"; return `<tr><td style="font-weight:500;">📚 ${s}</td><td style="text-align:center;">${avg}</td><td style="text-align:center;"><span class="grade-badge-sm">${lastVal}</span></td></tr>`; }).join(''); return `<div class="detail-page"><div class="detail-title">📖 Успеваемость: ${st.name}</div><table class="grades-table"><thead><tr><th>Предмет</th><th>Средний балл</th><th>Последняя оценка</th></tr></thead><tbody>${rows}</tbody></table><button class="back-link" data-back="dashboard">← На главную</button></div>`; }
 function getAttendancePage(){ let st=getStudentById(selectedStudentId); if(!st) return '<div class="detail-page">Нет данных</div>'; let days=(st.absences||[]).slice().reverse().map(a=>`<div style="padding:12px;background:#ffe0f0;border-radius:40px;margin:8px 0;">📅 ${a.date} — ${a.type}</div>`).join(''); return `<div class="detail-page"><div class="detail-title">📅 Посещаемость: ${st.name}</div>${days||'<div style="padding:20px;text-align:center;">✨ Нет пропусков</div>'}<button class="back-link" data-back="dashboard">← На главную</button></div>`; }
 function showDetail(pageId){ if(mainDash) mainDash.style.display='none'; let content=pageId==='detailed-progress'?getDetailedPage():getAttendancePage(); dynCont.innerHTML=content; dynCont.style.display='block'; navBtns.forEach(btn=>btn.classList.toggle('active-dashboard',btn.dataset.page===pageId)); document.querySelectorAll('.back-link').forEach(btn=>btn.onclick=()=>showMain()); }
 function showMain(){ if(mainDash) mainDash.style.display='grid'; dynCont.style.display='none'; dynCont.innerHTML=''; navBtns.forEach(btn=>btn.classList.toggle('active-dashboard',btn.dataset.page==='dashboard')); fullUpdate(); }
