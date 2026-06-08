@@ -239,13 +239,12 @@
 </div>
 
 <script>
-// ========== ОБЩЕОБРАЗОВАТЕЛЬНЫЕ ПРЕДМЕТЫ (БЕЗ РОДНОГО ЯЗЫКА И РОДНОЙ ЛИТЕРАТУРЫ) ==========
+// ========== СПИСОК ПРЕДМЕТОВ (13 ШТУК) ==========
 const COMMON_SUBJECTS = [
     "Математика",
     "Русский язык",
     "Литература",
     "Иностранный язык (английский)",
-    "Второй иностранный (немецкий)",
     "История",
     "Обществознание",
     "География",
@@ -256,42 +255,6 @@ const COMMON_SUBJECTS = [
     "Физическая культура",
     "ОБЗР"
 ];
-
-// ========== ПРОФЕССИОНАЛЬНЫЕ ПРЕДМЕТЫ ПО ГРУППАМ ==========
-const PROFESSIONAL_SUBJECTS = {
-    "П-201": [
-        "Программирование (Python)",
-        "Базы данных",
-        "Веб-дизайн",
-        "Компьютерные сети",
-        "Операционные системы",
-        "Алгоритмизация"
-    ],
-    "П-202": [
-        "Электротехника",
-        "Черчение",
-        "Материаловедение",
-        "Охрана труда",
-        "Промышленная безопасность",
-        "Техническая механика"
-    ],
-    "П-203": [
-        "Экономика организации",
-        "Бухгалтерский учёт",
-        "Право",
-        "Менеджмент",
-        "Маркетинг",
-        "Финансы",
-        "Статистика"
-    ]
-};
-
-// Функция для получения всех предметов группы (общие + профессиональные)
-function getAllSubjectsForGroup(group) {
-    const common = [...COMMON_SUBJECTS];
-    const prof = PROFESSIONAL_SUBJECTS[group] || [];
-    return [...common, ...prof];
-}
 
 // ========== ДАННЫЕ ПО УМОЛЧАНИЮ ==========
 if (!localStorage.getItem('users') || JSON.parse(localStorage.getItem('users')).length === 0) {
@@ -307,10 +270,9 @@ if (!localStorage.getItem('users') || JSON.parse(localStorage.getItem('users')).
     ]));
     localStorage.setItem('curatorGroups', JSON.stringify({ 'gennadij@dragons.ru': ['П-201', 'П-202'], 'chief@kif.ru': ['П-203'] }));
     
-    // Сохраняем предметы для каждой группы
     let groupSubjectsData = {};
     for (let group of ['П-201', 'П-202', 'П-203']) {
-        groupSubjectsData[group] = getAllSubjectsForGroup(group);
+        groupSubjectsData[group] = [...COMMON_SUBJECTS];
     }
     localStorage.setItem('groupSubjects', JSON.stringify(groupSubjectsData));
     
@@ -346,41 +308,22 @@ function getStudentById(id) { return students.find(s=>s.id===id); }
 function getStudentForParent(email) { return students.find(s=>s.parentEmail===email); }
 function getSubjectsForGroup(g) { 
     if (!groupSubjects[g] || groupSubjects[g].length === 0) {
-        groupSubjects[g] = getAllSubjectsForGroup(g);
+        groupSubjects[g] = [...COMMON_SUBJECTS];
     }
     return groupSubjects[g]; 
 }
 function avgGrade(st) { if(!st?.grades) return "—"; let t=0,s=0; for(let subj in st.grades) for(let g of st.grades[subj]){ let v=typeof g==='object'?g.value:g, w=(typeof g==='object'&&g.weight)?g.weight:1; s+=v*w; t+=w; } return t===0?"—":(s/t).toFixed(2); }
 
-// Добавляем тестовые оценки для демонстрации
 function addTestGrades() {
     let testStudent = students.find(s => s.name === 'Студент Маний');
     if (testStudent && Object.keys(testStudent.grades).length === 0) {
         testStudent.grades = {
-            'Математика': [
-                { value: 4, date: '2026-01-15', comment: 'Контрольная работа', weight: 2 },
-                { value: 5, date: '2026-01-22', comment: 'Ответ у доски', weight: 1 },
-                { value: 3, date: '2026-01-29', comment: 'Самостоятельная', weight: 1 },
-                { value: 4, date: '2026-02-05', comment: 'Контрольная', weight: 2 },
-                { value: 5, date: '2026-02-12', comment: 'Тест', weight: 1 }
-            ],
-            'Русский язык': [
-                { value: 5, date: '2026-01-14', comment: 'Сочинение', weight: 2 },
-                { value: 4, date: '2026-01-21', comment: 'Диктант', weight: 2 },
-                { value: 5, date: '2026-01-28', comment: 'Устный ответ', weight: 1 }
-            ],
-            'Физика': [
-                { value: 3, date: '2026-01-16', comment: 'Лабораторная', weight: 1 },
-                { value: 4, date: '2026-01-23', comment: 'Контрольная', weight: 2 },
-                { value: 4, date: '2026-01-30', comment: 'Практика', weight: 1 }
-            ],
-            'Программирование (Python)': [
-                { value: 5, date: '2026-01-17', comment: 'Практическая работа', weight: 1 },
-                { value: 4, date: '2026-01-24', comment: 'Тест', weight: 1 }
-            ]
+            'Математика': [{ value: 4, date: '2026-01-15', comment: 'Контрольная', weight: 2 }, { value: 5, date: '2026-01-22', comment: 'Устный ответ', weight: 1 }, { value: 3, date: '2026-01-29', comment: 'Самостоятельная', weight: 1 }, { value: 4, date: '2026-02-05', comment: 'Контрольная', weight: 2 }, { value: 5, date: '2026-02-12', comment: 'Тест', weight: 1 }],
+            'Русский язык': [{ value: 5, date: '2026-01-14', comment: 'Сочинение', weight: 2 }, { value: 4, date: '2026-01-21', comment: 'Диктант', weight: 2 }, { value: 5, date: '2026-01-28', comment: 'Устный ответ', weight: 1 }],
+            'Физика': [{ value: 3, date: '2026-01-16', comment: 'Лабораторная', weight: 1 }, { value: 4, date: '2026-01-23', comment: 'Контрольная', weight: 2 }, { value: 4, date: '2026-01-30', comment: 'Практика', weight: 1 }],
+            'Информатика': [{ value: 5, date: '2026-01-17', comment: 'Практическая', weight: 1 }, { value: 4, date: '2026-01-24', comment: 'Тест', weight: 1 }]
         };
         saveAll();
-        console.log('✅ Тестовые оценки добавлены!');
     }
 }
 addTestGrades();
@@ -408,7 +351,7 @@ function renderPaymentsReport(){
             let paid = r.payments[m]?.paid;
             html += `<td style="text-align:center;">${paid ? '<span class="paid-badge">✅ Оплачено</span>' : '<span class="unpaid-badge">❌ Не оплачено</span>'}</td>`;
         }
-        html += `</tr>`;
+        html += `<tr>`;
     }
     html += `</tbody></table>`;
     document.getElementById('paymentsReportContent').innerHTML = html;
@@ -475,7 +418,7 @@ function renderAllGradesTable(){
     let cont=document.getElementById('gradesTableContainer');
     if(!cont) return;
     if(grades.length===0){ cont.innerHTML='<div style="text-align:center;padding:40px;">📭 Нет оценок</div>'; return; }
-    cont.innerHTML=`<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th><tr></thead><tbody>${grades.map(g=>`<tr><td>${g.date||"—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight===2?'Контрольная ×2':'Обычная'}</td><td>${g.comment||"—"}</td></tr>`).join('')}</tbody></table>`;
+    cont.innerHTML=`<table class="grades-table"><thead><tr><th>Дата</th><th>Предмет</th><th>Оценка</th><th>Тип</th><th>Комментарий</th></tr></thead><tbody>${grades.map(g=>`<tr><td>${g.date||"—"}</td><td>📚 ${g.subject}</td><td><span class="grade-badge-sm">${g.value}</span></td><td>${g.weight===2?'Контрольная ×2':'Обычная'}</td><td>${g.comment||"—"}</td>`).join('')}</tbody></table>`;
 }
 
 function renderGradeDistribution(st){
@@ -605,12 +548,12 @@ function initNav(){ showMain(); navBtns.forEach(btn=>{ btn.onclick=()=>{ let pag
 document.getElementById('clearFilterBtn')?.addEventListener('click',()=>{ if(document.getElementById('filterSubject')) document.getElementById('filterSubject').value=""; renderAllGradesTable(); });
 document.getElementById('filterSubject')?.addEventListener('change',()=>renderAllGradesTable());
 document.getElementById('deleteGroupBtn')?.addEventListener('click',()=>{ if(currentCuratorActiveGroup && confirm(`Удалить группу "${currentCuratorActiveGroup}"?`)){ let groups=curatorGroups[currentUser.email]; let idx=groups.indexOf(currentCuratorActiveGroup); if(idx!==-1) groups.splice(idx,1); curatorGroups[currentUser.email]=groups; saveAll(); if(groups.length>0){ currentCuratorActiveGroup=groups[0]; localStorage.setItem('curatorActiveGroup',currentCuratorActiveGroup); } else { currentCuratorActiveGroup=null; document.getElementById('studentStatsBlock').style.display='none'; document.getElementById('noStudentsMessage').style.display='block'; } renderCuratorGroupsSelect(); fullUpdate(); renderPaymentsReport(); } });
-document.getElementById('confirmAddGroupBtn')?.addEventListener('click',()=>{ let ng=document.getElementById('newGroupNameInput').value.trim(); if(ng && currentUser){ let taken=false; for(let ce in curatorGroups) if(ce!==currentUser.email && curatorGroups[ce]?.includes(ng)) taken=true; if(taken){ document.getElementById('curatorSuccessMsg').innerHTML='⚠️ Группа уже закреплена'; document.getElementById('curatorSuccessMsg').style.display='block'; setTimeout(()=>document.getElementById('curatorSuccessMsg').style.display='none',2000); return; } if(!curatorGroups[currentUser.email]) curatorGroups[currentUser.email]=[]; if(!curatorGroups[currentUser.email].includes(ng)){ curatorGroups[currentUser.email].push(ng); if(!groupSubjects[ng]) groupSubjects[ng]=getAllSubjectsForGroup(ng); saveAll(); renderCuratorGroupsSelect(); currentCuratorActiveGroup=ng; fullUpdate(); document.getElementById('newGroupNameInput').value=''; renderPaymentsReport(); } } });
+document.getElementById('confirmAddGroupBtn')?.addEventListener('click',()=>{ let ng=document.getElementById('newGroupNameInput').value.trim(); if(ng && currentUser){ let taken=false; for(let ce in curatorGroups) if(ce!==currentUser.email && curatorGroups[ce]?.includes(ng)) taken=true; if(taken){ document.getElementById('curatorSuccessMsg').innerHTML='⚠️ Группа уже закреплена'; document.getElementById('curatorSuccessMsg').style.display='block'; setTimeout(()=>document.getElementById('curatorSuccessMsg').style.display='none',2000); return; } if(!curatorGroups[currentUser.email]) curatorGroups[currentUser.email]=[]; if(!curatorGroups[currentUser.email].includes(ng)){ curatorGroups[currentUser.email].push(ng); if(!groupSubjects[ng]) groupSubjects[ng]=[...COMMON_SUBJECTS]; saveAll(); renderCuratorGroupsSelect(); currentCuratorActiveGroup=ng; fullUpdate(); document.getElementById('newGroupNameInput').value=''; renderPaymentsReport(); } } });
 
 document.getElementById('regRole').onchange=function(){ let isParent=this.value==='parent'; document.getElementById('parentFields').style.display=isParent?'block':'none'; document.getElementById('curatorFields').style.display=isParent?'none':'block'; };
 document.getElementById('regRole').dispatchEvent(new Event('change'));
 document.querySelectorAll('.auth-tab').forEach(tab=>{ tab.onclick=()=>{ let t=tab.dataset.tab; document.querySelectorAll('.auth-tab').forEach(tt=>tt.classList.remove('active')); tab.classList.add('active'); document.getElementById('loginForm').classList.toggle('hidden',t!=='login'); document.getElementById('registerForm').classList.toggle('hidden',t!=='register'); }; });
-document.getElementById('doRegisterBtn').onclick=()=>{ let name=document.getElementById('regName').value.trim(), email=document.getElementById('regEmail').value.trim(), role=document.getElementById('regRole').value, pwd=document.getElementById('regPassword').value, err=document.getElementById('regError'); if(!name||!email||!pwd){ err.innerText='Заполните все поля'; return; } if(pwd.length<6){ err.innerText='Пароль минимум 6 символов'; return; } if(users.find(u=>u.email===email)){ err.innerText='Email уже существует'; return; } if(role==='parent'){ let child=document.getElementById('regChildName').value.trim(), group=document.getElementById('regGroupNumber').value.trim(); if(!child||!group){ err.innerText='Заполните данные студента'; return; } let ex=students.find(s=>s.name===child); if(!ex) students.push({id:`s${Date.now()}`,name:child,group:group,parentEmail:email,parentName:name,grades:{},absences:[]}); else if(ex.parentEmail && ex.parentEmail!==email){ err.innerText='Студент уже привязан'; return; } else { ex.parentEmail=email; ex.parentName=name; ex.group=group; } } else { let cg=document.getElementById('regCuratorGroup').value.trim(); if(!curatorGroups[email]) curatorGroups[email]=[]; if(cg && !curatorGroups[email].includes(cg)) curatorGroups[email].push(cg); if(cg && !groupSubjects[cg]) groupSubjects[cg]=getAllSubjectsForGroup(cg); } users.push({id:`u${Date.now()}`,name,email,password:pwd,role}); saveAll(); alert('Регистрация успешна!'); document.querySelector('.auth-tab[data-tab="login"]').click(); };
+document.getElementById('doRegisterBtn').onclick=()=>{ let name=document.getElementById('regName').value.trim(), email=document.getElementById('regEmail').value.trim(), role=document.getElementById('regRole').value, pwd=document.getElementById('regPassword').value, err=document.getElementById('regError'); if(!name||!email||!pwd){ err.innerText='Заполните все поля'; return; } if(pwd.length<6){ err.innerText='Пароль минимум 6 символов'; return; } if(users.find(u=>u.email===email)){ err.innerText='Email уже существует'; return; } if(role==='parent'){ let child=document.getElementById('regChildName').value.trim(), group=document.getElementById('regGroupNumber').value.trim(); if(!child||!group){ err.innerText='Заполните данные студента'; return; } let ex=students.find(s=>s.name===child); if(!ex) students.push({id:`s${Date.now()}`,name:child,group:group,parentEmail:email,parentName:name,grades:{},absences:[]}); else if(ex.parentEmail && ex.parentEmail!==email){ err.innerText='Студент уже привязан'; return; } else { ex.parentEmail=email; ex.parentName=name; ex.group=group; } } else { let cg=document.getElementById('regCuratorGroup').value.trim(); if(!curatorGroups[email]) curatorGroups[email]=[]; if(cg && !curatorGroups[email].includes(cg)) curatorGroups[email].push(cg); if(cg && !groupSubjects[cg]) groupSubjects[cg]=[...COMMON_SUBJECTS]; } users.push({id:`u${Date.now()}`,name,email,password:pwd,role}); saveAll(); alert('Регистрация успешна!'); document.querySelector('.auth-tab[data-tab="login"]').click(); };
 document.getElementById('doLoginBtn').onclick=()=>{ let email=document.getElementById('loginEmail').value.trim(), pwd=document.getElementById('loginPassword').value; let user=users.find(u=>u.email===email && u.password===pwd); if(!user){ document.getElementById('loginError').innerText='Неверный email или пароль'; return; } currentUser=user; localStorage.setItem('currentUser',JSON.stringify(user)); if(user.role==='parent'){ let st=getStudentForParent(user.email); if(st){ selectedStudentId=st.id; selectedChatStudentId=st.id; selectedGradeStudentId=st.id; } } if(user.role==='curator'){ if(!curatorGroups[user.email]) curatorGroups[user.email]=[]; let saved=localStorage.getItem('curatorActiveGroup'); if(saved && curatorGroups[user.email].includes(saved)) currentCuratorActiveGroup=saved; else if(curatorGroups[user.email].length) currentCuratorActiveGroup=curatorGroups[user.email][0]; } showDashboard(); };
 document.getElementById('logoutBtnMain').onclick=()=>{ localStorage.removeItem('currentUser'); currentUser=null; showAuth(); };
 
